@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<!-- Created by GNU Texinfo 7.1, https://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!-- This booklet is for Cuis-Smalltalk (7.0 or later), a free and modern
+implementation of the Smalltalk language and environment.
+
+Copyright © 2024 The Cuis writers
+
+
+Thanks to...  for the reviews of the booklet, suggestions and borrowed
+texts. Your help is very valuable.
+
+
+
+Compilation : June 22, 2024
+
+Documentation source: https://github.com/Cuis-Smalltalk/Cuis-Booklets 
+
+The contents of this booklet are protected under Creative Commons
+Attribution-ShareAlike 4.0 International.
+
+You are free to:
+
+
+Share - copy and redistribute the material in any medium or
+format
+
+
+Adapt - remix, transform, and build upon the material for any
+purpose, even commercially.
+
+Under the following terms:
+
+
+Attribution. You must give appropriate credit, provide a link to
+the license, and indicate if changes were made. You may do so in any
+reasonable manner, but not in any way that suggests the licensor
+endorses you or your use.
+
+
+Share Alike. If you remix, transform, or build upon the material,
+you must distribute your contributions under the same license as the
+original.
+
+Complete license: https://creativecommons.org/licenses/by-sa/4.0/legalcode
+ -->
+<title>Preparation (The title of a Cuis Booklet)</title>
+
+<meta name="description" content="Preparation (The title of a Cuis Booklet)">
+<meta name="keywords" content="Preparation (The title of a Cuis Booklet)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2any">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link href="index.html" rel="start" title="Top">
+<link href="Indexes.html" rel="index" title="Indexes">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Chapter-1.html" rel="up" title="Chapter 1">
+<link href="A-few-tips-on-editing.html" rel="next" title="A few tips on editing">
+<style type="text/css">
+<!--
+a.copiable-link {visibility: hidden; text-decoration: none; line-height: 0em}
+div.example {margin-left: 3.2em}
+span:hover a.copiable-link {visibility: visible}
+ul.mark-bullet {list-style-type: disc}
+-->
+</style>
+<link rel="stylesheet" type="text/css" href="style.css">
+
+
+</head>
+
+<body lang="en">
+<div class="section-level-extent" id="Preparation">
+<div class="nav-panel">
+<p>
+Next: <a href="A-few-tips-on-editing.html" accesskey="n" rel="next">A few tips on editing</a>, Up: <a href="Chapter-1.html" accesskey="u" rel="up">Chapter 1</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Indexes.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<h3 class="section" id="Preparation-1"><span>1.1 Preparation<a class="copiable-link" href="#Preparation-1"> &para;</a></span></h3>
+
+<div class="subsection-level-extent" id="Copying-template">
+<h4 class="subsection"><span>1.1.1 Copying template<a class="copiable-link" href="#Copying-template"> &para;</a></span></h4>
+<p>To edit your own booklet, you first copy the existing template:
+</p>
+<div class="float" id="copyingTemplate">
+<div class="example smallexample">
+<pre class="example-preformatted">cp -rf bookletTemplate myBooklet
+</pre></div>
+<div class="caption"><p><strong class="strong">Example 1.1: </strong>Install your own booklet</p></div></div>
+</div>
+<div class="subsection-level-extent" id="Settings">
+<h4 class="subsection"><span>1.1.2 Settings<a class="copiable-link" href="#Settings"> &para;</a></span></h4>
+<p>In the master document <samp class="file">booklet.texinfo</samp>, you should edit:
+</p>
+<ol class="enumerate">
+<li> The title and subtitle,
+ </li><li> The slogan.
+ </li><li> Insert an <code class="command">@include</code> command for each chapter.
+</li></ol>
+
+<p>In the <samp class="file">misc/settings.texinfo</samp> file adjust:
+</p>
+<ul class="itemize mark-bullet">
+<li>The title of the booklet, again,
+ </li><li>The list of writers in the <code class="command">@writer</code> macro,
+ </li><li>The list of reviewers in the <code class="command">@thanks</code> macro,
+ </li><li>Read the content of the file to learn about the macro to use when editing the booklet. You can also learn from the source &ldquo;The Cuis Book&rdquo;.
+</li></ul>
+
+
+</div>
+</div>
+
+
+
+</body>
+</html>
