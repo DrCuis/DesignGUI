@@ -1,0 +1,13 @@
+@c Documents avec copyright
+@node Documents Copyright
+@appendix Documents Copyright
+
+@noindent
+
+@subheading Cuis-Smalltalk mascot
+@image{CuisLogo,1cm}
+@*
+The southern mountain cavy (Microcavia australis) is a species of
+South American rodent in the family Caviidae.
+@*
+Copyright @copyright{} Euan Mee

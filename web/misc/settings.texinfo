@@ -1,0 +1,200 @@
+@documentlanguage en
+@documentencoding UTF-8
+@c Prefered settings
+@set cuisVersion 7.0 or later
+@set bookletTitle Web with Cuis
+@set writers The Cuis Writers
+@settitle @value{bookletTitle}
+@codequoteundirected on
+@codequotebacktick on
+@c Remove ugly black rectangle
+@finalout
+@setfilename WebCuis.info
+@c @afourwide
+@c @afourlatex
+@c 7x9.25 inches 17.8x23.5 cm
+@smallbook
+
+@c Macro definitions
+@macro alanQuoteAboutCuis
+@quotation
+I like it... It's nice and clean and simple and pretty. Nice stuff!
+@author Alan Kay
+@end quotation
+@end macro
+
+@macro cuis
+Cuis-Smalltalk
+@end macro
+
+@macro thanks
+@c Alphabetical list of reviewers
+Thanks to...  for the reviews of the booklet, suggestions and borrowed
+texts. Your help is very valuable.
+@end macro
+
+@macro vm
+@acronym{VM}
+@end macro
+
+@c Todo note, with an index entry to group them all
+@macro todo{note}
+@cindex @strong{to be written}, \note\
+@strong{To be written.} \note\
+@end macro
+
+@c comment, with an index entry to group them all
+@macro note{note}
+@cindex @strong{note}, \note\
+@strong{Note:} @emph{\note\}
+@end macro
+
+
+@c Smalltalk code in a text flow
+
+@c for the printed manual, use arrow symbols for the returned value
+@c and the assignment
+@iftex
+@c up arrow, return symbol
+@macro return
+@U{2191}
+@end macro
+@c left arrow, assignment
+@macro assign
+@U{2190}
+@end macro
+@end iftex
+
+@c for the html manual use := and ^ symbol, so the user can copy and
+@c paste Smalltalk directly in Cuis
+@ifnottex
+@c up arrow, return symbol
+@macro return
+^
+@end macro
+@c left arrow, assignment
+@macro assign
+:=
+@end macro
+@end ifnottex
+
+@alias class=code
+@alias smalltalk=code
+@alias method=code
+@c label of a button, string keyed in a text field
+@alias label=command 
+@macro msg{messageName}
+@code{#\messageName\}
+@end macro
+@c Smalltalk example
+@macro smalltalkExample{example}
+@iftex
+   @sp 1
+@end iftex
+@smallexample
+\example\
+@end smallexample
+@iftex
+   @sp 1
+@end iftex
+@end macro
+
+@c Smalltalk example with caption
+@macro smalltalkExampleCaption{caption,label,example}
+@float Example,\label\
+@smallexample
+\example\
+@end smallexample
+@caption{\caption\}
+@end float
+@iftex
+   @sp 1
+@end iftex
+@end macro
+
+@c Exercise with caption
+@macro exercise{caption,label,text}
+@float Exercise,\label\
+@indentedblock
+@iftex
+  @cartouche
+  @tie{}@image{CuisLogoLarge,1cm}
+@end iftex
+@ifhtml
+  @tie{}@image{CuisLogo,1cm}
+@end ifhtml
+\text\
+@iftex
+  @end cartouche
+@end iftex
+@end indentedblock
+@caption{\caption\}
+@shortcaption{\caption\}
+@end float
+@iftex
+@sp 1
+@end iftex
+@end macro
+
+@c Figure with caption
+@macro figure{caption,file,width}
+@ifnotplaintext
+ @float Figure,\file\
+ @center @image{\file\,\width\cm}
+ @caption{\caption\}
+ @end float
+@end ifnotplaintext
+@ifplaintext
+ @float Figure
+ @caption{\caption\}
+ @end float
+@end ifplaintext
+@iftex
+   @sp 1
+@end iftex
+@end macro
+
+@c Figure with caption and extension
+@macro figureExt{caption,file,width,ext}
+@ifnotplaintext
+ @float Figure,\file\
+ @center @image{\file\,\width\cm,,,\ext\}
+ @caption{\caption\}
+ @end float
+@end ifnotplaintext
+@ifplaintext
+ @float Figure
+ @caption{\caption\}
+ @end float
+@end ifplaintext
+@iftex
+   @sp 1
+@end iftex
+@end macro
+
+@c Iconic button
+@macro button{file}
+@ifnotplaintext
+ @image{\file\,,0.5cm}
+@end ifnotplaintext
+@end macro
+
+@macro icon{file}
+@image{\file\,1cm}
+@end macro
+
+@c Highlighted Note
+@macro cuisNote{aNote}
+@indentedblock
+@iftex
+@cartouche
+@end iftex
+@ifnotplaintext
+@tie{}@image{note,1cm}
+@end ifnotplaintext
+\aNote\
+@iftex
+@end cartouche
+@end iftex
+@end indentedblock
+@end macro
