@@ -5,12 +5,12 @@
 @c %**end of header
 
 @titlepage
-   @title A @cuis{} booklet
+   @title @value{bookletTitle}
    @subtitle Learn about...
    @* @* @* @*
 
    @alanQuoteAboutCuis
-   @author @writers{}
+   @author @value{writers}
 
 @iftex
    @page
@@ -32,7 +32,7 @@
 
 A Cuis booklet.
 
-@top Cuis booklet
+@top @value{bookletTitle}
 
 @ifnottex
   @shortcontents

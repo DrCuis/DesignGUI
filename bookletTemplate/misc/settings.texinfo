@@ -1,8 +1,10 @@
 @documentlanguage en
 @documentencoding UTF-8
-@settitle The title of a Cuis Booklet
 @c Prefered settings
 @set cuisVersion 7.0 or later
+@set bookletTitle Title of a Cuis Booklet
+@set writers The Cuis Writers
+@settitle @value{bookletTitle}
 @codequoteundirected on
 @codequotebacktick on
 @c Remove ugly black rectangle
@@ -24,11 +26,6 @@ I like it... It's nice and clean and simple and pretty. Nice stuff!
 @macro cuis
 Cuis-Smalltalk
 @end macro
-
-@macro writers
-The Cuis writers
-@end macro
-
 
 @macro thanks
 @c Alphabetical list of reviewers

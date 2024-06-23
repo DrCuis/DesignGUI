@@ -1,8 +1,8 @@
 @copying
-This booklet is for @cuis{} (@value{cuisVersion}), a free and modern
+``@value{bookletTitle}'' booklet is for @cuis{} (@value{cuisVersion}), a free and modern
 implementation of the Smalltalk language and environment.
 
-Copyright @copyright{} 2024 @writers{}
+Copyright @copyright{} 2024 @value{writers}
 @*
 @thanks{}
 @*
