@@ -8,59 +8,303 @@ The computer is simply an instrument whose music is ideas.
 
 @*
 
-An introduction to this chapter.
+This booklet covers web development using Cuis Smalltalk.
+Popular Smalltalk libraries for web development include
+Seaside (https://book.seaside.st/book) and Pier (https://www.piercms.com).
+Seaside has been ported to work in Pharo and Squeak, but not Cuis.
+Pier is a content management system that is compatible with Pharo Smalltalk,
+but has not been ported to work with Squeak or Cuis.
 
-@cindex editing @subentry menu
-@cindex editing @subentry chapter naming
+@node Pacakges
+@section Packages
 
-Rename @label{Chapter 1} to your taste, @command{@@node} name should follow chapter name.
+The only web development package I have found that is compatible with Cuis
+is WebClient (https://wiki.squeak.org/squeak/6337 and
+https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev/blob/master/Packages/Features/WebClient.pck.st).
+This works with Squeak and has been ported to Cuis, but not to Pharo.
 
-@cindex editing @subentry menu
-In the menu block below report the @command{@@node}/@command{@@section} argument declared in the rest of this document.
+This booklet focuses on using WebClient in Cuis
+to implement processing and sending HTTP requests.
 
-@menu
-* Preparation::
-* A few tips on editing::
-@end menu
+@node Installing
+@section Installing
 
-@node Preparation
-@section Preparation
+To get started, open a Workspace, enter `Feature require: 'WebClient'`,
+and "Do it".  This adds many classes in the WebClient...Core category including
+`WebClient`, `WebRequest`, `WebResponse`, `WebServer`, and `WebSocket`.
 
-@subsection Copying template
-To edit your own booklet, you first copy the existing template:
+@node HTTP Clients
+@section HTTP Clients
 
-@smalltalkExampleCaption{Install your own booklet,copyingTemplate,
-cp -rf bookletTemplate myBooklet}
+The `WebClient` class defines class methods that send HTTP requests.
+For example:
 
-@subsection Settings
-In the master document @file{booklet.texinfo}, you should edit:
+@smallexample
+res := WebClient httpGet: 'https://pokeapi.co/api/v2/pokemon/pikachu'.
+@end smallexample
 
-@enumerate
- @item The title and subtitle,
- @item The slogan.
- @item Insert an @command{@@include} command for each chapter.
-@end enumerate
+The value of the variable `res` above is a `WebResponse` object.
+It has many instance variables including:
 
-In the @file{misc/settings.texinfo} file adjust:
+- `code` - status code such as 200
+- `content` - response body
+- `headers` - an `OrderedCollection` of `Association` objects
+  that describe the HTTP response headers such as `content-type` with a
+  value like `text/html; charset=utf-8` or `application/json; charset=utf-8`
+- `protocol` - such as the `String` `HTTP/1.1`
+- `status` - such as the `String` `HTTP/1.1 200 OK`
+- `url` - the URL to which the request was sent
 
-@itemize
- @item The title of the booklet, again,
- @item The list of writers in the @command{@@writer} macro,
- @item The list of reviewers in the @command{@@thanks} macro,
- @item Read the content of the file to learn about the macro to use when editing the booklet. You can also learn from the source ``The Cuis Book''.
-@end itemize
+@node HTTP Servers
+@section HTTP Servers
 
+Our server will receive and send objects described using the JSON format.
+The JSON library supports this.
+To install it, open a Workspace, enter `Feature require: 'JSON'`, and "Do it".
 
-@node A few tips on editing
-@section A few tips on editing
-A subsection divides a section in smaller parts.
+To handle HTTP requests, create a `WebServer` instance
+and send it the `listenOn:` message with a port number.
+This starts a Smalltalk process called "WebServers's listener process".
+To kill it, open a "Process Browser", select the process,
+and press cmd-t (Terminate).
 
-@cindex editing @subentry figure
-Pictures must be copied in each @file{Chapter-XX/img} folder and be prefixed with the chapter number to avoid collision on html output.
+Let's walk through the steps to implement and use a web server
+that provides an API for performing CRUD operations
+on objects that represent dogs.
+To keep things simple, we will hold all the data in memory
+rather than persisting it to a database.
 
-Then to insert an image, use the @command{@@figure} macro with three arguments: @emph{caption}, @emph{filename} without extension and @emph{width} expressed in centimeter:
-@code{@@figure@{Cuis, ch00-img1, 8@}}.
+First, create the class `Dog`:
 
-@figure{Cuis, ch01-img1, 8}
+@smallexample
+Object subclass: #Dog
+	instanceVariableNames: 'breed name'
+	classVariableNames: 'Count'
+	poolDictionaries: ''
+	category: 'SomeCategory'
+@end smallexample   
 
-@exercise{Solution of the exercises,exeSolution, @emph{In which file must be authored the solutions of the exercises?}} 
+Next, define the following class method:
+
+@smallexample
+name: aName breed: aBreed
+	^self new setName: aName breed: aBreed! !
+@end smallexample    
+
+Next, define the following instance methods:
+
+@smallexample
+setName: aName breed: aBreed
+	name := aName.
+	breed := aBreed
+
+breed
+	^breed
+
+name
+	^name
+@end smallexample 
+
+Next, create the class `MyWebServer`:
+
+@smallexample
+Object subclass: #MyWebServer
+	instanceVariableNames: 'dogDict server'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'SomeCategory'
+@end smallexample 
+
+Next, define the following instance methods in the class `MyWebServer`:
+
+@smallexample
+initialize
+	"demonstrates using the WebServer class"
+	
+	server := WebServer new.
+	
+	"This looks for files in the Cuis-Smalltalk-Dev-UserFiles directory."
+    "TODO: Describe why it is necessary to define a new verion of the browseRequest method."
+	server addService: '/public' action:[:req| WebServer browseRequest2: req].
+	
+	"server addService: '/' action: [ :req | req send200Response: 'Home Page']."
+	"server addService: '/hello' action: [ :req | req send200Response: 'Hello World!']."
+	
+	server addService: '/hello' action: (MessageSend receiver: self selector: #helloWorld:).
+
+	server
+		addService: '/dog'
+		action: (MessageSend receiver: self selector: #handleDog:)
+		methods: #('DELETE' 'GET' 'POST' 'PUT').
+
+	"server addService: '/dog' action: [ :req | self createDog: req ] methods: #('POST')."
+	
+	"addService: '/dog' action: [ :req | self updateDog: req ] methods: #('PUT');"
+	
+	"addService: '/dog' action: [ :req | self deleteDog: req ] methods: #('DELETE')"
+
+start
+	| dog1 dog2 |
+	dog1 := Dog name: 'Comet' breed: 'Whippet'.
+	dog2 := Dog name: 'Oscar' breed: 'German Shorthaired Pointer'.
+	dogDict := Dictionary newFrom: {
+		dog1 id -> dog1.
+		dog2 id -> dog2
+	}.
+	server listenOn: 3000
+
+stop
+	server stopListener
+
+helloWorld: req
+	
+	req send200Response: 'Hello, World!'
+
+element: anAssoc
+	"This returns an HTML string.
+	The key in the Association must be a kind of String (such as a Symbol).
+	The value in the Association can be a primitive value or
+	an Array of Associations that represent nested elements."
+	
+	| content inner tag template |
+	
+	tag := anAssoc key.
+	content := anAssoc value.
+	"TODO: Add support for attributes."
+	template := '<{1}>{2}</{1}>'.
+	(content isKindOf: String)
+		ifTrue: [^​ template format: { tag. content } ]
+		ifFalse: [
+			"Maybe this should raise an exception if (content isKindOf: SequenceableCollection) is false."
+			inner := ''.
+			content do: [ :item | inner := inner, (self element: item) ].
+			^ template format: { tag. inner }
+		]
+
+createDog: aRequest
+ 	| dog res |
+	
+	"Get Dog object from request body. An id will be assigned."
+	dog := Dog fromJson: aRequest stream.
+	
+	"Save the new dog."
+	dogDict at: dog id put: dog.
+	
+	"Return the new dog as JSON."
+	res := WebResponse protocol: aRequest protocol code: 201. "Created"
+	res headerAt: 'Content-Type' put: 'application/json; charset=utf-8'.
+	^ aRequest sendResponse: res content: (Json render: dog)
+
+deleteDog: aRequest id: id
+	"Delete the dog, verifying that a dog with the given id exists."
+	dogDict removeKey: id ifAbsent: [
+		^ aRequest send404Response.
+	].
+
+	"Return an empty response."
+	^ aRequest send200Response: ''
+
+getDogsAsHtml: aRequest
+	| css html tableRows |
+	css := '
+		body { font-family: sans-serif }
+		table { border-collapse: collapse }
+		td, th {
+			border: 1px solid gray;
+			padding: 0.5rem;
+		}
+		th {
+			background-color: pink;
+		}
+	'.
+	
+	tableRows := OrderedCollection new.
+	tableRows add: #tr -> { #th -> 'Name'. #th -> 'Breed' }.
+	dogDict do: [ :dog |
+        tableRows add: (#tr -> { #td -> dog name. #td -> dog breed })
+    ].
+	
+	html := self element: (#html -> {
+		#head -> {
+			#title -> 'My Dogs'.
+			#style -> css
+		}.
+		#body -> {
+			#h1 -> 'My Dogs'.
+			#table -> tableRows
+		}
+	}).
+		
+	aRequest send200Response: html contentType: 'text/html'
+
+getDogsAsJson: aRequest
+	| json |
+	
+	"Create a JSON array from the dog Dictionary."
+	json := Json render: dogDict asArray.
+	
+	"Return the JSON."
+	aRequest send200Response: json contentType: 'application/json; charset=utf-8'
+	
+handleDog: aRequest	
+	"handle an HTTP request based on its method"
+	
+	| id method |
+	
+	method := aRequest method.
+	
+	(#('DELETE' 'PUT') includes: method) ifTrue: [
+		"Get the path parameter value."
+		"TODO: Is this really the best way to do it?"
+		| parts |
+		parts := aRequest url prefixAndSuffix: $/.
+		id := [parts last asNumber] on: Error do: [ :e |
+			| res |
+			res := WebResponse protocol: aRequest protocol code: 400.
+			^ aRequest sendResponse: res content: e messageText
+		].
+	].
+
+	method caseOf: {
+		['GET'] -> [ | accept |
+			accept := aRequest headerAt: 'Accept'.
+			(accept includesSubString: 'application/json') ifTrue: [
+ 				^self getDogsAsJson: aRequest].
+ 			(accept includesSubString: 'text/html') ifTrue: [
+ 				^self getDogsAsHtml: aRequest]].
+		['POST'] -> [self createDog: aRequest].
+ 		['DELETE'] -> [self deleteDog: aRequest id: id value].
+		['PUT'] -> [self updateDog: aRequest id: id value]
+ 	}
+
+updateDog: aRequest id: id
+	| dog |
+	
+	"Verify that a dog with the given id exists."
+	dogDict at: id ifAbsent: [
+		^ aRequest send404Response
+	].
+
+	"Get Dog object from request body."
+	dog := Dog fromJson: aRequest stream.
+	dog logAs: 'dog'.
+	
+	"Update its id to match id parameter."
+	dog id: id.
+	
+	"Save the change."
+	dogDict at: dog id put: dog.
+	
+	"Return the updated dog as JSON."
+	^ aRequest send200Response: (Json render: dog) contentType: 'application/json; charset=utf-8'
+@end smallexample
+
+To start this server, open a Workspace, enter the following,
+select all the lines, and "Do it":
+
+@smallexample
+server := MyWebServer new.
+server start.
+@end smallexample
+
+To stop the server, enter `server stop` and "Do it".
