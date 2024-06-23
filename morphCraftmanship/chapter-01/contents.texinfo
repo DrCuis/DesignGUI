@@ -1,0 +1,66 @@
+@node Chapter 1
+@chapter Chapter 1
+
+@quotation
+The computer is simply an instrument whose music is ideas.
+@author Alan Kay
+@end quotation
+
+@*
+
+An introduction to this chapter.
+
+@cindex editing @subentry menu
+@cindex editing @subentry chapter naming
+
+Rename @label{Chapter 1} to your taste, @command{@@node} name should follow chapter name.
+
+@cindex editing @subentry menu
+In the menu block below report the @command{@@node}/@command{@@section} argument declared in the rest of this document.
+
+@menu
+* Preparation::
+* A few tips on editing::
+@end menu
+
+@node Preparation
+@section Preparation
+
+@subsection Copying template
+To edit your own booklet, you first copy the existing template:
+
+@smalltalkExampleCaption{Install your own booklet,copyingTemplate,
+cp -rf bookletTemplate myBooklet}
+
+@subsection Settings
+In the master document @file{booklet.texinfo}, you should edit:
+
+@enumerate
+ @item The title and subtitle,
+ @item The slogan.
+ @item Insert an @command{@@include} command for each chapter.
+@end enumerate
+
+In the @file{misc/settings.texinfo} file adjust:
+
+@itemize
+ @item The title of the booklet, again,
+ @item The list of writers in the @command{@@writer} macro,
+ @item The list of reviewers in the @command{@@thanks} macro,
+ @item Read the content of the file to learn about the macro to use when editing the booklet. You can also learn from the source ``The Cuis Book''.
+@end itemize
+
+
+@node A few tips on editing
+@section A few tips on editing
+A subsection divides a section in smaller parts.
+
+@cindex editing @subentry figure
+Pictures must be copied in each @file{Chapter-XX/img} folder and be prefixed with the chapter number to avoid collision on html output.
+
+Then to insert an image, use the @command{@@figure} macro with three arguments: @emph{caption}, @emph{filename} without extension and @emph{width} expressed in centimeter:
+@code{@@figure@{Cuis, ch00-img1, 8@}}.
+
+@figure{Cuis, ch01-img1, 8}
+
+@exercise{Solution of the exercises,exeSolution, @emph{In which file must be authored the solutions of the exercises?}} 
