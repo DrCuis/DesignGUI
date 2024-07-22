@@ -8,52 +8,59 @@ The computer is simply an instrument whose music is ideas.
 
 @*
 
-This booklet covers web development using Cuis Smalltalk.
+This booklet covers web development using @cuis{}.
 Popular Smalltalk libraries for web development include
-Seaside (https://book.seaside.st/book) and Pier (https://www.piercms.com).
-Seaside has been ported to work in Pharo and Squeak, but not Cuis.
+Seaside (@url{https://book.seaside.st/book}) and Pier (@url{https://www.piercms.com}).
+Seaside has been ported to work in Pharo and Squeak, but not @cuis{}.
 Pier is a content management system that is compatible with Pharo Smalltalk,
-but has not been ported to work with Squeak or Cuis.
+but has not been ported to work with Squeak or @cuis{}.
 
 @node Pacakges
 @section Packages
 
-The only web development package I have found that is compatible with Cuis
-is WebClient (https://wiki.squeak.org/squeak/6337 and
-https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev/blob/master/Packages/Features/WebClient.pck.st).
-This works with Squeak and has been ported to Cuis, but not to Pharo.
+The only web development package I have found that is compatible with @cuis{}
+is WebClient (@url{https://wiki.squeak.org/squeak/6337} and
+@url{https://github.com/Cuis-Smalltalk/Cuis-Smalltalk-Dev/blob/master/Packages/Features/WebClient.pck.st}).
+This works with Squeak and has been ported to @cuis{}, but not to Pharo.
 
-This booklet focuses on using WebClient in Cuis
+This booklet focuses on using WebClient in @cuis{}
 to implement processing and sending HTTP requests.
 
 @node Installing
 @section Installing
 
-To get started, open a Workspace, enter `Feature require: 'WebClient'`,
-and "Do it".  This adds many classes in the WebClient...Core category including
-`WebClient`, `WebRequest`, `WebResponse`, `WebServer`, and `WebSocket`.
+To get started, open a Workspace, enter @smalltalk{Feature require: 'WebClient'},
+and @label{Do it}.  This adds many classes in the @label{WebClient...Core} category including
+@class{WebClient}, @class{WebRequest}, @class{WebResponse}, @class{WebServer}, and @class{WebSocket}.
 
 @node HTTP Clients
 @section HTTP Clients
 
-The `WebClient` class defines class methods that send HTTP requests.
+The @class{WebClient} class defines class methods that send HTTP requests.
 For example:
 
-@smallexample
-res := WebClient httpGet: 'https://pokeapi.co/api/v2/pokemon/pikachu'.
-@end smallexample
+@smalltalkExample{res := WebClient httpGet: 'https://pokeapi.co/api/v2/pokemon/pikachu'}
 
-The value of the variable `res` above is a `WebResponse` object.
+The value of the variable @smalltalk{res} above is a @smalltalk{WebResponse} object.
 It has many instance variables including:
+@itemize
 
-- `code` - status code such as 200
-- `content` - response body
-- `headers` - an `OrderedCollection` of `Association` objects
-  that describe the HTTP response headers such as `content-type` with a
-  value like `text/html; charset=utf-8` or `application/json; charset=utf-8`
-- `protocol` - such as the `String` `HTTP/1.1`
-- `status` - such as the `String` `HTTP/1.1 200 OK`
-- `url` - the URL to which the request was sent
+ @item @smalltalk{code} - status code such as 200
+
+ @item @smalltalk{content} - response body
+
+ @item @smalltalk{headers} - an @class{OrderedCollection} of
+  @class{Association} objects that describe the HTTP response headers
+  such as `content-type` with a value like `text/html; charset=utf-8` or
+  `application/json; charset=utf-8`
+
+ @item @smalltalk{protocol} - such as the `String` `HTTP/1.1`
+
+ @item @smalltalk{status} - such as the `String` `HTTP/1.1 200 OK`
+
+ @item @smalltalk{url} - the URL to which the request was sent
+
+@end itemize
 
 @node HTTP Servers
 @section HTTP Servers
@@ -147,10 +154,10 @@ start
 	| dog1 dog2 |
 	dog1 := Dog name: 'Comet' breed: 'Whippet'.
 	dog2 := Dog name: 'Oscar' breed: 'German Shorthaired Pointer'.
-	dogDict := Dictionary newFrom: {
+	dogDict := Dictionary newFrom: @{
 		dog1 id -> dog1.
 		dog2 id -> dog2
-	}.
+	@}.
 	server listenOn: 3000
 
 stop
@@ -171,14 +178,14 @@ element: anAssoc
 	tag := anAssoc key.
 	content := anAssoc value.
 	"TODO: Add support for attributes."
-	template := '<{1}>{2}</{1}>'.
+	template := '<@{1@}>@{2@}</@{1@}>'.
 	(content isKindOf: String)
-		ifTrue: [^​ template format: { tag. content } ]
+		ifTrue: [^​ template format: @{ tag. content @} ]
 		ifFalse: [
 			"Maybe this should raise an exception if (content isKindOf: SequenceableCollection) is false."
 			inner := ''.
 			content do: [ :item | inner := inner, (self element: item) ].
-			^ template format: { tag. inner }
+			^ template format: @{ tag. inner @}
 		]
 
 createDog: aRequest
@@ -207,33 +214,33 @@ deleteDog: aRequest id: id
 getDogsAsHtml: aRequest
 	| css html tableRows |
 	css := '
-		body { font-family: sans-serif }
-		table { border-collapse: collapse }
-		td, th {
+		body @{ font-family: sans-serif @}
+		table @{ border-collapse: collapse @}
+		td, th @{
 			border: 1px solid gray;
 			padding: 0.5rem;
-		}
-		th {
+		@}
+		th @{
 			background-color: pink;
-		}
+		@}
 	'.
 	
 	tableRows := OrderedCollection new.
-	tableRows add: #tr -> { #th -> 'Name'. #th -> 'Breed' }.
+	tableRows add: #tr -> @{ #th -> 'Name'. #th -> 'Breed' @}.
 	dogDict do: [ :dog |
-        tableRows add: (#tr -> { #td -> dog name. #td -> dog breed })
+        tableRows add: (#tr -> @{ #td -> dog name. #td -> dog breed @})
     ].
 	
-	html := self element: (#html -> {
-		#head -> {
+	html := self element: (#html -> @{
+		#head -> @{
 			#title -> 'My Dogs'.
 			#style -> css
-		}.
-		#body -> {
+		@}.
+		#body -> @{
 			#h1 -> 'My Dogs'.
 			#table -> tableRows
-		}
-	}).
+		@}
+	@}).
 		
 	aRequest send200Response: html contentType: 'text/html'
 
@@ -265,7 +272,7 @@ handleDog: aRequest
 		].
 	].
 
-	method caseOf: {
+	method caseOf: @{
 		['GET'] -> [ | accept |
 			accept := aRequest headerAt: 'Accept'.
 			(accept includesSubString: 'application/json') ifTrue: [
@@ -275,7 +282,7 @@ handleDog: aRequest
 		['POST'] -> [self createDog: aRequest].
  		['DELETE'] -> [self deleteDog: aRequest id: id value].
 		['PUT'] -> [self updateDog: aRequest id: id value]
- 	}
+ 	@}
 
 updateDog: aRequest id: id
 	| dog |
