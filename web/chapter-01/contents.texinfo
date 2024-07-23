@@ -121,11 +121,12 @@ Next, define the following instance methods in the class @class{MyWebServer}:
 This looks for files in the Cuis-Smalltalk-Dev-UserFiles directory.
 TODO: Describe why it is necessary to define a new verion of
 the browseRequest method."
+
    server @assign{} WebServer new.
    server addService: '/public' action: [:req|
       WebServer browseRequest2: req].
-"server addService: '/' action: [ :req | req send200Response: 'Home Page']."
-"server addService: '/hello' action: [ :req | req send200Response: 'Hello World!']."
+@c "server addService: '/' action: [ :req | req send200Response: 'Home Page']."
+@c "server addService: '/hello' action: [ :req | req send200Response: 'Hello World!']."
 	
    server
       addService: '/hello'
@@ -136,9 +137,10 @@ the browseRequest method."
       action: (MessageSend receiver: self selector: #handleDog:)
       methods: #('DELETE' 'GET' 'POST' 'PUT').
 
-"server addService: '/dog' action: [ :req | self createDog: req ] methods: #('POST')."
-"addService: '/dog' action: [ :req | self updateDog: req ] methods: #('PUT');"
-"addService: '/dog' action: [ :req | self deleteDog: req ] methods: #('DELETE')"}
+@c "server addService: '/dog' action: [ :req | self createDog: req ] methods: #('POST')."
+@c "addService: '/dog' action: [ :req | self updateDog: req ] methods: #('PUT');"
+@c"addService: '/dog' action: [ :req | self deleteDog: req ] methods: #('DELETE')"
+}
 
 @smalltalkExample{MyWebServer>>start
    | dog1 dog2 |
@@ -194,14 +196,14 @@ an Array of Associations that represent nested elements."
 @smalltalkExample{MyWebServer>>getDogsAsHtml: aRequest
    | css html tableRows |
    css @assign{} 'body @{ font-family: sans-serif @}
-      table @{ border-collapse: collapse @}
-      td, th @{
-	 border: 1px solid gray;
-	 padding: 0.5rem;
-      @}
-      th @{
-         background-color: pink;
-      @}'.
+table @{ border-collapse: collapse @}
+td, th @{
+   border: 1px solid gray;
+   padding: 0.5rem;
+@}
+th @{
+   background-color: pink;
+@}'.
 	
    tableRows @assign{} OrderedCollection new.
    tableRows add: #tr -> @{ #th -> 'Name'. #th -> 'Breed' @}.
@@ -210,12 +212,10 @@ an Array of Associations that represent nested elements."
    html @assign{} self element: (#html -> @{
       #head -> @{
          #title -> 'My Dogs'.
-	 #style -> css
-      @}.
+         #style -> css @}.
       #body -> @{
          #h1 -> 'My Dogs'.
-	 #table -> tableRows
-      @}
+         #table -> tableRows @}
    @}).
 		
    aRequest send200Response: html contentType: 'text/html'}
@@ -225,68 +225,64 @@ an Array of Associations that represent nested elements."
    "Create a JSON array from the dog Dictionary."
    json @assign{} render: dogDict asArray.
    "Return the JSON."
-   aRequest send200Response: json contentType: 'application/json; charset=utf-8'}
+   aRequest
+      send200Response: json
+      contentType: 'application/json; charset=utf-8'}
 
-@smallexample
-handleDog: aRequest	
-	"handle an HTTP request based on its method"
-	
-	| id method |
-	
-	method := aRequest method.
-	
-	(#('DELETE' 'PUT') includes: method) ifTrue: [
-		"Get the path parameter value."
-		"TODO: Is this really the best way to do it?"
-		| parts |
-		parts := aRequest url prefixAndSuffix: $/.
-		id := [parts last asNumber] on: Error do: [ :e |
-			| res |
-			res := WebResponse protocol: aRequest protocol code: 400.
-			^ aRequest sendResponse: res content: e messageText
-		].
-	].
+@smalltalkExample{MyWebServer>>handleDog: aRequest	
+"handle an HTTP request based on its method"
+   | id method |
+   method @assign{} aRequest method.
+   (#('DELETE' 'PUT') includes: method) ifTrue: [
+      "Get the path parameter value."
+      "TODO: Is this really the best way to do it?"
+      | parts |
+      parts @assign{} url prefixAndSuffix: $/.
+      id @assign{} [parts last asNumber]
+         on: Error
+         do: [:e | | res |
+            res @assign{} protocol: aRequest protocol code: 400.
+            @return{} aRequest
+               sendResponse: res
+               content: e messageText ] ].
 
-	method caseOf: @{
-		['GET'] -> [ | accept |
-			accept := aRequest headerAt: 'Accept'.
-			(accept includesSubString: 'application/json') ifTrue: [
- 				^self getDogsAsJson: aRequest].
- 			(accept includesSubString: 'text/html') ifTrue: [
- 				^self getDogsAsHtml: aRequest]].
-		['POST'] -> [self createDog: aRequest].
- 		['DELETE'] -> [self deleteDog: aRequest id: id value].
-		['PUT'] -> [self updateDog: aRequest id: id value]
- 	@}
+   method caseOf: @{
+      ['GET'] -> [ | accept |
+         accept @assign{} aRequest headerAt: 'Accept'.
+         (accept includesSubString: 'application/json') ifTrue: [
+            @return{} self getDogsAsJson: aRequest].
+         (accept includesSubString: 'text/html') ifTrue: [
+            @return{} self getDogsAsHtml: aRequest ] ].
+      ['POST'] -> [self createDog: aRequest].
+      ['DELETE'] -> [self deleteDog: aRequest id: id value].
+      ['PUT'] -> [self updateDog: aRequest id: id value]
+    @}}
 
-updateDog: aRequest id: id
-	| dog |
-	
-	"Verify that a dog with the given id exists."
-	dogDict at: id ifAbsent: [
-		^ aRequest send404Response
-	].
+@smalltalkExample{MyWebServer>>updateDog: aRequest id: id
+   | dog |
 
-	"Get Dog object from request body."
-	dog := Dog fromJson: aRequest stream.
-	dog logAs: 'dog'.
+   "Verify that a dog with the given id exists."
+   dogDict at: id ifAbsent: [@return{} aRequest send404Response].
+
+   "Get Dog object from request body."
+   dog @assign{} fromJson: aRequest stream.
+   dog logAs: 'dog'.
 	
-	"Update its id to match id parameter."
-	dog id: id.
+   "Update its id to match id parameter."
+   dog id: id.
 	
-	"Save the change."
-	dogDict at: dog id put: dog.
-	
-	"Return the updated dog as JSON."
-	^ aRequest send200Response: (Json render: dog) contentType: 'application/json; charset=utf-8'
-@end smallexample
+   "Save the change."
+   dogDict at: dog id put: dog.
+
+   "Return the updated dog as JSON."
+   @return{} aRequest
+      send200Response: (Json render: dog)
+      contentType: 'application/json; charset=utf-8'}
 
 To start this server, open a Workspace, enter the following,
-select all the lines, and "Do it":
+select all the lines, and @label{Do it}:
 
-@smallexample
-server := MyWebServer new.
-server start.
-@end smallexample
+@smalltalkExample{server @assign{} MyWebServer new.
+server start}
 
-To stop the server, enter `server stop` and "Do it".
+To stop the server, execute @smalltalk{server stop} with @label{Do it}.
