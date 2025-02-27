@@ -1,0 +1,8 @@
+@node Quick start
+@chapter Quick start
+
+@*
+
+@menu
+@end menu
+

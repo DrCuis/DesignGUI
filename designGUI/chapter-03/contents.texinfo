@@ -1,0 +1,8 @@
+@node Layout components
+@chapter Layout components
+
+@*
+
+@menu
+@end menu
+
