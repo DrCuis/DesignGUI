@@ -6,7 +6,7 @@
 
 @titlepage
    @title @value{bookletTitle}
-   @subtitle Learn Morph art...
+   @subtitle A Practical Guide for Cuis
    @* @* @* @*
 
    @alanQuoteAboutCuis
@@ -48,6 +48,19 @@ A journey in Morph world.
 @c Chapters
 @c=====================================
 @include chapter-01/contents.texinfo
+@c
+@include chapter-02/contents.texinfo
+@c
+@include chapter-03/contents.texinfo
+@c
+@include chapter-04/contents.texinfo
+@c
+@include chapter-05/contents.texinfo
+@c
+@include chapter-06/contents.texinfo
+@c
+@include chapter-07/contents.texinfo
+@c
 @c=====================================
 @c Apprendices
 @c=====================================

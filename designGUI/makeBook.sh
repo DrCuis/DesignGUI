@@ -3,8 +3,8 @@
 htmlDest="html"
 infoDest="info"
 docbookDest="docbook"
-masterDoc="MorphCraftmanship.texinfo"
-chapNumbers="01 50"
+masterDoc="DesignGUI.texinfo"
+chapNumbers="01 02 03 04 05 06 07 50"
 
 function collateChaptersImg {
     chapters=""

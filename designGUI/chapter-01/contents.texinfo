@@ -1,5 +1,5 @@
-@node Chapter 1
-@chapter Chapter 1
+@node Overview
+@chapter Overview
 
 @quotation
 The computer is simply an instrument whose music is ideas.

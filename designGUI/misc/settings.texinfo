@@ -1,14 +1,14 @@
 @documentlanguage en
 @documentencoding UTF-8
-@set bookletTitle Morph Craftmanship
+@set bookletTitle Designing GUI with Morphs
 @set cuisVersion 7.0 or later
-@set writers H. Fernandes
+@set writers H. Fernandes & M. Volkmann
 @settitle @value{bookletTitle}
 @codequoteundirected on
 @codequotebacktick on
 @c Remove ugly black rectangle
 @finalout
-@setfilename MorphCraftmanship.info
+@setfilename DesignGUIMorph.info
 @c @afourwide
 @c @afourlatex
 @c 7x9.25 inches 17.8x23.5 cm
