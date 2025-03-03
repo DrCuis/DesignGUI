@@ -15,11 +15,11 @@ The Cuis' Morph framework is fundamental to @cuis{}, every single visual piece t
 @section A World of Morphs
 
 @cindex morph @subentry count
-A bit of introspection reveals how many @class{Morph} instances are in use in the @cuis{} living system :
+A bit of introspection reveals how many @class{Morph} instances are in use in the @cuis{} living system:
 
 @smalltalkExampleCaption{How many buttons?,ch04-buttonCount,
 PluggableButtonMorph allInstances size
-@result{} 288}
+@result{} 288@footnote{As a recall, you @emph{execute-and-print} to get the result printed; otherwise, it is only executed. Use shortcut @kbd{Ctrl-p} instead of @kbd{Ctrl-d}.}}
 
 The previous example asked for one specific type of morph. What about asking for all types of morph?
 
@@ -80,14 +80,81 @@ In @cuis{}, there is a special morph, a @class{WorldMorph} instance, representin
 WorldMorph allInstances
 @result{} @{ [world]@}}
 
+@cindex morph @subentry explore
 Guess what? It is the only morph without an owner and still visible. Take any morph in the world, invoke its halo, then from the wrench icon, select the menu entry @label{explore morph} and browser the chain of owner until you reach the World, you discover it does not have owner:
 
 @figure{The chain of owners of a morph,ch04-morphOwners,5}
 
+Execute the following code to experiment from an inspector opened in Morph.
+
+@smalltalkExampleCaption{Create@comma{} inspect and open in the World a morph,newInspectMorph,
+Morph new ::
+   inspect;
+   openInWorld}
+
+@cindex morph @subentry flash
+A blue rectangular morph shows up at the top left corner of the @cuis{} window. Sometime, the morph we are playing with is out of sight, or we are not sure where it is; a convenient way to find is to ask it flashes itself. In the inspector, execute the code @smalltalk{self flash}.
+
+Any morph knows about its World, in the inspector execute: @smalltalk{self runningWorld}. As a World is a Morph class, we can flash it too: @smalltalk{self runningWorld flash}.
+
 @node Morph Hierarchy
 @section Morph Hierarchy
+In a stock @cuis{} system, browse the @class{Morph} class; it is in the @label{Morphic>Kernel} class category, here are the most fundamental type of @class{Morph}:
 
+@cindex morph @subentry kernel
+@indentedblock
+Morph
+   @indentedblock
+   PlacedMorph
+      @indentedblock
+      BoxMorph      
+       @indentedblock
+       ColoredBoxMorph
+         @indentedblock
+         BorderedBoxMorph
+         
+         PasteUpMorph
 
+            @indentedblock
+            WorldMorph
+            @end indentedblock            
+         @end indentedblock
+       @end indentedblock
+      HandMorph
+      @end indentedblock      
+   @end indentedblock
+@end indentedblock
+
+Observe how the @class{Morph} has only @class{PlacedMorph} as its subclass, this is odd and it requires some scrunity by looking at the differences between these two classes. Indeed, if @class{Morph} has only one sub-class, the two should be merged. Let's examine the attributes of the @class{Morph} class:
+
+@smalltalkExampleCaption{Definition of the @class{Morph} class,morphDefinition,
+Object subclass: #Morph
+   instanceVariableNames: 'owner submorphs properties id privateDisplayBounds'
+   classVariableNames: 'LastMorphId'
+   poolDictionaries: ''
+   category: 'Morphic-Kernel'}
+
+@cindex morph @subentry properties
+There are the expected @smalltalk{owner} and @smalltalk{submorphs} attributes; @smalltalk{properties} is set, when needed, as a dictionary to dynamically add attributes or behaviors -- with appropriate bloc of code -- to any @class{Morph} instances. There are companion methods to set or retrieve a property.
+
+@figure{@class{Morph}'s methods to manipulate properties,ch04-property,8}
+
+This @smalltalk{properties} attribute is used a lot. Observe how it is used to set a specific name to a @class{Morph} instance:
+
+@smalltalkExampleCaption{Methods to set and get a morph name, morphNameMethods,
+Morph>>name: anObject
+  "Set the morphName property"
+   self setProperty: #morphName toValue: anObject
+
+Morph>>name
+   "Answer the value of morphName"
+   @return{} self valueOfProperty: #morphName}
+
+An example to illustrate its use case: create a new morph as see in @ref{newInspectMorph}, then in the inspector execute @smalltalk{self name: 'Glouby'}, then observe how @smalltalk{properties} was amended with the dictionary entry @smalltalk{#morphName->'Glouby'}; when invoking the morph's halo, its new name is printed too.
+
+@subsection The basic type of Morph
+
+@subsection Morph you can move
 
 
 A Morph (from the Greek "shape" or "form") is an interactive graphical object. General information on the Morphic system can be found at http://wiki.squeak.org/squeak/morph. 
