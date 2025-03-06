@@ -188,6 +188,11 @@ drawOn: aCanvas
 
 A @class{Morph} instance draw instructions are relative to its owner's coordinates system. If you observe this blue rectangular morph we created, it is located on the top left corner of the World, where are the (0,0) coordinates; in fact, a large part of this morph is not visible, three quarters of its areas is outside of the screen.
 
+@cindex morph @subentry @class{PlacedMorph}
+@cindex morph @subentry position
+@cindex morph @subentry scale
+@cindex morph @subentry rotate
+
 If you observe the halo as see in @ref{ch04-morphProperties}, there is no @strong{scale}, @strong{resize} and @strong{rotate} icons! Indeed, a @class{Morph} instance can't be resized or rotated, this is one of the differences with @class{PlacedMorph}. Now, when you try to move the morph through its @strong{move} icon, you can't, it sticks to its position, hard coded in its @method{drawOn:} method; that's another difference with @class{PlacedMorph}, it is about time to examine its definition:
 
 @smalltalkExampleCaption{Definition of the @class{PlacedMoprh}, placedMorphDefinition,
@@ -198,6 +203,8 @@ Morph subclass: #PlacedMorph
    category: 'Morphic-Kernel'}
 
 We have two more instance variables:
+
+@cindex morph @subentry affine transformation
 
 @itemize
    @item
@@ -220,7 +227,10 @@ Then invoke its halo to move, resize and rotate to observe how its @smalltalk{lo
 
 In one attribute, we have the information on position, size and rotation. Moreover, when sending to a morph messages as @smalltalk{#morphPosition}, @smalltalk{#morphPosition:}, @smalltalk{#scale:}, @smalltalk{#rotation:}, etc., @cuis{} is just querying or adjusting the @smalltalk{location} matrix parameters.
 
-One last bit of experiment to foster Morph understanding, @cuis{} knows about morph detection; in our previous morph's inspector, execute and print @smalltalk{self coversPixel: 0@@0}, the answer is likely false if the morph is not positioned to cover the World origin. Now inspect its @smalltalk{properties}, there is a @smalltalk{bitMask} entry referring to 1 bits depth @class{Form}, this is how @cuis{} does pixel detection. This property is automatically garbage collected when not needed anymore or irrelevant.
+@cindex morph @subentry pixel detection
+@cindex morph @subentry bits mask
+
+One last bit of experiment to foster Morph understanding, @cuis{} knows about morph detection; in our previous morph's inspector, execute and print @smalltalk{self coversPixel: 0@@0}, the answer is likely false if the morph is not positioned to cover the World origin. Now inspect its @smalltalk{properties}, there is a @smalltalk{bitMask} entry referring to 1 bit depth @class{Form}, this is how @cuis{} does pixel detection. This property is automatically garbage collected when not needed anymore or irrelevant.
 
 @figure{Pixel detection illustrated,ch04-morphBitMask,9}
 
