@@ -68,9 +68,30 @@ Because everything is an object in @cuis{}, every visual part of the system is r
 
 Supplementary click accesses a sub-morph under the mouse pointer, the halo is then updated accordingly. When pressing the @kbd{Shift} key, the direction of morph selection is changed: the owner of the morph the mouse is over is selected instead.
 
-Each icon allows specific actions. We previously discussed the sub-morph and owner relationship among morphs. In a halo, the orange wrench icon at the right gives access to a set of actions to explore these relations, try it!
+Each icon gives access to specific actions to operate on the morph.
+
+@figure{Halo and descriptions on each icon functions,ch04-haloDescription,13}
+
+Some actions need clarifications:
+
+@itemize
+   @item 
+   @strong{grab.} It grabs the moprh from its owner and can be dropped in the World or any other morph accepting dropped morph
+
+   @item
+   @strong{move.} It moves the morph in its owner. Try the differences between grab and move with a menu entry in the World menu.
+
+   @item
+   @strong{resize.} On a text morph, it changes the area of the morph; on more graphics oriented morph as the Clock example in @cuis{}, it scales the morph.
+
+   @item 
+   @strong{explore.} It opens directly the explorer tool discussed earlier.
+@end itemize
+
+We previously discussed the sub-morph and owner relationship among morphs. In a halo, the orange wrench icon at the right gives access to a set of actions to explore these relations, try it!
 
 @figure{Actions to explore sub-morph and owner relations,ch04-haloDebug,4}
+
 
 @subsection The special World morph
 @cindex morph @subentry world
@@ -81,13 +102,13 @@ WorldMorph allInstances
 @result{} @{ [world]@}}
 
 @cindex morph @subentry explore
-Guess what? It is the only morph without an owner and still visible. Take any morph in the world, invoke its halo, then from the wrench icon, select the menu entry @label{explore morph} and browser the chain of owner until you reach the World, you discover it does not have owner:
+Guess what? It is the only morph without an owner and still visible. Take any morph in the world, invoke its halo, then from the wrench icon, select the menu entry @label{explore morph} and browse the chain of owner until you reach the World, you discover it does not have owner:
 
 @figure{The chain of owners of a morph,ch04-morphOwners,5}
 
-Execute the following code to experiment from an inspector opened in Morph.
+Execute the following code to experiment on a morph from its inspector.
 
-@smalltalkExampleCaption{Create@comma{} inspect and open in the World a morph,newInspectMorph,
+@smalltalkExampleCaption{Create a morph@comma{} inspect it and open it in the World,newInspectMorph,
 Morph new ::
    inspect;
    openInWorld}
@@ -95,32 +116,34 @@ Morph new ::
 @cindex morph @subentry flash
 A blue rectangular morph shows up at the top left corner of the @cuis{} window. Sometime, the morph we are playing with is out of sight, or we are not sure where it is; a convenient way to find is to ask it flashes itself. In the inspector, execute the code @smalltalk{self flash}.
 
-Any morph knows about its World, in the inspector execute: @smalltalk{self runningWorld}. As a World is a Morph class, we can flash it too: @smalltalk{self runningWorld flash}.
+Any morph knows about its World, in the inspector execute: @smalltalk{self runningWorld}. As a World is a kind of @class{Morph}, we can flash it too: @smalltalk{self runningWorld flash}.
 
 @node Morph Hierarchy
 @section Morph Hierarchy
-In a stock @cuis{} system, browse the @class{Morph} class; it is in the @label{Morphic>Kernel} class category, here are the most fundamental type of @class{Morph}:
+The @class{Morph} class is the root class to all kind of @class{Morph}, sub-classes specialize on specific facets or add some features. Let's learn a bit more about the @class{Morph} class itself and then explore its most fundamental sub-classes.
+
+In a stock @cuis{} system, browse the @class{Morph} class; it is in the @label{Morphic>Kernel} class category, here are the most fundamental type of @class{Morph}s:
 
 @cindex morph @subentry kernel
 @indentedblock
-Morph
+@class{Morph}
    @indentedblock
-   PlacedMorph
+   @class{PlacedMorph}
       @indentedblock
-      BoxMorph      
+      @class{BoxMorph}
        @indentedblock
-       ColoredBoxMorph
+       @class{ColoredBoxMorph}
          @indentedblock
-         BorderedBoxMorph
+         @class{BorderedBoxMorph}
          
-         PasteUpMorph
+         @class{PasteUpMorph}
 
             @indentedblock
-            WorldMorph
+            @class{WorldMorph}
             @end indentedblock            
          @end indentedblock
        @end indentedblock
-      HandMorph
+      @class{HandMorph}
       @end indentedblock      
    @end indentedblock
 @end indentedblock
@@ -135,22 +158,76 @@ Object subclass: #Morph
    category: 'Morphic-Kernel'}
 
 @cindex morph @subentry properties
-There are the expected @smalltalk{owner} and @smalltalk{submorphs} attributes; @smalltalk{properties} is set, when needed, as a dictionary to dynamically add attributes or behaviors -- with appropriate bloc of code -- to any @class{Morph} instances. There are companion methods to set or retrieve a property.
+There are the expected @smalltalk{owner} and @smalltalk{submorphs} attributes; the @smalltalk{properties} attribute is set, when needed, as a dictionary to dynamically add attributes or behaviors -- with appropriate bloc of code -- to any @class{Morph} instances. There are companion methods to set or retrieve a property.
 
 @figure{@class{Morph}'s methods to manipulate properties,ch04-property,8}
 
-This @smalltalk{properties} attribute is used a lot. Observe how it is used to set a specific name to a @class{Morph} instance:
+This @smalltalk{properties} attribute is used a lot. For example, observe its use case to set a specific name to a @class{Morph} instance:
 
 @smalltalkExampleCaption{Methods to set and get a morph name, morphNameMethods,
 Morph>>name: anObject
   "Set the morphName property"
    self setProperty: #morphName toValue: anObject
 
-Morph>>name
+      Morph>>name
    "Answer the value of morphName"
    @return{} self valueOfProperty: #morphName}
 
-An example to illustrate its use case: create a new morph as see in @ref{newInspectMorph}, then in the inspector execute @smalltalk{self name: 'Glouby'}, then observe how @smalltalk{properties} was amended with the dictionary entry @smalltalk{#morphName->'Glouby'}; when invoking the morph's halo, its new name is printed too.
+Create a new morph as see in @ref{newInspectMorph}, then in the inspector execute @smalltalk{self name: 'Glouby'}, observe how @smalltalk{properties} was amended with the dictionary entry @smalltalk{#morphName->'Glouby'}; when invoking the morph's halo, its new name is printed too.
+
+@figure{A morph's properties,ch04-morphProperties,8}
+
+Back to the @class{Morph} definition, you can observe there is no attribute to describe the shape of a morph!@footnote{The other attributes are used for internal managment of the morphs and you don't need to care about them.} Indeed a morph has no prestablised shape, its shapes is described dynamically -- at execution time -- through its @method{drawOn:} method:
+
+@smalltalkExampleCaption{@class{Morph}'s @method{drawOn:}, morphDrawOn,
+Morph>>drawOn: aCanvas
+drawOn: aCanvas
+   aCanvas
+      fillRectangle: `-75 @@ -70 corner: 75 @@ 70`
+      color: `Color blue`}
+
+A @class{Morph} instance draw instructions are relative to its owner's coordinates system. If you observe this blue rectangular morph we created, it is located on the top left corner of the World, where are the (0,0) coordinates; in fact, a large part of this morph is not visible, three quarters of its areas is outside of the screen.
+
+If you observe the halo as see in @ref{ch04-morphProperties}, there is no @strong{scale}, @strong{resize} and @strong{rotate} icons! Indeed, a @class{Morph} instance can't be resized or rotated, this is one of the differences with @class{PlacedMorph}. Now, when you try to move the morph through its @strong{move} icon, you can't, it sticks to its position, hard coded in its @method{drawOn:} method; that's another difference with @class{PlacedMorph}, it is about time to examine its definition:
+
+@smalltalkExampleCaption{Definition of the @class{PlacedMoprh}, placedMorphDefinition,
+Morph subclass: #PlacedMorph
+   instanceVariableNames: 'location layoutSpec'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'Morphic-Kernel'}
+
+We have two more instance variables:
+
+@itemize
+   @item
+   This @smalltalk{layoutSpec} attributes is obviously related to the optional layout specification used when a @class{PlacedMorph} instance is set in a layout morph, this also tells us a @class{Morph} instance can't be set in a layout.
+
+   @item
+   This @smalltalk{location} attributes holds the information regarding position, scale and rotation; it is a kind of affine transformation coded as a matrix@footnote{@url{https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix}}.
+   
+@end itemize
+
+Time to experiment a bit! Execute this simple code to explore with the inspector:
+
+@smalltalkExample{Sample10PythagorasTree new ::
+   openInWorld ;
+   inspect}
+
+Then invoke its halo to move, resize and rotate to observe how its @smalltalk{location} attribute is updated:
+
+@figure{@smalltalk{location} update according to scale@comma{} position and rotation,ch04-location,7}
+
+In one attribute, we have the information on position, size and rotation. Moreover, when sending to a morph messages as @smalltalk{#morphPosition}, @smalltalk{#morphPosition:}, @smalltalk{#scale:}, @smalltalk{#rotation:}, etc., @cuis{} is just querying or adjusting the @smalltalk{location} matrix parameters.
+
+One last bit of experiment to foster Morph understanding, @cuis{} knows about morph detection; in our previous morph's inspector, execute and print @smalltalk{self coversPixel: 0@@0}, the answer is likely false if the morph is not positioned to cover the World origin. Now inspect its @smalltalk{properties}, there is a @smalltalk{bitMask} entry referring to 1 bits depth @class{Form}, this is how @cuis{} does pixel detection. This property is automatically garbage collected when not needed anymore or irrelevant.
+
+@figure{Pixel detection illustrated,ch04-morphBitMask,9}
+
+
+Use case of Morph -> drgeo
+
+
 
 @subsection The basic type of Morph
 
