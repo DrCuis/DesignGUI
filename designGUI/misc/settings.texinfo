@@ -1,6 +1,6 @@
 @documentlanguage en
 @documentencoding UTF-8
-@set bookletTitle Designing GUI with Morphs
+@set bookletTitle Designing GUI with Morph
 @set cuisVersion 7.0 or later
 @set writers H. Fernandes & M. Volkmann
 @settitle @value{bookletTitle}
@@ -10,9 +10,9 @@
 @finalout
 @setfilename DesignGUIMorph.info
 @c @afourwide
-@c @afourlatex
+@afourlatex
 @c 7x9.25 inches 17.8x23.5 cm
-@smallbook
+@c @smallbook
 
 @c Macro definitions
 @macro alanQuoteAboutCuis
