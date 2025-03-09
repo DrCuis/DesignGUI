@@ -1,5 +1,5 @@
-@node Advanced design patterns in GUI
-@chapter Advanced design patterns in GUI
+@node Which components? Where to find more?
+@chapter Which components? Where to find more?
 
 @*
 
