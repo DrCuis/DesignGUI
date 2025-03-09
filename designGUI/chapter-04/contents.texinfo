@@ -245,7 +245,8 @@ The reader may wonder if there is any use case of the @class{Morph} class when i
 
 
 @cindex morph @subentry @class{BoxMorph}
-@subsection The basic type of Morph
+@cindex morph @subentry rectangular
+@subsection Rectangular Morph
 The remaining classes of the kernel morph hierarchy adds geometry and visual properties. @class{BoxMorph} is the most important one, it is bounded to a rectangular extent. It is the root of most sub-morphs used to construct @acronym{GUI,Graphic User Interface}, indeed its elements are most of the time bounded to a rectangular shape. It allows a lot of optimisation in the rendering of the whole @cuis{} @acronym{GUI}.
 
 @smalltalkExampleCaption{Definition of the @class{BoxMorph}, boxMorphDefinition,
