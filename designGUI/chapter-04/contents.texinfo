@@ -188,12 +188,16 @@ drawOn: aCanvas
 
 A @class{Morph} instance draw instructions are relative to its owner's coordinates system. If you observe this blue rectangular morph we created, it is located on the top left corner of the World, where are the (0,0) coordinates; in fact, a large part of this morph is not visible, three quarters of its areas is outside of the screen.
 
+If you observe the halo as see in @ref{ch04-morphProperties}, there is no @strong{scale}, @strong{resize} and @strong{rotate} icons! Indeed, a @class{Morph} instance can't be resized or rotated. Moreover, when you try to move the morph through its @strong{move} icon, you can't, it sticks to its position, hard coded in its @method{drawOn:} method. It is about time to introduce the @class{PlacedMorph} class which offers these features.
+
 @cindex morph @subentry @class{PlacedMorph}
 @cindex morph @subentry position
 @cindex morph @subentry scale
 @cindex morph @subentry rotate
+@subsection Morph you can move
+@emph{...but not only.}
 
-If you observe the halo as see in @ref{ch04-morphProperties}, there is no @strong{scale}, @strong{resize} and @strong{rotate} icons! Indeed, a @class{Morph} instance can't be resized or rotated, this is one of the differences with @class{PlacedMorph}. Now, when you try to move the morph through its @strong{move} icon, you can't, it sticks to its position, hard coded in its @method{drawOn:} method; that's another difference with @class{PlacedMorph}, it is about time to examine its definition:
+These abilities of @class{PlacedMorph} to scale, to resize, to rotate and to be moved are some of the differences with @class{Morph}. It is about time to examine its definition:
 
 @smalltalkExampleCaption{Definition of the @class{PlacedMoprh}, placedMorphDefinition,
 Morph subclass: #PlacedMorph
@@ -205,13 +209,14 @@ Morph subclass: #PlacedMorph
 We have two more instance variables:
 
 @cindex morph @subentry affine transformation
+@cindex morph @subentry matrix transformation
 
 @itemize
    @item
-   This @smalltalk{layoutSpec} attributes is obviously related to the optional layout specification used when a @class{PlacedMorph} instance is set in a layout morph, this also tells us a @class{Morph} instance can't be set in a layout.
+   This @smalltalk{layoutSpec} attribute is obviously related to the optional layout specification used when a @class{PlacedMorph} instance is set in a layout morph, this also tells us a @class{Morph} instance can't be set in a layout.
 
    @item
-   This @smalltalk{location} attributes holds the information regarding position, scale and rotation; it is a kind of affine transformation coded as a matrix@footnote{@url{https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix}}.
+   This @smalltalk{location} attribute holds the information regarding position, scale and rotation; it is a kind of affine transformation coded as a matrix@footnote{@url{https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix}}. These transformations are applied -- in one matrix transformation -- relatively to its owner.
    
 @end itemize
 
@@ -225,41 +230,89 @@ Then invoke its halo to move, resize and rotate to observe how its @smalltalk{lo
 
 @figure{@smalltalk{location} update according to scale@comma{} position and rotation,ch04-location,7}
 
-In one attribute, we have the information on position, size and rotation. Moreover, when sending to a morph messages as @smalltalk{#morphPosition}, @smalltalk{#morphPosition:}, @smalltalk{#scale:}, @smalltalk{#rotation:}, etc., @cuis{} is just querying or adjusting the @smalltalk{location} matrix parameters.
+In one attribute, we have the information on position, size and rotation. Moreover, when sending messages to a morph as @smalltalk{#morphPosition}, @smalltalk{#morphPosition:}, @smalltalk{#scale:}, @smalltalk{#rotation:}, etc., @cuis{} is just querying or adjusting the @smalltalk{location} matrix parameters. Therefore, you, as the user of a @class{PlacedMorph} instance you only use these messages without the need to care about the underneath matrix representation.
 
 @cindex morph @subentry pixel detection
 @cindex morph @subentry bits mask
 
-One last bit of experiment to foster Morph understanding, @cuis{} knows about morph detection; in our previous morph's inspector, execute and print @smalltalk{self coversPixel: 0@@0}, the answer is likely false if the morph is not positioned to cover the World origin. Now inspect its @smalltalk{properties}, there is a @smalltalk{bitMask} entry referring to 1 bit depth @class{Form}, this is how @cuis{} does pixel detection. This property is automatically garbage collected when not needed anymore or irrelevant.
+One last bit of experiment to foster Morph understanding, @cuis{} knows about morph detection; in our previous morph's inspector, execute and print @smalltalk{self coversPixel: 0@@0}, the answer is likely false if the morph is not positioned to cover the World origin. Now inspect its @smalltalk{properties}, there is a @smalltalk{bitMask} entry referring to 1 bit depth @class{Form}, this is how @cuis{} does pixel detection. In this @class{Form}, a kind of picture, each bit represent the pixel obstruction of the morph: 0 means nothing painted, 1 means the morph paints the pixel with an arbitrary color we don't need to know about here.
+
+This property is automatically garbage collected when not needed anymore or irrelevant.
 
 @figure{Pixel detection illustrated,ch04-morphBitMask,9}
 
-
-Use case of Morph -> drgeo
-
+The reader may wonder if there is any use case of the @class{Morph} class when its instances can't be grabbed and moved around. Why not just using @class{PlacedMorph}? In DrGeo software@footnote{@url{http://gnu.org/s/dr-geo}}, such morphs are used to represent geometric objets drawn in the coordinates system of the owner morph, their positions and aspect are completely dependend on the underneath mathemmatic models.
 
 
+@cindex morph @subentry @class{BoxMorph}
 @subsection The basic type of Morph
+The remaining classes of the kernel morph hierarchy adds geometry and visual properties. @class{BoxMorph} is the most important one, it is bounded to a rectangular extent. It is the root of most sub-morphs used to construct @acronym{GUI,Graphic User Interface}, indeed its elements are most of the time bounded to a rectangular shape. It allows a lot of optimisation in the rendering of the whole @cuis{} @acronym{GUI}.
 
-@subsection Morph you can move
+@smalltalkExampleCaption{Definition of the @class{BoxMorph}, boxMorphDefinition,
+PlacedMorph subclass: #BoxMorph
+   instanceVariableNames: 'extent'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'Morphic-Kernel'}
 
+@cindex morph @subentry extent
+This additional @smalltalk{extent} attribute defines its width (x-axis) and height (y-axis) in the morph local coordinates. There are companion methods to play with:
 
-A Morph (from the Greek "shape" or "form") is an interactive graphical object. General information on the Morphic system can be found at http://wiki.squeak.org/squeak/morph. 
+@smalltalkExample{BoxMorph new ::
+   openInWorld;
+   morphWidth: 1000;
+   morphHeight: 10}
 
-Morphs exist in a tree, rooted at a World (a WorldMorph). The morphs owned by a morph are its submorphs. Morphs are drawn recursively; if a Morph has no owner it never gets 
-drawn. To hide a Morph and its submorphs, send the #visible: message. 
+Or more directly:
 
-Subclass PlacedMorph defines a local coordinate system (see its class comment). Morphs NOT in the PlacedMorph hierarchy live in the space defined by their owner. Their local coordinate system is the same as the owner's. They ignore #morphPosition:.
+@smalltalkExample{BoxMorph new ::
+   openInWorld;
+   morphExtent: 1000@@10}
 
-Local coordinates are used in the #drawOn: method (the Canvas understands positions in the local coordinate system), for the positions of submorphs (for example #morphPosition and #morphPosition:) and for positions carried by mouse events.
+@cindex morph @subentry local bounds
+As this is a kind of @class{PlacedMorph}, we ask directly about its bounds -- position and extent -- by executing and printing the result:
 
-Events are delivered to morphs in Z-order, i.e. if a morph occludes another the event is only delivered to the foremost (just like physical objects). Events received by a morph carry positions in the local coordinate system.
+@smalltalkExample{BoxMorph new ::
+   openInWorld;
+   localBounds
+@result{} 0@@0 corner: 50@@40.}
 
-Structure:
-instance var 				Type 						Description 
-owner 				Morph or nil		 				My parent Morph, or nil for the top-level Morph, which is a WorldMorph
-submorphs 				Array 						My child Morphs.
+The returned object is a @class{Rectangle} instance, as @class{Point} instances, this is a fundamental architecture class when dealing with @acronym{GUI}.
 
+Observe as you get the same local bounds even when positioning around the morph:
+@smalltalkExample{BoxMorph new ::
+   openInWorld;
+   morphPosition: 200@@200;
+   localBounds
+@result{} 0@@0 corner: 50@@40.}
 
+@cindex morph @subentry bounds in owner
+This is because we are asking in the local morph coordinates system. What the reader may want is to ask in the owner coordinates system, here the @cuis{} World:
+@smalltalkExample{"Morph positioned at pointer position"
+BoxMorph new ::
+  openInWorld;
+  @strong{fullBoundsInOwner}
+@result{} 493@@594 corner: 543@@634.
 
+"Morph positioned according to programming instruction"
+BoxMorph new ::
+   openInWorld;
+   morphPosition: 200@@200;
+   @strong{fullBoundsInOwner}
+@result{} 200@@200 corner: 250@@240.}
+
+@cindex morph @subentry pixel detection
+There are several methods dealing specifically with @class{BoxMorph}, take a look at them and play a bit to foster your understanding. A last bit about this class, earlier at @ref{ch04-morphBitMask} we discussed about pixel detection with a complicated morph containing holes. In this situation, the detection is done with a expensive computed mask. @class{BoxMorph} optimizes this thanks to its rectangular shape:
+
+@smalltalkExampleCaption{Optimized @class{BoxMorph} pixel detection, coversPixelBoxMorph,
+BoxMorph>>coversPixel: worldPoint
+"Answer true as long as worldPoint is inside our shape even if:
+   - a submorph (above us) also covers it
+   - a sibling that is above us or one of their submorphs also covers it.
+This implementation is cheap@comma{} we are a rectangular shape."
+@return{} self coversLocalPoint: (self internalizeFromWorld: worldPoint)}
+
+By browsing the inheritance of this method, read how different it is for a non rectangular morph.
+
+The other morph classes in the kernel category, @class{ColoredBoxMorph} and @class{BorderBoxMorph}, add cosmetic features as color, border width and color, padding to set space between the border and inner content. It doesn't require much explanation. @class{PasteUpMorph} and @class{WorldMorph} are rarely used.
 
