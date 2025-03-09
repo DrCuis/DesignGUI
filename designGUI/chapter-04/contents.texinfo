@@ -235,7 +235,7 @@ In one attribute, we have the information on position, size and rotation. Moreov
 @cindex morph @subentry pixel detection
 @cindex morph @subentry bits mask
 
-One last bit of experiment to foster Morph understanding, @cuis{} knows about morph detection; in our previous morph's inspector, execute and print @smalltalk{self coversPixel: 0@@0}, the answer is likely false if the morph is not positioned to cover the World origin. Now inspect its @smalltalk{properties}, there is a @smalltalk{bitMask} entry referring to 1 bit depth @class{Form}, this is how @cuis{} does pixel detection. In this @class{Form}, a kind of picture, each bit represent the pixel obstruction of the morph: 0 means nothing painted, 1 means the morph paints the pixel with an arbitrary color we don't need to know about here.
+One last bit of experiment to foster Morph understanding, @cuis{} knows about morph detection; in our previous morph's inspector, execute and print @smalltalk{self coversPixel: 0@@0}, the answer is likely false if the morph is not positioned to cover the World origin. Now inspect its @smalltalk{properties}, there is a @smalltalk{bitMask} entry referring to 1 bit depth @class{Form}, this is how @cuis{} does pixel detection. In this @class{Form}, a kind of picture, each bit represents the pixel obstruction of the morph: 0 means nothing painted, 1 means the morph paints the pixel with an arbitrary color we don't need to know about here.
 
 This property is automatically garbage collected when not needed anymore or irrelevant.
 

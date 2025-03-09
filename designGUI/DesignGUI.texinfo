@@ -49,8 +49,6 @@ A journey in Morph world.
 @c=====================================
 @include chapter-01/contents.texinfo
 @c
-@include chapter-02/contents.texinfo
-@c
 @include chapter-03/contents.texinfo
 @c
 @include chapter-04/contents.texinfo

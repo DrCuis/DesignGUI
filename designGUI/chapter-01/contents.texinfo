@@ -1,66 +1,87 @@
-@node Overview
-@chapter Overview
+@node Introduction
+@chapter Introduction
 
-@quotation
-The computer is simply an instrument whose music is ideas.
-@author Alan Kay
-@end quotation
-
-@*
-
-An introduction to this chapter.
-
-@cindex editing @subentry menu
-@cindex editing @subentry chapter naming
-
-Rename @label{Chapter 1} to your taste, @command{@@node} name should follow chapter name.
-
-@cindex editing @subentry menu
-In the menu block below report the @command{@@node}/@command{@@section} argument declared in the rest of this document.
+The standard @cuis{} framework for building user interfaces is Morphic 3. The classes provided by this framework are in the class category @label{Morphic}. What non-Smalltalk GUI libraries refer to as @emph{components} or @emph{widgets} are called @emph{Morphs} in @cuis{}; therefore in the rest of this book the terms Morph, widget, component are interchangeable.
 
 @menu
-* Preparation::
-* A few tips on editing::
+* Overview::
+* Quick Start::
 @end menu
 
-@node Preparation
-@section Preparation
+@node Overview
+@section Overview
+There are many provided morphs that are subclasses of the class @class{Morph} and it's easy to create custom morphs.
 
-@subsection Copying template
-To edit your own booklet, you first copy the existing template:
+The primary way of organizing morphs is to create instances of @class{LayoutMorph} and add submorphs to them. Instances of @class{LayoutMorph} can be nested to achieve pretty much any layout. It is used massively, in a @cuis{} image with several browsers open, there are tenth of layout. Execute the code bellow with @kbd{Ctrl-p} to get the result printed in your image:
 
-@smalltalkExampleCaption{Install your own booklet,copyingTemplate,
-cp -rf bookletTemplate myBooklet}
+@smalltalkExample{LayoutMorph allInstances size
+@result{} 79.}
 
-@subsection Settings
-In the master document @file{booklet.texinfo}, you should edit:
+Open a Workspace and execute the following expressions:
 
-@enumerate
- @item The title and subtitle,
- @item The slogan.
- @item Insert an @command{@@include} command for each chapter.
-@end enumerate
+@smalltalkExample{My first morph, firstMorph,
+box := ColoredBoxMorph new.
+box color: Color pink.
+box morphExtent: 200 @@ 100.
+box openInWorld}
 
-In the @file{misc/settings.texinfo} file adjust:
+This renders a pink rectangle.
 
-@itemize
- @item The title of the booklet, again,
- @item The list of writers in the @command{@@writer} macro,
- @item The list of reviewers in the @command{@@thanks} macro,
- @item Read the content of the file to learn about the macro to use when editing the booklet. You can also learn from the source ``The Cuis Book''.
-@end itemize
+Open the halo for this morph by holding down a key and clicking it. The key to hold down depends on your platform. It is the @kbd{Command} key in macOS and the @kbd{Control} key in other platforms. Click the red button in the upper-left of the halo to remove the morph.
 
+@node Quick Start
+@section Quick Start
+Rendering a single morph isn't particularly interesting. Let's render some label, a text input, and a button to implement a simple application.
 
-@node A few tips on editing
-@section A few tips on editing
-A subsection divides a section in smaller parts.
+In a new Workspace execute the following code:
 
-@cindex editing @subentry figure
-Pictures must be copied in each @file{Chapter-XX/img} folder and be prefixed with the chapter number to avoid collision on html output.
+@smalltalkExampleCaption{My first layout, firstLayout,
+| view input greetingLabel button row |
 
-Then to insert an image, use the @command{@@figure} macro with three arguments: @emph{caption}, @emph{filename} without extension and @emph{width} expressed in centimeter:
-@code{@@figure@{Cuis, ch00-img1, 8@}}.
+view := LayoutMorph newColumn.
 
-@figure{Cuis, ch01-img1, 8}
+"Create a single-line text input.
+ Using zero for the height causes it to calculate
+ the minimum required height for a single line."
+input := TextModelMorph withText: '' ::
+    hideScrollBarsIndefinitely;
+    morphExtent: 200 @@ 0;
+    wrapFlag: false.
 
-@exercise{Solution of the exercises,exeSolution, @emph{In which file must be authored the solutions of the exercises?}} 
+greetingLabel := LabelMorph contents: '' ::
+    color: Color red;
+    font: FontFamily defaultFamilyAndPointSize bold.
+
+"Create a button that when clicked execute
+ the associated block of code"
+button := PluggableButtonMorph
+    model: [greetingLabel contents: 'Hello@comma{} '@comma{} input text@comma{} '!']
+    action: #value.
+button label: 'Greet'.
+
+row := LayoutMorph newRow
+    gap: 10;
+    addMorph: (LabelMorph contents: 'Name:');
+    addMorph: input;
+    addMorph: button.
+
+view
+    padding: 20;
+    addMorph: row;
+    addMorph: greetingLabel;
+    openInWorld}
+
+@figure{My first interface,ch01-morphicGreeter,6}
+
+This morph is a bit like a ``Hello World'' panel, it should be inserted in window with proper title and icon to operate on. To remove this panel, you need again the request its halo, it is not very practical. Let's change the simple app we've built so it can be
+inside a window. In the previous code, edit the end of the script to insert our view in a @class{SystemWindow} instance:
+
+@smalltalkExample{[...]
+view
+    padding: 20;
+    addMorph: row;
+    addMorph: greetingLabel.
+
+SystemWindow new ::
+    addMorph: view;
+    openInWorld}
