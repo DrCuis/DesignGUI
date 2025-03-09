@@ -83,5 +83,10 @@ view
     addMorph: greetingLabel.
 
 SystemWindow new ::
-    addMorph: view;
-    openInWorld}
+   setLabel: 'Hello World!';
+   addMorph: view;
+   openInWorld;
+   morphExtent: 300@@100}
+
+
+@figure{My first window,ch01-windowGreeter,6}
