@@ -61,6 +61,8 @@ A journey in Morph world.
 @c
 @include chapter-07/contents.texinfo
 @c
+@include chapter-08/contents.texinfo
+@c
 @c=====================================
 @c Apprendices
 @c=====================================
