@@ -3,6 +3,175 @@
 
 @*
 
-@menu
-@end menu
+Instances of the class @class{LayoutMorph} actively manage the
+position and size of morphs that are added them, referred to as submorphs.
+They arrange submorphs in a row or column and are created with
+@smalltalk{LayoutMorph newRow} or @smalltalk{LayoutMorph newColumn}.
+An instance cannot be created with @smalltalk{LayoutMorph new}
+because a direction must be specified.
 
+The submorphs must be instances subclasses of @class{PlacedMorph}.
+The @class{LayoutMorph} is such a class, so these can be nested
+which enables achieving practially any layout.
+
+Let's layout three instances of @class{ColoredBoxMorph}.
+Using this kind of morph for examples allows us to clearly see their bounds.
+
+@smalltalkExample{box1 := ColoredBoxMorph new color: Color red; morphExtent: 50 @ 50.
+box2 := ColoredBoxMorph new color: Color green; morphExtent: 75 @ 75.
+box3 := ColoredBoxMorph new color: Color blue; morphExtent: 100 @ 100.
+layout := LayoutMorph newRow
+    addMorph: box1;
+    addMorph: box2;
+    addMorph: box3;
+    openInWorld.}
+
+@figure{Basic use of @class{LayoutMorph}, ch03-layoutmorph-example1, 6} 
+
+By default there is no space between
+the edges of the @class{LayoutMorph} and its submorphs,
+and there is no space between the submorphs.
+
+To add 10 pixels of space between the edges of the @class{LayoutMorph}
+and its submorphs, send @smalltalk{layout padding: 10}.
+If the argument is a @class{Point},
+its x value is used for left and right padding
+and its y value is used for top and bottom padding.
+
+@figure{Adding padding, ch03-layoutmorph-example2, 6} 
+
+To add 10 pixels of space between the submorphs, send
+@smalltalk{layout gap: 10}.
+
+@figure{Adding gap, ch03-layoutmorph-example3, 6} 
+
+To add both padding and gap in a single message,
+send @smalltalk{layout separation: 10}.
+
+For a row @class{LayoutMorph} the major axis is x and the minor axis is y.
+For a column @class{LayoutMorph} the major axis is y and the minor axis is x.
+
+If a @class{LayoutMorph} is given a width or height
+that is larger than needed to fit the submorphs,
+we can specify how the submorphs should be aligned.
+By default the submorphs will be aligned
+at the beginning of its major axis and centered on its minor axis.
+
+@figure{Default alignment, ch03-layoutmorph-example4, 6} 
+
+To change the major axis alignment,
+send the message @msg{#axisEdgeWeight:} with a floating point argument.
+The argument should be 0 for left-align, 0.5 for center, or 1 for right-align.
+The following symbols can also be used for the argument:
+@itemize
+  @item
+  for rows, @smalltalk{#rowLeft}, @smalltalk{#center}, or @smalltalk{#rowRight}
+
+  @item
+  for columns, @smalltalk{#columnTop}, @smalltalk{#center}, or @smalltalk{#columnBottom}
+@end itemize
+
+@figure{Center alignment, ch03-layoutmorph-example5, 6} 
+
+To change the minor axis alignment,
+send the message @msg{#offAxisEdgeWeight:} with a floating point argument.
+It takes the same argument values as the @smalltalk{#axisEdgeWeight:} message.
+This message must be sent to each of the submorphs,
+not to the @class{LayoutMorph}.
+
+@smalltalkExample{layout submorphsDo: [:submorph | submorph layoutSpec offAxisEdgeWeight: 0]}
+
+@figure{Top alignment, ch03-layoutmorph-example6, 6} 
+
+In all the examples so far, the submorphs each have a fixed size.
+They can also be given proportional sizes so their actual size
+will be based on a percentage of the available space.
+The available space is the space after removing the padding,
+the gaps between submorphs, and
+the sizes of submorphs that have a fixed size.
+
+Each submorph can be given a different proportional size value.
+The amount of the available space given to each
+is its percentage of the total values.
+For example, suppose a row @class{LayoutMorph}
+contains three submorphs that use a proportional width,
+and they are assigned the values 2, 3, and 5.
+The total is 10, so the first will take 2/10 (20%),
+the second will take 3/10 (30%), and the third will take 5/10 (50%)
+of the available space.
+
+Let's modify the previous example to cause
+the second submorph to take all the available space.
+
+Each morph can have a @class{LayoutSpec} that specifies
+how it should be laid out within its owner `LayoutMorph`.
+This is ignored if the owner is not a `LayoutMorph`.
+
+Instances of @class{LayoutSpec} have the following instance variables:
+@smalltalk{morph}, @smalltalk{fixedWidth}, @smalltalk{fixedHeight},
+@smalltalk{offAxisEdgeWeight}, @smalltalk{proportionalWidth},
+and @smalltalk{proportionalHeight}.
+There are methods to set each of these instance variables.
+
+@smalltalkExample{box2 layoutSpec proportionalWidth: 1}
+
+@figure{Using proportionalWidth, ch03-layoutmorph-example7, 6} 
+
+We could have added @smalltalk{box2} to @smalltalk{layout}
+using the message @smalltalk{add:proportionWidth:}
+which adds a submorph AND
+sets the @smalltalk{proportionalWidth} property of its @class{LayoutSpec}.
+However, an issue with this approach is that it
+creates a new instance of @class{LayoutSpec} where the values of
+@smalltalk{proportionalWidth} and @smalltalk{proportionalHeight} are both 1.
+To only modify one of those properties,
+it's best to set it directly on the @class{LayoutSpec} of the morph.
+
+Let's arrange the boxes so they are spread across the width of
+the @class{LayoutMorph} with an even amount of space between them.
+
+@smalltalkExample{example8
+box1 := ColoredBoxMorph new color: Color red; morphExtent: 50 @ 75.
+box2 := ColoredBoxMorph new color: Color green; morphExtent: 75 @ 50.
+box3 := ColoredBoxMorph new color: Color blue; morphExtent: 100 @ 100.
+spacer1 := ColoredBoxMorph new color: Color transparent.
+spacer1 layoutSpec proportionalWidth: 1.
+spacer2 := ColoredBoxMorph new color: Color transparent.
+spacer2 layoutSpec proportionalWidth: 1.
+layout := LayoutMorph newRow
+	morphExtent: 350 @ 150;
+	separation: 10;
+	addMorph: box1;
+	addMorph: spacer1;
+	addMorph: box2;
+	addMorph: spacer2;
+	addMorph: box3.
+layout openInWorld.}
+
+@figure{Evenly spaced, ch03-layoutmorph-example8, 9} 
+
+To wrap up our discussion on using the @class{LayoutMorph} class,
+let's look at an example that nests layouts.
+
+@smalltalkExample{column1 := LayoutMorph newColumn
+    addMorph: (LabelMorph contents: 'Apple');
+    addMorph: (LabelMorph contents: 'Banana');
+    addMorph: (LabelMorph contents: 'Cherry').
+column1 layoutSpec proportionalHeight: 0. "defaults to 1"
+
+column2 := LayoutMorph newColumn
+    addMorph: (LabelMorph contents: 'Spring');
+    addMorph: (LabelMorph contents: 'Winter');
+    addMorph: (LabelMorph contents: 'Summer');
+    addMorph: (LabelMorph contents: 'Fall').
+column2 layoutSpec proportionalHeight: 0. "defaults to 1"
+        
+row := LayoutMorph newRow
+    separation: 20;
+    addMorph: column1;
+    addMorph: (LabelMorph contents: 'What are your favorites?');
+    addMorph: column2.
+                
+row openInWorld.}
+
+@figure{Nested LayoutMorphs, ch03-layoutmorph-example9, 9} 
