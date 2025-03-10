@@ -57,10 +57,10 @@ we can specify how the submorphs should be aligned.
 By default the submorphs will be aligned
 at the beginning of its major axis and centered on its minor axis.
 
-@figure{Default submorph alignment, ch03-layoutmorph-example4, 6} 
+@figure{Default alignment, ch03-layoutmorph-example4, 6} 
 
 To change the major axis alignment,
-send the message @smalltalk{#axisEdgeWeight:} with a floating point argument.
+send the message @msg{#axisEdgeWeight:} with a floating point argument.
 The argument should be 0 for left-align, 0.5 for center, or 1 for right-align.
 The following symbols can also be used for the argument:
 @itemize
@@ -71,17 +71,17 @@ The following symbols can also be used for the argument:
   for columns, @smalltalk{#columnTop}, @smalltalk{#center}, or @smalltalk{#columnBottom}
 @end itemize
 
-@figure{Submorph alignment with axisEdgeWeight: 0.5, ch03-layoutmorph-example5, 6} 
+@figure{Center alignment, ch03-layoutmorph-example5, 6} 
 
 To change the minor axis alignment,
-send the message @smalltalk{#offAxisEdgeWeight:} with a floating point argument.
+send the message @msg{#offAxisEdgeWeight:} with a floating point argument.
 It takes the same argument values as the @smalltalk{#axisEdgeWeight:} message.
 This message must be sent to each of the submorphs,
 not to the @class{LayoutMorph}.
 
 @smalltalkExample{layout submorphsDo: [:submorph | submorph layoutSpec offAxisEdgeWeight: 0]}
 
-@figure{Submorph alignment with offAxisEdgeWeight: 0, ch03-layoutmorph-example6, 6} 
+@figure{Top alignment, ch03-layoutmorph-example6, 6} 
 
 In all the examples so far, the submorphs each have a fixed size.
 They can also be given proportional sizes so their actual size
@@ -115,7 +115,7 @@ There are methods to set each of these instance variables.
 
 @smalltalkExample{box2 layoutSpec proportionalWidth: 1}
 
-@figure{Using proportionalWidth:, ch03-layoutmorph-example7, 6} 
+@figure{Using proportionalWidth, ch03-layoutmorph-example7, 6} 
 
 We could have added @smalltalk{box2} to @smalltalk{layout}
 using the message @smalltalk{add:proportionWidth:}
@@ -126,6 +126,29 @@ creates a new instance of @class{LayoutSpec} where the values of
 @smalltalk{proportionalWidth} and @smalltalk{proportionalHeight} are both 1.
 To only modify one of those properties,
 it's best to set it directly on the @class{LayoutSpec} of the morph.
+
+Let's arrange the boxes so they are spread across the width of
+the @class{LayoutMorph} with an even amount of space between them.
+
+@smalltalkExample{example8
+box1 := ColoredBoxMorph new color: Color red; morphExtent: 50 @ 75.
+box2 := ColoredBoxMorph new color: Color green; morphExtent: 75 @ 50.
+box3 := ColoredBoxMorph new color: Color blue; morphExtent: 100 @ 100.
+spacer1 := ColoredBoxMorph new color: Color transparent.
+spacer1 layoutSpec proportionalWidth: 1.
+spacer2 := ColoredBoxMorph new color: Color transparent.
+spacer2 layoutSpec proportionalWidth: 1.
+layout := LayoutMorph newRow
+	morphExtent: 350 @ 150;
+	separation: 10;
+	addMorph: box1;
+	addMorph: spacer1;
+	addMorph: box2;
+	addMorph: spacer2;
+	addMorph: box3.
+layout openInWorld.}
+
+@figure{Evenly spaced, ch03-layoutmorph-example8, 9} 
 
 To wrap up our discussion on using the @class{LayoutMorph} class,
 let's look at an example that nests layouts.
@@ -151,4 +174,4 @@ row := LayoutMorph newRow
                 
 row openInWorld.}
 
-@figure{Nested LayoutMorphs:, ch03-layoutmorph-example8, 9} 
+@figure{Nested LayoutMorphs, ch03-layoutmorph-example9, 9} 
