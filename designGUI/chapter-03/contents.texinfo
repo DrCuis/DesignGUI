@@ -175,3 +175,36 @@ row := LayoutMorph newRow
 row openInWorld.}
 
 @figure{Nested LayoutMorphs, ch03-layoutmorph-example9, 9} 
+
+We can add a colored border to any morph that is
+an instance of a subclass of @class{BorderedBoxMorph}.
+This is useful for debugging.
+Let's add borders to some of the morphs in the previous example.
+
+@smalltalkExample{column1 := LayoutMorph newColumn
+    addMorph: (LabelMorph contents: 'Apple');
+    addMorph: (LabelMorph contents: 'Banana');
+    addMorph: (LabelMorph contents: 'Cherry');
+    borderColor: Color red; borderWidth: 2.
+column1 layoutSpec proportionalHeight: 0.
+
+column2 := LayoutMorph newColumn
+    addMorph: (LabelMorph contents: 'Spring');
+    addMorph: (LabelMorph contents: 'Winter');
+    addMorph: (LabelMorph contents: 'Summer');
+    addMorph: (LabelMorph contents: 'Fall');
+    borderColor: Color blue; borderWidth: 2.
+column2 layoutSpec proportionalHeight: 0.
+    
+center := LabelMorph contents: 'What are your favorites?
+    borderColor: Color green; borderWidth: 2.
+
+row := LayoutMorph newRow
+    separation: 20;
+    addMorph: column1;
+    addMorph: center;
+    addMorph: column2.
+                
+row openInWorld.}
+
+@figure{Morph borders, ch03-layoutmorph-example10, 9} 
