@@ -4,8 +4,21 @@
 @*
 
 Instances of the class @class{LayoutMorph} actively manage the
-position and size of morphs that are added them, referred to as submorphs.
-They arrange submorphs in a row or column and are created with
+position and size of morphs that are added to them, referred to as submorphs.
+
+@menu
+* To be a Row or to be a Column::
+* Alignments::
+@end menu
+
+@cindex layout
+@node To be a Row or to be a Column
+@section To be a Row or to be a Column
+
+@cindex layout @subentry row
+@cindex layout @subentry column
+
+@class{LayoutMorph} instances arrange submorphs in a row or column and are created with
 @smalltalk{LayoutMorph newRow} or @smalltalk{LayoutMorph newColumn}.
 An instance cannot be created with @smalltalk{LayoutMorph new}
 because a direction must be specified.
@@ -28,6 +41,8 @@ layout := LayoutMorph newRow
 
 @figure{Basic use of @class{LayoutMorph}, ch03-layoutmorph-example1, 6} 
 
+@cindex layout @subentry padding
+
 By default there is no space between
 the edges of the @class{LayoutMorph} and its submorphs,
 and there is no space between the submorphs.
@@ -40,27 +55,35 @@ and its y value is used for top and bottom padding.
 
 @figure{Adding padding, ch03-layoutmorph-example2, 6} 
 
+@cindex layout @subentry gap
+
 To add 10 pixels of space between the submorphs, send
 @smalltalk{layout gap: 10}.
 
 @figure{Adding gap, ch03-layoutmorph-example3, 6} 
 
-To add both padding and gap in a single message,
-send @smalltalk{layout separation: 10}.
+@cindex layout @subentry separation
 
+To add both padding and gap in a single message, send
+@smalltalk{layout separation: 10}.
+
+@cindex layout @subentry alignment
+@cindex layout @subentry alignment @subentry major axis
+@cindex layout @subentry alignment @subentry minor axis
+@node Alignments
+@section Alignments
 For a row @class{LayoutMorph} the major axis is x and the minor axis is y.
 For a column @class{LayoutMorph} the major axis is y and the minor axis is x.
 
-If a @class{LayoutMorph} is given a width or height
-that is larger than needed to fit the submorphs,
-we can specify how the submorphs should be aligned.
-By default the submorphs will be aligned
-at the beginning of its major axis and centered on its minor axis.
+If a @class{LayoutMorph} is given a width or height that is larger
+than needed to fit the submorphs, we can specify how the submorphs
+should be aligned.  By default the submorphs will be aligned at the
+beginning of its major axis and centered on its minor axis.
 
 @figure{Default alignment, ch03-layoutmorph-example4, 6} 
 
 To change the major axis alignment,
-send the message @msg{#axisEdgeWeight:} with a floating point argument.
+send the message @msg{axisEdgeWeight:} with a floating point argument.
 The argument should be 0 for left-align, 0.5 for center, or 1 for right-align.
 The following symbols can also be used for the argument:
 @itemize
@@ -74,8 +97,8 @@ The following symbols can also be used for the argument:
 @figure{Center alignment, ch03-layoutmorph-example5, 6} 
 
 To change the minor axis alignment,
-send the message @msg{#offAxisEdgeWeight:} with a floating point argument.
-It takes the same argument values as the @smalltalk{#axisEdgeWeight:} message.
+send the message @msg{offAxisEdgeWeight:} with a floating point argument.
+It takes the same argument values as the @msg{axisEdgeWeight:} message.
 This message must be sent to each of the submorphs,
 not to the @class{LayoutMorph}.
 
