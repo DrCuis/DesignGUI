@@ -1,3 +1,6 @@
 .DS_Store
 designGUI/designGUI.pdf
+*.aux
+*.log
+*.toc
 *~
