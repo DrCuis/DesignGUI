@@ -3,6 +3,181 @@
 
 @*
 
+There are three primary ways that the user can interact with a morph.
+They can click it, hover over it, or
+press a key on their keyboard when the morph has focus.
+This chapter demonstrates all three of these approaches.
+
+@section Handling mouse clicks
+
+Let's create a custom morph that draws a circle.
+Initially the circle will be red.
+Clicking the circle will toggle the color between red and green.
+
+Begin by creating the following class:
+
+@smalltalkExample{BoxMorph subclass: #ClickDemo
+    instanceVariableNames: 'color offColor onColor radius'
+    classVariableNames: ''
+    poolDictionaries: ''
+    category: 'Demo'}
+
+Now add the following instance methods:
+
+@smalltalkExample{initialize
+    | diameter |
+
+    super initialize.
+    offColor := `Color red`.
+    onColor := `Color green`.
+    color := offColor.
+    
+    diameter := 200.
+    self morphExtent: diameter @ diameter.
+    radius := diameter / 2.
+    'Click the circle to toggle its color.' print.
+
+requiresVectorCanvas
+    ^ true "enables using drawing methods in drawOn: below"
+
+drawOn: aCanvas
+    aCanvas fillColor: color do: [
+        aCanvas
+            circleCenter: radius @ radius
+            radius: radius
+    ].
+
+handlesMouseDown: aMouseEvent
+    ^ true "enables listening for mouse events"
+
+mouseButton1Down: aMouseEvent localPosition: aPosition
+    color := color = offColor ifTrue: onColor ifFalse: offColor.
+    self redrawNeeded.}
+
+@figure{Handling mouse click events, ch05-userinteraction-example1, 3} 
+
+@section Handling mouse hover
+
+Let's create another custom morph that looks exactly like the previous example,
+but responds to different events.
+Initially the circle will be red.
+Hovering over the circle with the mouse cursor will change the color to green.
+Moving the mouse cursor outside the circle will change the color back to red.
+
+Begin by creating the following class:
+
+@smalltalkExample{BoxMorph subclass: #HoverDemo
+    instanceVariableNames: 'color offColor onColor radius'
+    classVariableNames: ''
+    poolDictionaries: ''
+    category: 'Demo'}
+
+Now add the following instance methods:
+
+@smalltalkExample{initialize
+    | diameter |
+
+    super initialize.
+    offColor := `Color red`.
+    onColor := `Color green`.
+    color := offColor.
+    
+    diameter := 200.
+    self morphExtent: diameter @ diameter.
+    radius := diameter / 2.
+    'Hover over the circle to change its color and unhover to change it back.' print.
+
+requiresVectorCanvas
+    ^ true "enables using drawing methods in drawOn: below"
+
+drawOn: aCanvas
+    aCanvas fillColor: color do: [
+        aCanvas
+            circleCenter: radius @ radius
+            radius: radius
+    ].
+
+handlesMouseOver: aMouseEvent
+    ^ true "enables listening for mouse enter and leave events"
+
+mouseEnter: aMouseEvent
+    color := onColor.    
+    self redrawNeeded.
+
+mouseLeave: aMouseEvent
+    color := offColor.
+    self redrawNeeded.}
+
+@figure{Handling mouse hover events, ch05-userinteraction-example2, 3} 
+
+@section Handling key presses
+
+Let's create one more custom morph that looks exactly like the previous example,
+but responds to different events.
+Initially the circle will be yellow.
+Pressing the "r", "g", or "b" key will change the color
+to red, green, or blue respectively.
+
+Begin by creating the following class:
+
+@smalltalkExample{BoxMorph subclass: #KeyDemo
+    instanceVariableNames: 'color radius'
+    classVariableNames: ''
+    poolDictionaries: ''
+    category: 'Demo'}
+
+Now add the following instance methods:
+
+@smalltalkExample{initialize
+    | diameter |
+
+    super initialize.
+    color := `Color yellow`.
+    
+    diameter := 200.
+    self morphExtent: diameter @ diameter.
+    radius := diameter / 2.
+    'Move mouse over the circle and press r, g, or b to change its color.' print.
+
+requiresVectorCanvas
+    ^ true "enables using drawing methods in drawOn: below"
+
+drawOn: aCanvas
+    aCanvas fillColor: color do: [
+        aCanvas
+            circleCenter: radius @ radius
+            radius: radius
+    ].
+
+handlesMouseOver: aMouseEvent
+    ^ true "enables listening for mouse enter events"
+
+mouseEnter: event
+    super mouseEnter: event.
+
+    "If the user opted for focus to automatically
+     move focus to the morph under the cursor then tell
+     the cursor (event hand) to give focus to this morph."
+    Preferences at: #focusFollowsMouse :: ifTrue: [
+        event hand newKeyboardFocus: self
+    ].
+
+handlesKeyboard
+    "Handle keyboard events only if this morph is visible."
+    ^ self visible
+
+keyStroke: aKeyEvent
+    | character |
+    
+    character := Character codePoint: aKeyEvent keyValue.
+    color := character caseOf: @{
+        [ $r ] -> [ `Color red` ].
+        [ $g ] -> [ `Color green` ].
+        [ $b ] -> [ `Color blue` ].
+    @}.
+    self redrawNeeded.}
+
+@figure{Handling keyboard events, ch05-userinteraction-example3, 3} 
+
 @menu
 @end menu
-
