@@ -2,10 +2,30 @@
 @appendix Solutions to the Exercises
 
 @menu
-* Chapter 1 (Solutions)::
+* Layout Components (Solutions)::
 @end menu
 
-@node Chapter 1 (Solutions)
-@unnumberedsec Chapter 1
-@c @subheading @ref{exeSolution}
-The solutions of the exercises of the booklet are authored in the file @file{chapter-50/contents.texinfo}.
+@c Layout chapter
+@node Layout Components (Solutions)
+@unnumberedsec Layout Components (Solutions)
+
+@subheading @ref{alignmentTopDown}
+Right after the instantiating the box, add these two lines:
+@smallexample
+box1 layoutSpec offAxisEdgeWeight: #rowTop.
+box3 layoutSpec offAxisEdgeWeight: #rowBottom.
+@end smallexample
+
+@smalltalk{box2} is centered by default.
+
+@figure{Top to down,ch50-alignmentTopDown,6}
+
+@subheading @ref{exeSpacerQuarter}
+Edit the example as follow:
+@smallexample
+...
+spacer1 layoutSpec proportionalWidth: 1.
+...
+spacer2 layoutSpec proportionalWidth: 3.
+...
+@end smallexample
