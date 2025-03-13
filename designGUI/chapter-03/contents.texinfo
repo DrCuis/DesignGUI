@@ -7,13 +7,13 @@ Instances of the class @class{LayoutMorph} actively manage the
 position and size of morphs that are added to them, referred to as submorphs.
 
 @menu
-* To be a Row or to be a Column::
+* To row or no to row::
 * Alignments::
 @end menu
 
 @cindex layout
-@node To be a Row or to be a Column
-@section To be a Row or to be a Column
+@node To row or not to row
+@section To row or not to row
 
 @cindex layout @subentry row
 @cindex layout @subentry column

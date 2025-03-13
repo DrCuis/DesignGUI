@@ -7,5 +7,5 @@
 
 @node Chapter 1 (Solutions)
 @unnumberedsec Chapter 1
-@subheading @ref{exeSolution}
+@c @subheading @ref{exeSolution}
 The solutions of the exercises of the booklet are authored in the file @file{chapter-50/contents.texinfo}.
