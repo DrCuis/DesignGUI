@@ -10,7 +10,7 @@
 @unnumberedsec Layout Components (Solutions)
 
 @subheading @ref{alignmentTopDown}
-Right after the instantiating the box, add these two lines:
+Right after instantiating the boxes, add these two lines:
 @smallexample
 box1 layoutSpec offAxisEdgeWeight: #rowTop.
 box3 layoutSpec offAxisEdgeWeight: #rowBottom.

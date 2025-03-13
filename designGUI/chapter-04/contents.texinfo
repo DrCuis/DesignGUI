@@ -317,3 +317,7 @@ By browsing the inheritance of this method, read how different it is for a non r
 
 The other morph classes in the kernel category, @class{ColoredBoxMorph} and @class{BorderBoxMorph}, add cosmetic features as color, border width and color, padding to set space between the border and inner content. It doesn't require much explanation. @class{PasteUpMorph} and @class{WorldMorph} are rarely used.
 
+This modest dive-in the Morph framework is now over, we hope it
+provided enough background to foster your understanding when building
+@acronym{GUI}. In another booklet we will discuss more deeply the
+Morph framework.
