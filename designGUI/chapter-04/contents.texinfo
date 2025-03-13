@@ -76,7 +76,7 @@ Some actions need clarifications:
 
 @itemize
    @item 
-   @strong{grab.} It grabs the moprh from its owner and can be dropped in the World or any other morph accepting dropped morph
+   @strong{grab.} It grabs the morph from its owner and can be dropped in the World or any other morph accepting dropped morph
 
    @item
    @strong{move.} It moves the morph in its owner. Try the differences between grab and move with a menu entry in the World menu.
