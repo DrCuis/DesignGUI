@@ -8,7 +8,7 @@ Instances of the class @class{LayoutMorph} actively manage the
 position and size of morphs that are added to them, referred to as submorphs.
 
 @menu
-* To row or no to row::
+* To row or not to row::
 * Alignment::
 * Proportion::
 @end menu
