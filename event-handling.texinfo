@@ -1,7 +1,0 @@
-@node Handle user interaction
-@chapter Handle user interaction
-
-@*
-
-@menu
-@end menu
