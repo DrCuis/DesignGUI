@@ -11,6 +11,7 @@ position and size of morphs that are added to them, referred to as submorphs.
 * To row or not to row::
 * Alignment::
 * Proportion::
+* Nest of layouts::
 @end menu
 
 @cindex layout
@@ -214,10 +215,14 @@ by the other morphs in the owner. The total free space is counted as 2
 @ref{layoutExample2} so that the first spacer use one quarter of the
 free space and the second one three quarters.}
 
+@cindex layout @subentry nested
+@node Nest of layouts
+@section Nest of layouts
 To wrap up our discussion on using the @class{LayoutMorph} class,
 let's look at an example that nests layouts.
 
-@smalltalkExample{column1 := LayoutMorph newColumn
+@smalltalkExampleCaption{Nesting layouts,layoutNested1,
+column1 := LayoutMorph newColumn
     addMorph: (LabelMorph contents: 'Apple');
     addMorph: (LabelMorph contents: 'Banana');
     addMorph: (LabelMorph contents: 'Cherry').
@@ -238,14 +243,16 @@ row := LayoutMorph newRow
                 
 row openInWorld.}
 
-@figure{Nested LayoutMorphs, ch03-layoutmorph-example9, 9} 
+@figure{Nested LayoutMorphs, ch03-layoutmorph-example9, 8} 
 
-We can add a colored border to any morph that is
-an instance of a subclass of @class{BorderedBoxMorph}.
-This is useful for debugging.
-Let's add borders to some of the morphs in the previous example.
+@cindex layout @subentry debugging
+We can add a colored border to any morph that is an instance of a
+subclass of @class{BorderedBoxMorph}.  This is useful for debugging.
+Let's add borders to some of the morphs in the previous example
+@ref{layoutNested1}.
 
-@smalltalkExample{column1 := LayoutMorph newColumn
+@smalltalkExampleCaption{Revealed nested layouts,layoutNested2,
+column1 := LayoutMorph newColumn
     addMorph: (LabelMorph contents: 'Apple');
     addMorph: (LabelMorph contents: 'Banana');
     addMorph: (LabelMorph contents: 'Cherry');
@@ -271,4 +278,4 @@ row := LayoutMorph newRow
                 
 row openInWorld.}
 
-@figure{Morph borders, ch03-layoutmorph-example10, 9} 
+@figure{Morph borders, ch03-layoutmorph-example10, 8} 
