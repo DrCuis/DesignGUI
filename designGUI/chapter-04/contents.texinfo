@@ -241,7 +241,7 @@ This property is automatically garbage collected when not needed anymore or irre
 
 @figure{Pixel detection illustrated,ch04-morphBitMask,9}
 
-The reader may wonder if there is any use case of the @class{Morph} class when its instances can't be grabbed and moved around. Why not just using @class{PlacedMorph}? In DrGeo software@footnote{@url{http://gnu.org/s/dr-geo}}, such morphs are used to represent geometric objets drawn in the coordinates system of the owner morph, their positions and aspect are completely dependend on the underneath mathemmatic models.
+The reader may wonder if there is any use case of the @class{Morph} class when its instances can't be grabbed and moved around. Why not just using @class{PlacedMorph}? In DrGeo software@footnote{@url{http://gnu.org/s/dr-geo}}, such morphs are used to represent geometric objets drawn in the coordinates system of the owner morph, their positions and aspect are completely dependend on the underneath mathematics models.
 
 
 @cindex morph @subentry @class{BoxMorph}
