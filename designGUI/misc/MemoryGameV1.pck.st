@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7066] on 18 March 2025 at 11:43:19 pm'!
+'From Cuis7.3 [latest update: #7066] on 19 March 2025 at 4:40:42 pm'!
 'Description '!
-!provides: 'MemoryGameV1' 1 4!
+!provides: 'MemoryGameV1' 1 5!
 SystemOrganization addCategory: 'MemoryGameV1'!
 
 
@@ -107,6 +107,12 @@ message: aText
 	statusBar contents: aText ;
 		redrawNeeded ! !
 
+!MemoryGameWindow methodsFor: 'accessing' stamp: 'hlsf 3/19/2025 16:32:10'!
+undoneCards
+	^ cards elements asOrderedCollection 
+		removeAll: self doneCards;
+		yourself.! !
+
 !MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 3/15/2025 18:24:23'!
 distributeColors
 	| colors |
@@ -175,7 +181,7 @@ installToolbar
 	self addMorph: toolbar layoutSpec: LayoutSpec new useMorphHeight
 ! !
 
-!MemoryGameWindow methodsFor: 'updating' stamp: 'hlsf 3/16/2025 17:30:58'!
+!MemoryGameWindow methodsFor: 'updating' stamp: 'hlsf 3/19/2025 16:37:56'!
 flip: position
 	| flippedCards |
 	(cards at: position) flip; lock.	
@@ -196,13 +202,20 @@ flip: position
 		self message: 'Great!!' bold, ' You find a ', tupleSize asString, '-tuple!!'.
 		flippedCards do: #flash.
 		flippedCards do: #setDone.
-		self isGameWon ifTrue: [self message: 'Congatuluation, you finished the game!!' bold red] ]! !
+		self isGameWon ifTrue: [
+			self message: 'Congatuluation, you finished the game!!' bold red.
+			playing := false] ]! !
 
-!MemoryGameWindow methodsFor: 'updating' stamp: 'hlsf 3/18/2025 23:41:11'!
+!MemoryGameWindow methodsFor: 'updating' stamp: 'hlsf 3/19/2025 16:39:39'!
 startGame
 	self installCards.
-	playing := true! !
+	playing := true.
+	self message: 'Starting a new game' bold green! !
 
-!MemoryGameWindow methodsFor: 'updating' stamp: 'hlsf 3/18/2025 23:41:26'!
+!MemoryGameWindow methodsFor: 'updating' stamp: 'hlsf 3/19/2025 16:36:36'!
 stopGame
-	playing := false! !
+	playing := false.
+	self message: 'Game over'.
+	self undoneCards do: [:aCard |
+		aCard flash; flip.
+		self world doOneCycleNow]! !
