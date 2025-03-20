@@ -33,7 +33,7 @@ This number, likely different on your own @cuis{} system, represents all the obj
 @subsection Tree of morphs
 @cindex morph @subentry sub-morph
 @cindex morph @subentry owner
-Any morph can contain other morphs. We already know a @class{LayoutMorph} contains several morphs and manage the way there are layed out; these is reflected in the @smalltalk{submorphs} attribute of each morph, when this collection is empty it means there is no sub-morph. In the other hand, a morph knows about its unique owner: the @smalltalk{owner} attribute of each morph refers to the morph owning it. And as you can expect it, the owner morph @smalltalk{submorphs} attribute contains the owned attribute as well.
+Any morph can contain other morphs. We already know a @class{LayoutMorph} contains several morphs and manage the way there are layed out; these is reflected in the @smalltalk{submorphs} attribute of each morph, when this collection is empty it means there is no sub-morph. In the other hand, a morph knows about its unique owner: the @smalltalk{owner} attribute of each morph refers to the morph owning it. And as you can expect it, the owner morph @smalltalk{submorphs} attribute contains the owned morph as well.
 
 Then what happens when the @smalltalk{owner} attribute is @smalltalk{nil}? The morph is simply not visible! This double link between owner and owned is very convenient and necessary for the morph framework depending on the situation. For example, while an owned morph may have its own local coordinates system for its drawing operations, it can refer to its owner to know about its global coordinates situation, from the point of view of the owner or even from the World perspective -- @emph{simplified for readiness}:
 

@@ -20,7 +20,7 @@
 @end titlepage
 
 @iftex
-   @shortcontents
+@c   @shortcontents
    @contents
 @end iftex
 
@@ -80,6 +80,12 @@ A journey in Morph world.
 @node The Figures
 @appendix The Figures
 @listoffloats Figure
+@c The games source code package
+@appendix Memory Game v1
+@smallformat
+@verbatiminclude misc/MemoryGameV1.pck.st
+@end smallformat
+
 @c Indexes
 @node Indexes
 @appendix Conceptual index
