@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7066] on 22 March 2025 at 7:47:49 pm'!
+'From Cuis7.3 [latest update: #7066] on 22 March 2025 at 10:46:29 pm'!
 'Description '!
-!provides: 'MemoryGameV2' 1 3!
+!provides: 'MemoryGameV2' 1 5!
 SystemOrganization addCategory: 'MemoryGameV2'!
 
 
@@ -32,26 +32,6 @@ Object subclass: #MemoryGameModel
 	category: 'MemoryGameV2'!
 !classDefinition: 'MemoryGameModel class' category: 'MemoryGameV2'!
 MemoryGameModel class
-	instanceVariableNames: ''!
-
-!classDefinition: #MemoryCard category: 'MemoryGameV2'!
-PluggableButtonMorph subclass: #MemoryCard
-	instanceVariableNames: 'cardColor done'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'MemoryGameV2'!
-!classDefinition: 'MemoryCard class' category: 'MemoryGameV2'!
-MemoryCard class
-	instanceVariableNames: ''!
-
-!classDefinition: #MemoryCardView category: 'MemoryGameV2'!
-PluggableButtonMorph subclass: #MemoryCardView
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'MemoryGameV2'!
-!classDefinition: 'MemoryCardView class' category: 'MemoryGameV2'!
-MemoryCardView class
 	instanceVariableNames: ''!
 
 !classDefinition: #MemoryGameWindow category: 'MemoryGameV2'!
@@ -112,7 +92,7 @@ initialize
 	super initialize.
 	done := flipped := false! !
 
-!MemoryGame methodsFor: 'callback ui' stamp: 'hlsf 3/22/2025 19:44:43'!
+!MemoryGame methodsFor: 'callback ui' stamp: 'hlsf 3/22/2025 22:41:36'!
 flip: position
 	| flippedCards |
 	(model cards at: position) 
@@ -123,14 +103,14 @@ flip: position
 	flippedCards := model flippedCards.
 	(flippedCards collect: [:aCard | aCard color]) asSet size = 1 ifFalse: [
 		" NO "
-		" Some delay to the player to see the color of this card "
-		self message: 'Colors do not match!!'.
+		" Some delay for the player to see the colors of these flipped cards "
+		view message: 'Colors do not match!!'.
 		view world doOneCycleNow.
 		(Delay forSeconds: 1) wait.
 		" Unflip and unlock the flipped cards "
 		flippedCards do: [:aCard | 
-			aCard 
-				flip;
+			aCard flip; 
+				triggerEvent: #flash;
 				triggerEvent: #unlock].
 		^ self].
 
@@ -140,29 +120,33 @@ flip: position
 		flippedCards do: [:aCard | aCard triggerEvent: #flash].
 		flippedCards do: #setDone.
 		model isGameWon ifTrue: [
-			self message: 'Congratuluation, you finished the game!!' bold red.
+			view message: 'Congratuluation, you finished the game!!' bold red.
 			playing := false] ]! !
 
-!MemoryGame methodsFor: 'callback ui' stamp: 'hlsf 3/22/2025 15:51:04'!
+!MemoryGame methodsFor: 'callback ui' stamp: 'hlsf 3/22/2025 22:28:33'!
 startGame
-	model installCards.
+	model installCardModels.
 	view installCards.
+	view message: 'Starting a new game' bold green.
+	view setLabel: 'P L A Y I N G'.
 	playing := true.
-	view message: 'Starting a new game' bold green! !
+! !
 
-!MemoryGame methodsFor: 'callback ui' stamp: 'hlsf 3/22/2025 19:45:56'!
+!MemoryGame methodsFor: 'callback ui' stamp: 'hlsf 3/22/2025 22:27:53'!
 stopGame
 	playing := false.
 	view message: 'Game over'.
+	view setLabel: 'G A M E   S T O P P E D'.
 	model undoneCards do: [:aCard |
-		aCard flip;
-			triggerEvent: #flash]! !
+		aCard triggerEvent: #flash; flip.
+		view world doOneCycleNow]! !
 
-!MemoryGame methodsFor: 'initialization' stamp: 'hlsf 3/22/2025 15:44:16'!
+!MemoryGame methodsFor: 'initialization' stamp: 'hlsf 3/22/2025 22:25:51'!
 initialize
-	playing := true.
-	model := MemoryCardModel new.
-	view := MemoryGameWindow presenter: self! !
+	model := MemoryGameModel new.
+	view := MemoryGameWindow presenter: self.
+	self startGame.
+	view openInWorld.! !
 
 !MemoryGame methodsFor: 'testing' stamp: 'hlsf 3/22/2025 15:42:24'!
 isPlayed
@@ -172,7 +156,11 @@ isPlayed
 isStopped
 	^ self isPlayed not! !
 
-!MemoryGameModel methodsFor: 'initialization' stamp: 'hlsf 3/22/2025 15:44:09'!
+!MemoryGame methodsFor: 'accessing' stamp: 'hlsf 3/22/2025 22:07:58'!
+model
+	^model! !
+
+!MemoryGameModel methodsFor: 'initialization' stamp: 'hlsf 3/22/2025 22:25:40'!
 initialize	
 	size := 4 @ 3.
 	tupleSize := 2! !
@@ -238,44 +226,6 @@ isGameWon
 		aCard isDone ifTrue: [doneCards add: aCard] ].
 	^ doneCards size = (size x * size y)! !
 
-!MemoryCard methodsFor: 'initialization' stamp: 'hlsf 3/15/2025 15:39:10'!
-defaultColor
-	^ Color white! !
-
-!MemoryCard methodsFor: 'initialization' stamp: 'hlsf 3/15/2025 18:38:45'!
-initialize
-	super initialize.
-	done := false! !
-
-!MemoryCard methodsFor: 'accessing' stamp: 'hlsf 3/15/2025 14:48:44'!
-cardColor
-	"Answer the value of cardColor"
-
-	^ cardColor! !
-
-!MemoryCard methodsFor: 'accessing' stamp: 'hlsf 3/15/2025 14:48:44'!
-cardColor: anObject
-	"Set the value of cardColor"
-
-	cardColor := anObject! !
-
-!MemoryCard methodsFor: 'accessing' stamp: 'hlsf 3/15/2025 18:40:42'!
-setDone
-	done := true.! !
-
-!MemoryCard methodsFor: 'testing' stamp: 'hlsf 3/15/2025 18:38:55'!
-isDone
-	^ done! !
-
-!MemoryCard methodsFor: 'testing' stamp: 'hlsf 3/15/2025 18:21:22'!
-isFlipped
-	^ color = cardColor ! !
-
-!MemoryCard methodsFor: 'action' stamp: 'hlsf 3/15/2025 18:21:22'!
-flip
-	color := self isFlipped ifTrue:  [self defaultColor] ifFalse: [cardColor ].
-	self redrawNeeded ! !
-
 !MemoryGameWindow methodsFor: 'accessing' stamp: 'hlsf 3/15/2025 18:52:39'!
 adoptWidgetsColor: paneColor
 " Does nothing, let the buttons have their own colors "! !
@@ -290,16 +240,15 @@ presenter: aPresenter
 	presenter := aPresenter.
 	self model: presenter model! !
 
-!MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 3/22/2025 15:18:09'!
+!MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 3/22/2025 22:25:57'!
 initialize
 	super initialize.
 	playground := LayoutMorph newColumn.
 	self installToolbar.
 	self addMorph: playground.
-	self installCards.
 	self installStatusBar ! !
 
-!MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 3/22/2025 19:42:30'!
+!MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 3/22/2025 22:18:57'!
 installCards
 	| row size |
 	playground removeAllMorphs.
@@ -308,7 +257,7 @@ installCards
 		row := LayoutMorph newRow.
 		1 to: size x do: [:x | | cardModel cardView |
 			cardModel := model cards at: x@y.
-			cardView := MemoryCardView model: presenter action: #flip: actionArgument: x@y.
+			cardView := PluggableButtonMorph model: presenter action: #flip: actionArgument: x@y.
 			cardModel 
 				when: #color send: #color: to: cardView;
 				when: #lock send:#lock to: cardView;
