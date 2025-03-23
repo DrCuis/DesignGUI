@@ -1,8 +1,35 @@
-@node Design patterns in GUI
-@chapter Design patterns in GUI
+@node Design GUI application
+@chapter Design GUI application
+
+@quotation
+Don't ask whether you can do something, but how to do it.
+@author Adel Goldberg
+@end quotation
 
 @*
 
+In the previous chapter we explain how to handle user interactions on widgets as button and text editor. We illustrate it with a complete memory game; we did not particularly pay attention to how the responsibilities were spread across the various involved objects. In a small project, it does not really mater, however as soon as you want your project to grow it may lead to complicate code difficult to make evolve and to maintain.
+
 @menu
+* Responsibilities::
+* Model View Presenter::
+* The Three Musketeers ::
 @end menu
 
+@node Responsibilities
+@section Responsibilities
+
+@node Model View Presenter
+@section Model View Presenter
+Why MVP
+Why MVP and not MVC?
+
+@node The Three Musketeers
+@section The Three Musketeers
+
+The model, the view and the presenter are tied together. Unlike the three musketeers which tied by friendship and the fight for justice, our three objects are tied together by the dependency mechanism we already discussed in the previous chapter.
+
+How the M-V-P are tied together?
+
+Why observer patter over change/update?
+In fact both: at widget change/update; at app level observer pattern

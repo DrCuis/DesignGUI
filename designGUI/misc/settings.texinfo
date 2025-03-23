@@ -15,7 +15,7 @@
 @c @smallbook
 
 @c Macro definitions
-@macro alanQuoteAboutCuis
+@macro bookQuote
 @quotation
 The screen is a window through which one sees a virtual world. The challenge is to make that world look real, act real, sound real, feel real.
 @author Ivan Sutherland

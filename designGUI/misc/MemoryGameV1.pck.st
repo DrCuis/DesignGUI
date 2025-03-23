@@ -142,7 +142,7 @@ installCards
 	1 to: size y do: [:y |
 		row := LayoutMorph newRow.
 		1 to: size x do: [:x | | card |
-			card := MemoryCard model: self 	action: #flip: actionArgument: x@y.
+			card := MemoryCard model: self action: #flip: actionArgument: x@y.
 			card layoutSpec proportionalWidth: 1; proportionalHeight: 1.
 			card cardColor: colors removeFirst.
 			row addMorph: card.
