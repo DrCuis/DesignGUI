@@ -4,7 +4,7 @@ htmlDest="html"
 infoDest="info"
 docbookDest="docbook"
 masterDoc="DesignGUI.texinfo"
-chapNumbers="01 03 04 05 06 07 08 50"
+chapNumbers="01 02 03 04 05 06 07 50"
 
 function collateChaptersImg {
     chapters=""
