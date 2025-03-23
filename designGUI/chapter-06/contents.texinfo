@@ -18,6 +18,7 @@ In the previous chapter we explain how to handle user interactions on widgets as
 
 @node Responsibilities
 @section Responsibilities
+In @acronym{OOP, Object Oriented Programming} we like each object to be responsible of its assigned business. Of course we can assign kind of extended businesses to a few objects as we did in @ref{Memory Game v1}. This is not good design, when a project grows it produces legacy code difficult to maintain as developer willing to make changes will face various challenges and difficulty: to distinguish how the responsibilities are spread across the involved objects, if any; to face long methods hard to understand; to replace one behaviour or one class by another one, in that circumstance it may require to replace several behaviors; to collaborate with several developers, each one working independently in once facet of the project,...
 
 @node Model View Presenter
 @section Model View Presenter

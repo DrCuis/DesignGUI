@@ -1,5 +1,5 @@
 - Source package comes with tab, for better rendering in the book, replace tab with three spaces:
 
-sed -e "s/[\t]\+/   /g" MemoryGameV1.pck.st >> MemoryGameV1-untabbed.pck.st
+sed -e "s/[\t]/   /g" MemoryGameV1.pck.st > MemoryGameV1-untabbed.pck.st
 
 

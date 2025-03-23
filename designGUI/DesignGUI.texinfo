@@ -82,6 +82,7 @@ A journey in Morph world.
 @listoffloats Figure
 @c The games source code package
 @appendix Memory Game v1
+@anchor{Memory Game v1}
 @smallformat
 @verbatiminclude misc/MemoryGameV1-untabbed.pck.st
 @end smallformat
