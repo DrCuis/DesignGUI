@@ -1,8 +1,281 @@
-@node Quick start
-@chapter Quick start
+@node Layout components
+@chapter Layout components
 
 @*
 
+@cindex layout @subentry @class{LayoutMorph}
+Instances of the class @class{LayoutMorph} actively manage the
+position and size of morphs that are added to them, referred to as submorphs.
+
 @menu
+* To row or not to row::
+* Alignment::
+* Proportion::
+* Nest of layouts::
 @end menu
 
+@cindex layout
+@node To row or not to row
+@section To row or not to row
+
+@cindex layout @subentry row
+@cindex layout @subentry column
+
+@class{LayoutMorph} instances arrange submorphs in a row or column and are created with
+@smalltalk{LayoutMorph newRow} or @smalltalk{LayoutMorph newColumn}.
+An instance cannot be created with @smalltalk{LayoutMorph new}
+because a direction must be specified.
+
+The submorphs must be instances subclasses of @class{PlacedMorph}.
+The @class{LayoutMorph} is such a class, so these can be nested
+which enables achieving practially any layout.
+
+Let's layout three instances of @class{ColoredBoxMorph}.  Using this
+kind of morph for examples allows us to clearly see their bounds.
+
+@smalltalkExampleCaption{Layout base example, layoutExample1,
+box1 := ColoredBoxMorph new color: Color red; morphExtent: 50 @@ 50.
+box2 := ColoredBoxMorph new color: Color green; morphExtent: 75 @@ 75.
+box3 := ColoredBoxMorph new color: Color blue; morphExtent: 100 @@ 100.
+layout := LayoutMorph newRow
+    addMorph: box1;
+    addMorph: box2;
+    addMorph: box3;
+    openInWorld}
+
+@figure{Basic use of @class{LayoutMorph}, ch03-layoutmorph-example1, 6} 
+
+@cindex layout @subentry padding
+
+By default there is no space between the edges of the
+@class{LayoutMorph} and its submorphs, and there is no space between
+the submorphs.
+
+To add 10 pixels of space between the edges of the @class{LayoutMorph}
+and its submorphs, send @smalltalk{layout padding: 10}.
+If the argument is a @class{Point},
+its x value is used for left and right padding
+and its y value is used for top and bottom padding.
+
+@figure{Adding padding, ch03-layoutmorph-example2, 6} 
+
+@cindex layout @subentry gap
+
+To add 10 pixels of space between the submorphs, send
+@smalltalk{layout gap: 10}.
+
+@figure{Adding gap, ch03-layoutmorph-example3, 6} 
+
+@cindex layout @subentry separation
+
+To add both padding and gap in a single message, do
+@smalltalk{layout separation: 10}.
+
+@figure{Separation of 10 is both gap and padding of 10, ch03-layoutmorph-example3b, 6} 
+
+
+@cindex layout @subentry alignment
+@cindex layout @subentry alignment @subentry major axis
+@cindex layout @subentry alignment @subentry minor axis
+@node Alignment
+@section Alignment
+For a row @class{LayoutMorph} the major axis is x and the minor axis is y.
+For a column @class{LayoutMorph} the major axis is y and the minor axis is x.
+
+If a @class{LayoutMorph} is given a width or height that is larger
+than needed to fit the submorphs, we can specify how the submorphs
+should be aligned.  By default the submorphs will be aligned at the
+beginning of its major axis and centered on its minor axis.
+
+@figure{Default alignment, ch03-layoutmorph-example4, 6} 
+
+To change the major axis alignment, @strong{send to the layout morph}
+the message @msg{axisEdgeWeight:} with a floating point argument.  The
+argument should be 0 for left-align, 0.5 for center, or 1 for
+right-align.  The following symbols can also be used for the argument:
+@itemize
+  @item
+  @strong{For rows.} @smalltalk{#rowLeft}, @smalltalk{#center}, or @smalltalk{#rowRight},
+
+  @item
+  @strong{For columns.} @smalltalk{#columnTop}, @smalltalk{#center}, or @smalltalk{#columnBottom}.
+@end itemize
+
+@figure{Center alignment, ch03-layoutmorph-example5, 6} 
+
+To change the minor axis alignment, @strong{send to each submorph} the
+message @msg{offAxisEdgeWeight:} with a floating point argument.  It
+takes the same argument values as the @msg{axisEdgeWeight:} message.
+Again, this message must be sent to each of the submorphs, not to the
+@class{LayoutMorph}.
+
+@smalltalkExample{layout submorphsDo: [:submorph |
+   submorph layoutSpec offAxisEdgeWeight: 0]}
+
+@figure{Top alignment, ch03-layoutmorph-example6, 6} 
+
+Alternatively to numeric value argument, symbol can be used:
+
+@itemize
+
+@item
+@strong{For rows.} @smalltalk{#rowTop}, @smalltalk{#center}, @smalltalk{#rowBottom},
+
+@item
+@strong{For columns.} @smalltalk{#columnLeft}, @smalltalk{#center}, @smalltalk{#columnRight}.
+
+@end itemize
+
+Browse the method @smalltalk{offAxisEdgeWeight:} to discover more symbols.
+
+
+@exercise{Top to down, alignmentTopDown, Edit the example
+@ref{layoutExample1} so that @smalltalk{box1} sit at the top of its
+owner@comma{} @smalltalk{box2} at the middle and @smalltalk{box3} at the
+bottom}
+
+
+@cindex layout @subentry proportion
+@cindex layout @subentry percentage
+@node Proportion
+@section Proportion
+
+In all the examples so far, the submorphs each have a fixed size.
+They can also be given proportional sizes so their actual size will be
+based on a percentage of the available space.  The available space is
+the space after removing the padding, the gaps between submorphs, and
+the sizes of submorphs that have a fixed size.
+
+Each submorph can be given a different proportional size value.  The
+amount of the available space given to each is its percentage of the
+total values.  For example, suppose a row @class{LayoutMorph} contains
+three submorphs that use a proportional width, and they are assigned
+the values 2, 3, and 5.  The total is 10, so the first will take 2/10
+(20%), the second will take 3/10 (30%), and the third will take 5/10
+(50%) of the available space.
+
+Let's modify the previous example to cause the second submorph to take
+all the available space.
+
+@cindex layout @subentry @class{LayoutSpec}
+Each morph can have a @class{LayoutSpec} that specifies how it should
+be laid out within its owner, this ignored if the owner is not a
+@class{LayoutMorph} instance.
+
+Instances of @class{LayoutSpec} have the following instance variables:
+@smalltalk{morph}, @smalltalk{fixedWidth}, @smalltalk{fixedHeight},
+@smalltalk{offAxisEdgeWeight}, @smalltalk{proportionalWidth}, and
+@smalltalk{proportionalHeight}.  There are methods to set each of
+these instance variables.
+
+@smalltalkExample{box2 layoutSpec proportionalWidth: 1}
+
+@figure{Using proportionalWidth, ch03-layoutmorph-example7, 6} 
+
+We could have added @smalltalk{box2} to @smalltalk{layout} using the
+message @msg{add:proportionWidth:} which adds a submorph AND sets the
+@smalltalk{proportionalWidth} property of its @class{LayoutSpec}.
+However, an issue with this approach is that it creates a new instance
+of @class{LayoutSpec} where the values of
+@smalltalk{proportionalWidth} and @smalltalk{proportionalHeight} are
+both 1.  To only modify one of those properties, it's best to set it
+directly on the @class{LayoutSpec} instance of the morph.
+
+@cindex layout @subentry spacer
+Let's modify our example @ref{layoutExample1} so the boxes are spread
+across the width of the @class{LayoutMorph} instance with an even
+amount of space between them.
+
+@smalltalkExampleCaption{Layout with spacer,layoutExample2,
+box1 := ColoredBoxMorph new color: Color red; morphExtent: 50 @@ 75.
+box2 := ColoredBoxMorph new color: Color green; morphExtent: 75 @@ 50.
+box3 := ColoredBoxMorph new color: Color blue; morphExtent: 100 @@ 100.
+spacer1 := ColoredBoxMorph new color: Color transparent.
+spacer1 layoutSpec proportionalWidth: 1.
+spacer2 := ColoredBoxMorph new color: Color transparent.
+spacer2 layoutSpec proportionalWidth: 1.
+layout := LayoutMorph newRow
+   morphExtent: 350 @@ 150;
+   separation: 10;
+   addMorph: box1;
+   addMorph: spacer1;
+   addMorph: box2;
+   addMorph: spacer2;
+   addMorph: box3.
+layout openInWorld.}
+
+@figure{Evenly spaced, ch03-layoutmorph-example8, 6} 
+
+
+@smalltalk{spacer1} and @smalltalk{spacer2} each uses 1 of the free space left
+by the other morphs in the owner. The total free space is counted as 2
+(1+1), therefore eacher spacer will occupy 1/2 of the free space.
+
+@exercise{Spacers in quarters, exeSpacerQuarter, Edit the example
+@ref{layoutExample2} so that the first spacer use one quarter of the
+free space and the second one three quarters.}
+
+@cindex layout @subentry nested
+@node Nest of layouts
+@section Nest of layouts
+To wrap up our discussion on using the @class{LayoutMorph} class,
+let's look at an example that nests layouts.
+
+@smalltalkExampleCaption{Nesting layouts,layoutNested1,
+column1 := LayoutMorph newColumn
+    addMorph: (LabelMorph contents: 'Apple');
+    addMorph: (LabelMorph contents: 'Banana');
+    addMorph: (LabelMorph contents: 'Cherry').
+column1 layoutSpec proportionalHeight: 0. "defaults to 1"
+
+column2 := LayoutMorph newColumn
+    addMorph: (LabelMorph contents: 'Spring');
+    addMorph: (LabelMorph contents: 'Winter');
+    addMorph: (LabelMorph contents: 'Summer');
+    addMorph: (LabelMorph contents: 'Fall').
+column2 layoutSpec proportionalHeight: 0. "defaults to 1"
+        
+row := LayoutMorph newRow
+    separation: 20;
+    addMorph: column1;
+    addMorph: (LabelMorph contents: 'What are your favorites?');
+    addMorph: column2.
+                
+row openInWorld.}
+
+@figure{Nested LayoutMorphs, ch03-layoutmorph-example9, 8} 
+
+@cindex layout @subentry debugging
+We can add a colored border to any morph that is an instance of a
+subclass of @class{BorderedBoxMorph}.  This is useful for debugging.
+Let's add borders to some of the morphs in the previous example
+@ref{layoutNested1}.
+
+@smalltalkExampleCaption{Revealed nested layouts,layoutNested2,
+column1 := LayoutMorph newColumn
+    addMorph: (LabelMorph contents: 'Apple');
+    addMorph: (LabelMorph contents: 'Banana');
+    addMorph: (LabelMorph contents: 'Cherry');
+    borderColor: Color red; borderWidth: 2.
+column1 layoutSpec proportionalHeight: 0.
+
+column2 := LayoutMorph newColumn
+    addMorph: (LabelMorph contents: 'Spring');
+    addMorph: (LabelMorph contents: 'Winter');
+    addMorph: (LabelMorph contents: 'Summer');
+    addMorph: (LabelMorph contents: 'Fall');
+    borderColor: Color blue; borderWidth: 2.
+column2 layoutSpec proportionalHeight: 0.
+    
+center := LabelMorph contents: 'What are your favorites?
+    borderColor: Color green; borderWidth: 2.
+
+row := LayoutMorph newRow
+    separation: 20;
+    addMorph: column1;
+    addMorph: center;
+    addMorph: column2.
+                
+row openInWorld.}
+
+@figure{Morph borders, ch03-layoutmorph-example10, 8} 
