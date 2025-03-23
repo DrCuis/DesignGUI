@@ -1,8 +1,0 @@
-@node Advanced design patterns in GUI
-@chapter Advanced design patterns in GUI
-
-@*
-
-@menu
-@end menu
-

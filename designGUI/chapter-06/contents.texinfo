@@ -1,36 +1,8 @@
-@node Design GUI application
-@chapter Design GUI application
-
-@quotation
-Don't ask whether you can do something, but how to do it.
-@author Adel Goldberg
-@end quotation
+@node Which components? Where to find more?
+@chapter Which components? Where to find more?
 
 @*
 
-In the previous chapter we explain how to handle user interactions on widgets as button and text editor. We illustrate it with a complete memory game; we did not particularly pay attention to how the responsibilities were spread across the various involved objects. In a small project, it does not really mater, however as soon as you want your project to grow it may lead to complicate code difficult to make evolve and to maintain.
-
 @menu
-* Responsibilities::
-* Model View Presenter::
-* The Three Musketeers ::
 @end menu
 
-@node Responsibilities
-@section Responsibilities
-In @acronym{OOP, Object Oriented Programming} we like each object to be responsible of its assigned business. Of course we can assign kind of extended businesses to a few objects as we did in @ref{Memory Game v1}. This is not good design, when a project grows it produces legacy code difficult to maintain as developer willing to make changes will face various challenges and difficulty: to distinguish how the responsibilities are spread across the involved objects, if any; to face long methods hard to understand; to replace one behaviour or one class by another one, in that circumstance it may require to replace several behaviors; to collaborate with several developers, each one working independently in once facet of the project,...
-
-@node Model View Presenter
-@section Model View Presenter
-Why MVP
-Why MVP and not MVC?
-
-@node The Three Musketeers
-@section The Three Musketeers
-
-The model, the view and the presenter are tied together. Unlike the three musketeers which tied by friendship and the fight for justice, our three objects are tied together by the dependency mechanism we already discussed in the previous chapter.
-
-How the M-V-P are tied together?
-
-Why observer patter over change/update?
-In fact both: at widget change/update; at app level observer pattern

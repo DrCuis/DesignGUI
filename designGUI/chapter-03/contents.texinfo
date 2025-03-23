@@ -1,281 +1,323 @@
-@node Layout components
-@chapter Layout components
+@node What is a Morph after all?
+@chapter What is a Morph after all?
 
 @*
 
-@cindex layout @subentry @class{LayoutMorph}
-Instances of the class @class{LayoutMorph} actively manage the
-position and size of morphs that are added to them, referred to as submorphs.
+The Cuis' Morph framework is fundamental to @cuis{}, every single visual piece the user sees and interacts with in the Cuis' window is a morph. A morph offers both visual representation and interactivity with keyboard and mouse inputs.
 
 @menu
-* To row or not to row::
-* Alignment::
-* Proportion::
-* Nest of layouts::
+* A World of Morphs::
+* Morph Hierarchy::
 @end menu
 
-@cindex layout
-@node To row or not to row
-@section To row or not to row
 
-@cindex layout @subentry row
-@cindex layout @subentry column
+@node A World of Morphs
+@section A World of Morphs
 
-@class{LayoutMorph} instances arrange submorphs in a row or column and are created with
-@smalltalk{LayoutMorph newRow} or @smalltalk{LayoutMorph newColumn}.
-An instance cannot be created with @smalltalk{LayoutMorph new}
-because a direction must be specified.
+@cindex morph @subentry count
+A bit of introspection reveals how many @class{Morph} instances are in use in the @cuis{} living system:
 
-The submorphs must be instances subclasses of @class{PlacedMorph}.
-The @class{LayoutMorph} is such a class, so these can be nested
-which enables achieving practially any layout.
+@smalltalkExampleCaption{How many buttons?,ch04-buttonCount,
+PluggableButtonMorph allInstances size
+@result{} 288@footnote{As a recall, you @emph{execute-and-print} to get the result printed; otherwise, it is only executed. Use shortcut @kbd{Ctrl-p} instead of @kbd{Ctrl-d}.}}
 
-Let's layout three instances of @class{ColoredBoxMorph}.  Using this
-kind of morph for examples allows us to clearly see their bounds.
+The previous example asked for one specific type of morph. What about asking for all types of morph?
 
-@smalltalkExampleCaption{Layout base example, layoutExample1,
-box1 := ColoredBoxMorph new color: Color red; morphExtent: 50 @@ 50.
-box2 := ColoredBoxMorph new color: Color green; morphExtent: 75 @@ 75.
-box3 := ColoredBoxMorph new color: Color blue; morphExtent: 100 @@ 100.
-layout := LayoutMorph newRow
-    addMorph: box1;
-    addMorph: box2;
-    addMorph: box3;
-    openInWorld}
+@smalltalkExampleCaption{How many morphs are operating on the system?,ch-04-allMorphCount,
+Morph allSubclasses inject: 0 into: [:count :aClass |
+   count + aClass allInstances size]
+@result{} 1558}
 
-@figure{Basic use of @class{LayoutMorph}, ch03-layoutmorph-example1, 6} 
+This number, likely different on your own @cuis{} system, represents all the objects necessary to operate visually the system. This count changes all the time, new morph are created and ones no more necessary are garbage collected regularly. Play a bit with the system and evaluate again this count.
 
-@cindex layout @subentry padding
+@subsection Tree of morphs
+@cindex morph @subentry sub-morph
+@cindex morph @subentry owner
+Any morph can contain other morphs. We already know a @class{LayoutMorph} contains several morphs and manage the way there are layed out; these is reflected in the @smalltalk{submorphs} attribute of each morph, when this collection is empty it means there is no sub-morph. In the other hand, a morph knows about its unique owner: the @smalltalk{owner} attribute of each morph refers to the morph owning it. And as you can expect it, the owner morph @smalltalk{submorphs} attribute contains the owned morph as well.
 
-By default there is no space between the edges of the
-@class{LayoutMorph} and its submorphs, and there is no space between
-the submorphs.
+Then what happens when the @smalltalk{owner} attribute is @smalltalk{nil}? The morph is simply not visible! This double link between owner and owned is very convenient and necessary for the morph framework depending on the situation. For example, while an owned morph may have its own local coordinates system for its drawing operations, it can refer to its owner to know about its global coordinates situation, from the point of view of the owner or even from the World perspective -- @emph{simplified for readiness}:
 
-To add 10 pixels of space between the edges of the @class{LayoutMorph}
-and its submorphs, send @smalltalk{layout padding: 10}.
-If the argument is a @class{Point},
-its x value is used for left and right padding
-and its y value is used for top and bottom padding.
+@smalltalkExample{Morph>>externalizeToWorld: aPoint
+"aPoint is in own coordinates. Answer is in world coordinates."
+| inOwners |
+inOwners := self externalize: aPoint.
+@return{} owner externalizeToWorld: inOwners}
 
-@figure{Adding padding, ch03-layoutmorph-example2, 6} 
+Access to the owner is also useful for mundane aspect as the style. A morph asks its owner's color to draw itself accordingly:
 
-@cindex layout @subentry gap
+@smalltalkExample{MenuLineMorph>>drawOn: aCanvas 
+| baseColor |
+baseColor := owner color.
+aCanvas
+   fillRectangle: (`0@@0` corner: extent x @@ (extent y / 2))
+   color: baseColor twiceDarker.
+...}		
 
-To add 10 pixels of space between the submorphs, send
-@smalltalk{layout gap: 10}.
+In the other hand, the owner, depending on its nature, can decide how to dispose its sub-morphs, like does a @class{LayoutMorph} by first requesting which sub-morphs to lay out:
 
-@figure{Adding gap, ch03-layoutmorph-example3, 6} 
-
-@cindex layout @subentry separation
-
-To add both padding and gap in a single message, do
-@smalltalk{layout separation: 10}.
-
-@figure{Separation of 10 is both gap and padding of 10, ch03-layoutmorph-example3b, 6} 
+@smalltalkExample{LayoutMorph>>submorphsToLayout
+"Select those that will be layout"
+@return{} submorphs select: [ :m | m visible ]}
 
 
-@cindex layout @subentry alignment
-@cindex layout @subentry alignment @subentry major axis
-@cindex layout @subentry alignment @subentry minor axis
-@node Alignment
-@section Alignment
-For a row @class{LayoutMorph} the major axis is x and the minor axis is y.
-For a column @class{LayoutMorph} the major axis is y and the minor axis is x.
+@subsection Halo of icons
+@cindex morph @subentry halo
+Because everything is an object in @cuis{}, every visual part of the system is represented through an object the user can interact and inspect from a system level perspective. The Halo system, designed with objects, is a special visual tool to know more about specific @class{Morph} instances. It is invoked on any @class{Morph} instance by a middle button click, a halo of coloured icons then shows up, surrounding the selected morph.
 
-If a @class{LayoutMorph} is given a width or height that is larger
-than needed to fit the submorphs, we can specify how the submorphs
-should be aligned.  By default the submorphs will be aligned at the
-beginning of its major axis and centered on its minor axis.
+@figure{Halo of a @class{LayoutMorph},ch04-halo,5}
 
-@figure{Default alignment, ch03-layoutmorph-example4, 6} 
+Supplementary click accesses a sub-morph under the mouse pointer, the halo is then updated accordingly. When pressing the @kbd{Shift} key, the direction of morph selection is changed: the owner of the morph the mouse is over is selected instead.
 
-To change the major axis alignment, @strong{send to the layout morph}
-the message @msg{axisEdgeWeight:} with a floating point argument.  The
-argument should be 0 for left-align, 0.5 for center, or 1 for
-right-align.  The following symbols can also be used for the argument:
-@itemize
-  @item
-  @strong{For rows.} @smalltalk{#rowLeft}, @smalltalk{#center}, or @smalltalk{#rowRight},
+Each icon gives access to specific actions to operate on the morph.
 
-  @item
-  @strong{For columns.} @smalltalk{#columnTop}, @smalltalk{#center}, or @smalltalk{#columnBottom}.
-@end itemize
+@figure{Halo and descriptions on each icon functions,ch04-haloDescription,13}
 
-@figure{Center alignment, ch03-layoutmorph-example5, 6} 
-
-To change the minor axis alignment, @strong{send to each submorph} the
-message @msg{offAxisEdgeWeight:} with a floating point argument.  It
-takes the same argument values as the @msg{axisEdgeWeight:} message.
-Again, this message must be sent to each of the submorphs, not to the
-@class{LayoutMorph}.
-
-@smalltalkExample{layout submorphsDo: [:submorph |
-   submorph layoutSpec offAxisEdgeWeight: 0]}
-
-@figure{Top alignment, ch03-layoutmorph-example6, 6} 
-
-Alternatively to numeric value argument, symbol can be used:
+Some actions need clarifications:
 
 @itemize
+   @item 
+   @strong{grab.} It grabs the morph from its owner and can be dropped in the World or any other morph accepting dropped morph
 
-@item
-@strong{For rows.} @smalltalk{#rowTop}, @smalltalk{#center}, @smalltalk{#rowBottom},
+   @item
+   @strong{move.} It moves the morph in its owner. Try the differences between grab and move with a menu entry in the World menu.
 
-@item
-@strong{For columns.} @smalltalk{#columnLeft}, @smalltalk{#center}, @smalltalk{#columnRight}.
+   @item
+   @strong{resize.} On a text morph, it changes the area of the morph; on more graphics oriented morph as the Clock example in @cuis{}, it scales the morph.
 
+   @item 
+   @strong{explore.} It opens directly the explorer tool discussed earlier.
 @end itemize
 
-Browse the method @smalltalk{offAxisEdgeWeight:} to discover more symbols.
+We previously discussed the sub-morph and owner relationship among morphs. In a halo, the orange wrench icon at the right gives access to a set of actions to explore these relations, try it!
+
+@figure{Actions to explore sub-morph and owner relations,ch04-haloDebug,4}
 
 
-@exercise{Top to down, alignmentTopDown, Edit the example
-@ref{layoutExample1} so that @smalltalk{box1} sit at the top of its
-owner@comma{} @smalltalk{box2} at the middle and @smalltalk{box3} at the
-bottom}
+@subsection The special World morph
+@cindex morph @subentry world
+In @cuis{}, there is a special morph, a @class{WorldMorph} instance, representing the top morph of @cuis{}.
+
+@smalltalkExampleCaption{There is only one World!,ch04-worldCount,
+WorldMorph allInstances
+@result{} @{ [world]@}}
+
+@cindex morph @subentry explore
+Guess what? It is the only morph without an owner and still visible. Take any morph in the world, invoke its halo, then from the wrench icon, select the menu entry @label{explore morph} and browse the chain of owner until you reach the World, you discover it does not have owner:
+
+@figure{The chain of owners of a morph,ch04-morphOwners,5}
+
+Execute the following code to experiment on a morph from its inspector.
+
+@smalltalkExampleCaption{Create a morph@comma{} inspect it and open it in the World,newInspectMorph,
+Morph new ::
+   inspect;
+   openInWorld}
+
+@cindex morph @subentry flash
+A blue rectangular morph shows up at the top left corner of the @cuis{} window. Sometime, the morph we are playing with is out of sight, or we are not sure where it is; a convenient way to find is to ask it flashes itself. In the inspector, execute the code @smalltalk{self flash}.
+
+Any morph knows about its World, in the inspector execute: @smalltalk{self runningWorld}. As a World is a kind of @class{Morph}, we can flash it too: @smalltalk{self runningWorld flash}.
+
+@node Morph Hierarchy
+@section Morph Hierarchy
+The @class{Morph} class is the root class to all kind of @class{Morph}, sub-classes specialize on specific facets or add some features. Let's learn a bit more about the @class{Morph} class itself and then explore its most fundamental sub-classes.
+
+In a stock @cuis{} system, browse the @class{Morph} class; it is in the @label{Morphic>Kernel} class category, here are the most fundamental type of @class{Morph}s:
+
+@cindex morph @subentry kernel
+@indentedblock
+@class{Morph}
+   @indentedblock
+   @class{PlacedMorph}
+      @indentedblock
+      @class{BoxMorph}
+       @indentedblock
+       @class{ColoredBoxMorph}
+         @indentedblock
+         @class{BorderedBoxMorph}
+         
+         @class{PasteUpMorph}
+
+            @indentedblock
+            @class{WorldMorph}
+            @end indentedblock            
+         @end indentedblock
+       @end indentedblock
+      @class{HandMorph}
+      @end indentedblock      
+   @end indentedblock
+@end indentedblock
+
+Observe how the @class{Morph} has only @class{PlacedMorph} as its subclass, this is odd and it requires some scrunity by looking at the differences between these two classes. Indeed, if @class{Morph} has only one sub-class, the two should be merged. Let's examine the attributes of the @class{Morph} class:
+
+@smalltalkExampleCaption{Definition of the @class{Morph} class,morphDefinition,
+Object subclass: #Morph
+   instanceVariableNames: 'owner submorphs properties id privateDisplayBounds'
+   classVariableNames: 'LastMorphId'
+   poolDictionaries: ''
+   category: 'Morphic-Kernel'}
+
+@cindex morph @subentry properties
+There are the expected @smalltalk{owner} and @smalltalk{submorphs} attributes; the @smalltalk{properties} attribute is set, when needed, as a dictionary to dynamically add attributes or behaviors -- with appropriate bloc of code -- to any @class{Morph} instances. There are companion methods to set or retrieve a property.
+
+@figure{@class{Morph}'s methods to manipulate properties,ch04-property,8}
+
+This @smalltalk{properties} attribute is used a lot. For example, observe its use case to set a specific name to a @class{Morph} instance:
+
+@smalltalkExampleCaption{Methods to set and get a morph name, morphNameMethods,
+Morph>>name: anObject
+  "Set the morphName property"
+   self setProperty: #morphName toValue: anObject
+
+      Morph>>name
+   "Answer the value of morphName"
+   @return{} self valueOfProperty: #morphName}
+
+Create a new morph as see in @ref{newInspectMorph}, then in the inspector execute @smalltalk{self name: 'Glouby'}, observe how @smalltalk{properties} was amended with the dictionary entry @smalltalk{#morphName->'Glouby'}; when invoking the morph's halo, its new name is printed too.
+
+@figure{A morph's properties,ch04-morphProperties,8}
+
+Back to the @class{Morph} definition, you can observe there is no attribute to describe the shape of a morph!@footnote{The other attributes are used for internal managment of the morphs and you don't need to care about them.} Indeed a morph has no prestablised shape, its shapes is described dynamically -- at execution time -- through its @method{drawOn:} method:
+
+@smalltalkExampleCaption{@class{Morph}'s @method{drawOn:}, morphDrawOn,
+Morph>>drawOn: aCanvas
+drawOn: aCanvas
+   aCanvas
+      fillRectangle: `-75 @@ -70 corner: 75 @@ 70`
+      color: `Color blue`}
+
+A @class{Morph} instance draw instructions are relative to its owner's coordinates system. If you observe this blue rectangular morph we created, it is located on the top left corner of the World, where are the (0,0) coordinates; in fact, a large part of this morph is not visible, three quarters of its areas is outside of the screen.
+
+If you observe the halo as see in @ref{ch04-morphProperties}, there is no @strong{scale}, @strong{resize} and @strong{rotate} icons! Indeed, a @class{Morph} instance can't be resized or rotated. Moreover, when you try to move the morph through its @strong{move} icon, you can't, it sticks to its position, hard coded in its @method{drawOn:} method. It is about time to introduce the @class{PlacedMorph} class which offers these features.
+
+@cindex morph @subentry @class{PlacedMorph}
+@cindex morph @subentry position
+@cindex morph @subentry scale
+@cindex morph @subentry rotate
+@subsection Morph you can move
+@emph{...but not only.}
+
+These abilities of @class{PlacedMorph} to scale, to resize, to rotate and to be moved are some of the differences with @class{Morph}. It is about time to examine its definition:
+
+@smalltalkExampleCaption{Definition of the @class{PlacedMoprh}, placedMorphDefinition,
+Morph subclass: #PlacedMorph
+   instanceVariableNames: 'location layoutSpec'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'Morphic-Kernel'}
+
+We have two more instance variables:
+
+@cindex morph @subentry affine transformation
+@cindex morph @subentry matrix transformation
+
+@itemize
+   @item
+   This @smalltalk{layoutSpec} attribute is obviously related to the optional layout specification used when a @class{PlacedMorph} instance is set in a layout morph, this also tells us a @class{Morph} instance can't be set in a layout.
+
+   @item
+   This @smalltalk{location} attribute holds the information regarding position, scale and rotation; it is a kind of affine transformation coded as a matrix@footnote{@url{https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix}}. These transformations are applied -- in one matrix transformation -- relatively to its owner.
+   
+@end itemize
+
+Time to experiment a bit! Execute this simple code to explore with the inspector:
+
+@smalltalkExample{Sample10PythagorasTree new ::
+   openInWorld ;
+   inspect}
+
+Then invoke its halo to move, resize and rotate to observe how its @smalltalk{location} attribute is updated:
+
+@figure{@smalltalk{location} update according to scale@comma{} position and rotation,ch04-location,7}
+
+In one attribute, we have the information on position, size and rotation. Moreover, when sending messages to a morph as @smalltalk{#morphPosition}, @smalltalk{#morphPosition:}, @smalltalk{#scale:}, @smalltalk{#rotation:}, etc., @cuis{} is just querying or adjusting the @smalltalk{location} matrix parameters. Therefore, you, as the user of a @class{PlacedMorph} instance you only use these messages without the need to care about the underneath matrix representation.
+
+@cindex morph @subentry pixel detection
+@cindex morph @subentry bits mask
+
+One last bit of experiment to foster Morph understanding, @cuis{} knows about morph detection; in our previous morph's inspector, execute and print @smalltalk{self coversPixel: 0@@0}, the answer is likely false if the morph is not positioned to cover the World origin. Now inspect its @smalltalk{properties}, there is a @smalltalk{bitMask} entry referring to 1 bit depth @class{Form}, this is how @cuis{} does pixel detection. In this @class{Form}, a kind of picture, each bit represents the pixel obstruction of the morph: 0 means nothing painted, 1 means the morph paints the pixel with an arbitrary color we don't need to know about here.
+
+This property is automatically garbage collected when not needed anymore or irrelevant.
+
+@figure{Pixel detection illustrated,ch04-morphBitMask,9}
+
+The reader may wonder if there is any use case of the @class{Morph} class when its instances can't be grabbed and moved around. Why not just using @class{PlacedMorph}? In DrGeo software@footnote{@url{http://gnu.org/s/dr-geo}}, such morphs are used to represent geometric objets drawn in the coordinates system of the owner morph, their positions and aspect are completely dependend on the underneath mathematics models.
 
 
-@cindex layout @subentry proportion
-@cindex layout @subentry percentage
-@node Proportion
-@section Proportion
+@cindex morph @subentry @class{BoxMorph}
+@cindex morph @subentry rectangular
+@subsection Rectangular Morph
+The remaining classes of the kernel morph hierarchy adds geometry and visual properties. @class{BoxMorph} is the most important one, it is bounded to a rectangular extent. It is the root of most sub-morphs used to construct @acronym{GUI,Graphic User Interface}, indeed its elements are most of the time bounded to a rectangular shape. It allows a lot of optimisation in the rendering of the whole @cuis{} @acronym{GUI}.
 
-In all the examples so far, the submorphs each have a fixed size.
-They can also be given proportional sizes so their actual size will be
-based on a percentage of the available space.  The available space is
-the space after removing the padding, the gaps between submorphs, and
-the sizes of submorphs that have a fixed size.
+@smalltalkExampleCaption{Definition of the @class{BoxMorph}, boxMorphDefinition,
+PlacedMorph subclass: #BoxMorph
+   instanceVariableNames: 'extent'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'Morphic-Kernel'}
 
-Each submorph can be given a different proportional size value.  The
-amount of the available space given to each is its percentage of the
-total values.  For example, suppose a row @class{LayoutMorph} contains
-three submorphs that use a proportional width, and they are assigned
-the values 2, 3, and 5.  The total is 10, so the first will take 2/10
-(20%), the second will take 3/10 (30%), and the third will take 5/10
-(50%) of the available space.
+@cindex morph @subentry extent
+This additional @smalltalk{extent} attribute defines its width (x-axis) and height (y-axis) in the morph local coordinates. There are companion methods to play with:
 
-Let's modify the previous example to cause the second submorph to take
-all the available space.
+@smalltalkExample{BoxMorph new ::
+   openInWorld;
+   morphWidth: 1000;
+   morphHeight: 10}
 
-@cindex layout @subentry @class{LayoutSpec}
-Each morph can have a @class{LayoutSpec} that specifies how it should
-be laid out within its owner, this ignored if the owner is not a
-@class{LayoutMorph} instance.
+Or more directly:
 
-Instances of @class{LayoutSpec} have the following instance variables:
-@smalltalk{morph}, @smalltalk{fixedWidth}, @smalltalk{fixedHeight},
-@smalltalk{offAxisEdgeWeight}, @smalltalk{proportionalWidth}, and
-@smalltalk{proportionalHeight}.  There are methods to set each of
-these instance variables.
+@smalltalkExample{BoxMorph new ::
+   openInWorld;
+   morphExtent: 1000@@10}
 
-@smalltalkExample{box2 layoutSpec proportionalWidth: 1}
+@cindex morph @subentry local bounds
+As this is a kind of @class{PlacedMorph}, we ask directly about its bounds -- position and extent -- by executing and printing the result:
 
-@figure{Using proportionalWidth, ch03-layoutmorph-example7, 6} 
+@smalltalkExample{BoxMorph new ::
+   openInWorld;
+   localBounds
+@result{} 0@@0 corner: 50@@40.}
 
-We could have added @smalltalk{box2} to @smalltalk{layout} using the
-message @msg{add:proportionWidth:} which adds a submorph AND sets the
-@smalltalk{proportionalWidth} property of its @class{LayoutSpec}.
-However, an issue with this approach is that it creates a new instance
-of @class{LayoutSpec} where the values of
-@smalltalk{proportionalWidth} and @smalltalk{proportionalHeight} are
-both 1.  To only modify one of those properties, it's best to set it
-directly on the @class{LayoutSpec} instance of the morph.
+The returned object is a @class{Rectangle} instance, as @class{Point} instances, this is a fundamental architecture class when dealing with @acronym{GUI}.
 
-@cindex layout @subentry spacer
-Let's modify our example @ref{layoutExample1} so the boxes are spread
-across the width of the @class{LayoutMorph} instance with an even
-amount of space between them.
+Observe as you get the same local bounds even when positioning around the morph:
+@smalltalkExample{BoxMorph new ::
+   openInWorld;
+   morphPosition: 200@@200;
+   localBounds
+@result{} 0@@0 corner: 50@@40.}
 
-@smalltalkExampleCaption{Layout with spacer,layoutExample2,
-box1 := ColoredBoxMorph new color: Color red; morphExtent: 50 @@ 75.
-box2 := ColoredBoxMorph new color: Color green; morphExtent: 75 @@ 50.
-box3 := ColoredBoxMorph new color: Color blue; morphExtent: 100 @@ 100.
-spacer1 := ColoredBoxMorph new color: Color transparent.
-spacer1 layoutSpec proportionalWidth: 1.
-spacer2 := ColoredBoxMorph new color: Color transparent.
-spacer2 layoutSpec proportionalWidth: 1.
-layout := LayoutMorph newRow
-   morphExtent: 350 @@ 150;
-   separation: 10;
-   addMorph: box1;
-   addMorph: spacer1;
-   addMorph: box2;
-   addMorph: spacer2;
-   addMorph: box3.
-layout openInWorld.}
+@cindex morph @subentry bounds in owner
+This is because we are asking in the local morph coordinates system. What the reader may want is to ask in the owner coordinates system, here the @cuis{} World:
+@smalltalkExample{"Morph positioned at pointer position"
+BoxMorph new ::
+  openInWorld;
+  @strong{fullBoundsInOwner}
+@result{} 493@@594 corner: 543@@634.
 
-@figure{Evenly spaced, ch03-layoutmorph-example8, 6} 
+"Morph positioned according to programming instruction"
+BoxMorph new ::
+   openInWorld;
+   morphPosition: 200@@200;
+   @strong{fullBoundsInOwner}
+@result{} 200@@200 corner: 250@@240.}
 
+@cindex morph @subentry pixel detection
+There are several methods dealing specifically with @class{BoxMorph}, take a look at them and play a bit to foster your understanding. A last bit about this class, earlier at @ref{ch04-morphBitMask} we discussed about pixel detection with a complicated morph containing holes. In this situation, the detection is done with a expensive computed mask. @class{BoxMorph} optimizes this thanks to its rectangular shape:
 
-@smalltalk{spacer1} and @smalltalk{spacer2} each uses 1 of the free space left
-by the other morphs in the owner. The total free space is counted as 2
-(1+1), therefore eacher spacer will occupy 1/2 of the free space.
+@smalltalkExampleCaption{Optimized @class{BoxMorph} pixel detection, coversPixelBoxMorph,
+BoxMorph>>coversPixel: worldPoint
+"Answer true as long as worldPoint is inside our shape even if:
+   - a submorph (above us) also covers it
+   - a sibling that is above us or one of their submorphs also covers it.
+This implementation is cheap@comma{} we are a rectangular shape."
+@return{} self coversLocalPoint: (self internalizeFromWorld: worldPoint)}
 
-@exercise{Spacers in quarters, exeSpacerQuarter, Edit the example
-@ref{layoutExample2} so that the first spacer use one quarter of the
-free space and the second one three quarters.}
+By browsing the inheritance of this method, read how different it is for a non rectangular morph.
 
-@cindex layout @subentry nested
-@node Nest of layouts
-@section Nest of layouts
-To wrap up our discussion on using the @class{LayoutMorph} class,
-let's look at an example that nests layouts.
+The other morph classes in the kernel category, @class{ColoredBoxMorph} and @class{BorderBoxMorph}, add cosmetic features as color, border width and color, padding to set space between the border and inner content. It doesn't require much explanation. @class{PasteUpMorph} and @class{WorldMorph} are rarely used.
 
-@smalltalkExampleCaption{Nesting layouts,layoutNested1,
-column1 := LayoutMorph newColumn
-    addMorph: (LabelMorph contents: 'Apple');
-    addMorph: (LabelMorph contents: 'Banana');
-    addMorph: (LabelMorph contents: 'Cherry').
-column1 layoutSpec proportionalHeight: 0. "defaults to 1"
-
-column2 := LayoutMorph newColumn
-    addMorph: (LabelMorph contents: 'Spring');
-    addMorph: (LabelMorph contents: 'Winter');
-    addMorph: (LabelMorph contents: 'Summer');
-    addMorph: (LabelMorph contents: 'Fall').
-column2 layoutSpec proportionalHeight: 0. "defaults to 1"
-        
-row := LayoutMorph newRow
-    separation: 20;
-    addMorph: column1;
-    addMorph: (LabelMorph contents: 'What are your favorites?');
-    addMorph: column2.
-                
-row openInWorld.}
-
-@figure{Nested LayoutMorphs, ch03-layoutmorph-example9, 8} 
-
-@cindex layout @subentry debugging
-We can add a colored border to any morph that is an instance of a
-subclass of @class{BorderedBoxMorph}.  This is useful for debugging.
-Let's add borders to some of the morphs in the previous example
-@ref{layoutNested1}.
-
-@smalltalkExampleCaption{Revealed nested layouts,layoutNested2,
-column1 := LayoutMorph newColumn
-    addMorph: (LabelMorph contents: 'Apple');
-    addMorph: (LabelMorph contents: 'Banana');
-    addMorph: (LabelMorph contents: 'Cherry');
-    borderColor: Color red; borderWidth: 2.
-column1 layoutSpec proportionalHeight: 0.
-
-column2 := LayoutMorph newColumn
-    addMorph: (LabelMorph contents: 'Spring');
-    addMorph: (LabelMorph contents: 'Winter');
-    addMorph: (LabelMorph contents: 'Summer');
-    addMorph: (LabelMorph contents: 'Fall');
-    borderColor: Color blue; borderWidth: 2.
-column2 layoutSpec proportionalHeight: 0.
-    
-center := LabelMorph contents: 'What are your favorites?
-    borderColor: Color green; borderWidth: 2.
-
-row := LayoutMorph newRow
-    separation: 20;
-    addMorph: column1;
-    addMorph: center;
-    addMorph: column2.
-                
-row openInWorld.}
-
-@figure{Morph borders, ch03-layoutmorph-example10, 8} 
+This modest dive-in the Morph framework is now over, we hope it
+provided enough background to foster your understanding when building
+@acronym{GUI}. In another booklet we will discuss more deeply the
+Morph framework.
