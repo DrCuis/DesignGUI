@@ -3,11 +3,264 @@
 
 @*
 
-This chapter will not cover low-level event handling like
+This chapter does not cover low-level event handling like
 mouse clicks, mouse hovers, and key presses.
-Instead, it will cover how to use existing widgets, pluggable morphs, etc.,
+Instead, it covers how to use existing widgets, pluggable morphs, etc.,
 and how to set up a model.
 Important facets to cover include the update/changes and observer pattern.
+
+@node Text Entry
+@section Text Entry
+
+The @class{TextModelMorph} class defined in the base image Morphic package
+can be used for single or multiple line text entry.
+
+The following code creates an instance of @class{TextModelMorph},
+changes its value, and prints its value:
+
+@smalltalkExample{tmm := TextModelMorph withText: 'initial content'.
+tmm openInWorld.
+tmm editor actualContents: 'new content'.
+tmm text print.}
+
+The value associated with a @class{TextModelMorph} is either
+held in a @class{TextModel} object or a @class{Text} object.
+
+There are three common ways to create an instance of @class{TextModelMorph}.
+The choice is based on how the initial value is supplied
+and where the current value is held.
+
+@enumerate
+
+@item
+@smalltalk{TextModelMorph withText: aTextOrString}
+
+   This creates a @class{TextModel} object
+   that is initialized with the given value,
+   passes it to the next method, and returns what that returns.
+
+@item
+@smalltalk{TextModelMorph withModel: aTextModel}
+
+   The approach allows the same @class{TextModel} to be used by multiple other morphs.
+   It creates an instance, sets its model to @smalltalk{aTextModel},
+   and returns the instance.
+
+@item
+@smalltalk{TextModelMorph textProvider: aTextProvider textGetter: selectorSymbol1 textSetter: selectorSymbol2}
+
+   This approach allows the value to maintained in
+   any object (@smalltalk{aTextProvider}) that responds to the given selectors.
+   It creates an instance, sets @smalltalk{newModel} to
+   an instance of @class{PluggableTextModel} that uses @smalltalk{aTextProvider},
+   adds @smalltalk{aTextProvider} as a dependent of @smalltalk{newModel},
+   sets its model to @smalltalk{newModel},
+   and returns the instance.
+
+@end enumerate
+
+The default background color of a @class{TextModelMorph} is white.
+A @class{TextModelMorph} only displays a border when it has focus.
+One way to make its bounds apparent when it doesn't have focus
+is to set the background color of the parent component.
+
+@smalltalkExample{tmm owner color: (Color blue alpha: 0.1)}
+
+Another way is to set the background color of the @class{TextModelMorph}.
+
+@smalltalkExample{tmm color: (Color blue alpha: 0.1)}
+
+By default, words that would extend past the right side wrap to the next line.
+To prevent wrapping:
+
+@smalltalkExample{tmm wrapFlag: false}
+
+By default, when there are more lines than fit in the height,
+a vertical scroll bar appears.
+When wrapping is turned off, if the text does not fit in the width
+then a horizontal scroll bar appears.
+
+To prevent scroll bars from appearing,
+send one of the following messages to an instance:
+
+@itemize
+@item
+@msg{hHideScrollBar} for horizontal (doesn't seem to work!)
+
+@item
+@msg{vHideScrollBar} for vertical (doesn't seem to work!)
+
+@item
+@msg{hideScrollBarsIndefinitely} for both
+@end itemize
+
+The default size of a @class{TextModelMorph} is 200 by 100.
+This is set in the @method{initialize} method of @class{PluggableMorph},
+which is the superclass of @class{PluggableScrollPane},
+which is the superclass of @class{TextModelMorph}.
+Depending on the font, the default size displays around four lines
+of wrapping text with around 17 characters per line.
+
+To change the size:
+
+@smalltalkExample{tmm morphExtent: width @@ height}
+
+The size should include space for scroll bars if they may be needed.
+
+Setting the height to zero causes it to actually be set to
+the height required for a single line in the current font.
+
+By default, pressing the tab key does not move focus from
+one @class{TextModelMorph} instance to another.
+To enable this, do the following for each instance:
+
+@smalltalkExample{tmm tabToFocus: true}
+
+When the user changes the text in a @class{TextModelMorph},
+the object that holds its value is not automatically updated.
+To manually request the update:
+
+@smalltalkExample{tmm scroller acceptContents}
+
+There are multiple ways to configure user actions to trigger an update.
+The easiest are:
+
+@smalltalkExample{tmm acceptOnAny: true. "updates after every keystroke"
+tmm acceptOnCR: true. "updates after return key is pressed"}
+
+To listen for changes to the value of a @class{TextModelMorph}:
+
+@smalltalkExample{tmm keystrokeAction: [:event |
+    | value |
+    value := tmm text.
+    "Do something with the value."
+].}
+
+By default, if the user attempts to close a @class{SystemWindow}
+and it contains @class{TextModelMorph} instances that have unsaved changes,
+they are asked to confirm this with the message
+"Changes have not been saved. Is it OK to cancel those changes?".
+The user must select "Yes" to close the window.
+To disable this check for a particular instance of @class{TextModelMorph},
+send it @msg{askBeforeDiscardingEdits:} with the argument @smalltalk{false}.
+
+The following code creates a single-line text input
+with a given width that never shows scroll bars:
+
+@smalltalkExample{tmm := TextModelMorph withText: '' ::
+    hideScrollBarsIndefinitely;
+    morphExtent: 200 @ 0; "calculates required height for one line"
+    wrapFlag: false.}
+
+If the text exceeds the width,
+use the left and right arrow keys to scroll the text.
+
+To select all the content in an instance, send it @msg{selectAll}.
+
+To select content from one index to another where both are inclusive:
+
+@smalltalkExample{tmm selectFrom: startIndex to: endIndex.}
+
+To place the text cursor at the end of the current content:
+
+@smalltalkExample{index := tmm text size + 1.
+tmm selectFrom: index to: index.}
+
+The following code demonstrates listening for key events.
+It prints their ASCII codes and character representations to the Transcript.
+
+@smalltalkExample{tmm keystrokeAction: [ :evt |
+   evt keyValue print.
+   evt keyCharacter print.
+].}
+
+Let's combine what we have learned above to create a small application.
+The user can enter their first and last name.
+Clicking the "Greet" button displays a greeting message below the button.
+
+@figure{User Interaction Demo, ch04-userinteraction-example1, 6} 
+
+Create the class @class{UserInteractionDemo} as follows:
+
+@smalltalkExample{Object subclass: #UserInteractionDemo
+	instanceVariableNames: 'greetLabel firstNameTMM lastNameTMM'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Demo'}
+
+Define the instance method @method{rowLabel:} as follows:
+
+@smalltalkExample{rowLabel: aString
+    "Answer a row LayoutMorph containing a LabelMorph and a TextModelMorph."
+    | row tmm |
+        
+    tmm := TextModelMorph withText: '' ::
+        acceptOnAny: true;
+        askBeforeDiscardingEdits: false;
+        hideScrollBarsIndefinitely;
+        "Width is made proportional below.
+        Setting height to zero causes it to use minimum height for one line."
+        morphExtent: 0 @@ 0;
+        tabToFocus: true;
+        wrapFlag: false.
+    tmm layoutSpec proportionalWidth: 1.
+    row := LayoutMorph newRow
+        gap: 10;
+        addMorph: (LabelMorph contents: aString);
+        addMorph: tmm.
+    row layoutSpec proportionalHeight: 0.
+    ^ row.}
+
+Define the instance method @method{greet} as follows:
+
+@smalltalkExample{greet
+    | firstName greeting lastName |
+
+    firstName := firstNameTMM text.
+    lastName := lastNameTMM text.
+    greeting := firstName isEmpty
+        ifTrue: ''
+        ifFalse: [ 'Hello @{1@} @{2@}!' format: @{firstName. lastName@} ].
+    greetLabel contents: greeting.}
+
+Define the instance method @method{initialize} as follows:
+
+@smalltalkExample{initialize
+    | button extent firstNameRow form image lastNameRow window |
+    
+    "Relative file paths start from the Cuis-Smalltalk-Dev-UserFiles directory.
+    Select your own image file here."
+    form := Form fromFileNamed: './hot-air-balloon.png' :: magnifyBy: 0.5.
+    image := ImageMorph newWith: form.
+    
+    firstNameRow := self rowLabel: 'First Name:'.
+    firstNameTMM := firstNameRow submorphs first.
+    lastNameRow := self rowLabel: 'Last Name:'.
+    lastNameTMM := lastNameRow submorphs first.
+    button := PluggableButtonMorph model: self action: #greet label: 'Greet'.
+
+    greetLabel := LabelMorph contents: ''.
+    
+    window := SystemWindow new.
+    window layoutMorph separation: 10.
+    window
+        setLabel: 'User Interaction Demo';
+        addMorph: image;
+        addMorph: firstNameRow;
+        addMorph: lastNameRow;
+        addMorph: button;
+        addMorph: greetLabel;
+        openInWorld.
+        
+    "Set a background color so it's clear where the TextModelMorphs
+    are placed when they do not have focus.
+    This must be done AFTER the window is opened."
+    window layoutMorph color: (Color blue alpha: 0.1).
+            
+    "Set window size to the smallest height that contains its submorphs.
+    This must be done AFTER the window is opened."
+    extent := window layoutMorph minimumExtent.
+    window morphExtent: 400 @@ extent y.}
 
 @menu
 @end menu

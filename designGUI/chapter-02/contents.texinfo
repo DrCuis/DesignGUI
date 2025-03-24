@@ -28,7 +28,7 @@ because a direction must be specified.
 
 The submorphs must be instances subclasses of @class{PlacedMorph}.
 The @class{LayoutMorph} is such a class, so these can be nested
-which enables achieving practially any layout.
+which enables achieving practically any layout.
 
 Let's layout three instances of @class{ColoredBoxMorph}.  Using this
 kind of morph for examples allows us to clearly see their bounds.
