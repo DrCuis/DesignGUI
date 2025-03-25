@@ -183,24 +183,27 @@ Clicking the "Greet" button displays a greeting message below the button.
 Create the class @class{UserInteractionDemo} as follows:
 
 @smalltalkExample{Object subclass: #UserInteractionDemo
-	instanceVariableNames: 'greetLabel firstNameTMM lastNameTMM'
+	instanceVariableNames: 'firstName greetLabel lastName'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Demo'}
 
 Define the instance method @method{rowLabel:} as follows:
 
-@smalltalkExample{rowLabel: aString
+@smalltalkExample{rowLabel: aString getter: aSymbol
     "Answer a row LayoutMorph containing a LabelMorph and a TextModelMorph."
     | row tmm |
         
-    tmm := TextModelMorph withText: '' ::
+    tmm := TextModelMorph
+        textProvider: self
+        textGetter: aSymbol
+        textSetter: (aSymbol, ':') asSymbol ::
         acceptOnAny: true;
         askBeforeDiscardingEdits: false;
         hideScrollBarsIndefinitely;
         "Width is made proportional below.
         Setting height to zero causes it to use minimum height for one line."
-        morphExtent: 0 @@ 0;
+        morphExtent: 0 @ 0;
         tabToFocus: true;
         wrapFlag: false.
     tmm layoutSpec proportionalWidth: 1.
@@ -216,8 +219,6 @@ Define the instance method @method{greet} as follows:
 @smalltalkExample{greet
     | firstName greeting lastName |
 
-    firstName := firstNameTMM text.
-    lastName := lastNameTMM text.
     greeting := firstName isEmpty
         ifTrue: ''
         ifFalse: [ 'Hello @{1@} @{2@}!' format: @{firstName. lastName@} ].
@@ -227,16 +228,17 @@ Define the instance method @method{initialize} as follows:
 
 @smalltalkExample{initialize
     | button extent firstNameRow form image lastNameRow window |
+
+    firstName := ''.
+    lastName := ''.
     
     "Relative file paths start from the Cuis-Smalltalk-Dev-UserFiles directory.
     Select your own image file here."
     form := Form fromFileNamed: './hot-air-balloon.png' :: magnifyBy: 0.5.
     image := ImageMorph newWith: form.
     
-    firstNameRow := self rowLabel: 'First Name:'.
-    firstNameTMM := firstNameRow submorphs first.
-    lastNameRow := self rowLabel: 'Last Name:'.
-    lastNameTMM := lastNameRow submorphs first.
+    firstNameRow := self rowLabel: 'First Name:' getter: #firstName.
+    lastNameRow := self rowLabel: 'Last Name:' getter: #lastName.
     button := PluggableButtonMorph model: self action: #greet label: 'Greet'.
 
     greetLabel := LabelMorph contents: ''.
