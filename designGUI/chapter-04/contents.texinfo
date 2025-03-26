@@ -57,6 +57,7 @@ Define the following instance methods.
         openInWorld.
         
     extent := button morphExtent.
+    "Add some space to the left and right of the button label."
     button morphExtent: (extent x + 15) @ extent y.
         
     "Set window size to the smallest height that contains its submorphs.
