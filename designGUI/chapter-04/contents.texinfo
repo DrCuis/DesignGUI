@@ -9,6 +9,76 @@ Instead, it covers how to use existing widgets, pluggable morphs, etc.,
 and how to set up a model.
 Important facets to cover include the update/changes and observer pattern.
 
+@node Buttons
+@section Buttons
+
+Perhaps the simplest user interaction to implement
+is responding to button clicks.
+The @class{PluggableButtonMorph} supports this.
+
+Several of the @class{Morph} subclasses are "pluggable". This means
+they can be configured through composition rather than inheritance.
+Configuration is achieved by specifying a model object and a selector
+for messages to be sent to the model object when an interaction occurs.
+
+Instances of the @class{PluggableButtonMorph} class can be
+created with the @msg{model:action:label:} class method.
+The @smalltalk{model:} keyword specifies a model object,
+the @smalltalk{action:} keyword specifies a selector for the model object, and
+the @smalltalk{label:} keyword specifies the text that appears in the button.
+
+Let's demonstrate using a @class{PluggableButtonMorph} by
+defining a class that opens a window containing a single button.
+Initially the window background color is white.
+Clicking the button toggles the color between red and blue.
+
+Create the following class.
+
+@smalltalkExample{Object subclass: #ButtonDemo
+    instanceVariableNames: 'layout'
+    classVariableNames: ''
+    poolDictionaries: ''
+    category: 'Demo'}
+
+Define the following instance methods.
+
+@smalltalkExample{initialize
+    | button extent window |
+    
+    button := PluggableButtonMorph
+        model: self
+        action: #toggleColor
+        label: 'Toggle'.
+    button setBalloonText: 'toggle background color'.
+    window := SystemWindow new.
+    window
+        setLabel: 'Button Demo';
+        addMorph: button;
+        openInWorld.
+        
+    extent := button morphExtent.
+    button morphExtent: (extent x + 15) @ extent y.
+        
+    "Set window size to the smallest height that contains its submorphs.
+    This must be done AFTER the window is opened."
+    layout := window layoutMorph.
+    layout padding: 10.
+    window morphExtent: 300 @ layout minimumExtent y.} 
+
+@smalltalkExample{toggleColor
+    
+    layout color: (
+        layout color = Color red
+            ifTrue: [ Color blue ]
+            ifFalse: [ Color red ]
+    )}
+
+Open a Workspace and evaluate @smalltalk{ButtonDemo new}.
+Hover over the "Toggle" button for a second
+to see its tooltip (a.k.a balloon text).
+Click the "Toggle" button several times and
+note how the window background color changes.
+
 @node Text Entry
 @section Text Entry
 
