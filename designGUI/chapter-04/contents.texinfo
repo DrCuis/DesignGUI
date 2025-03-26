@@ -82,7 +82,7 @@ note how the window background color changes.
 @node Text Entry
 @section Text Entry
 
-The @class{TextModelMorph} class defined in the base image Morphic package
+The @class{TextModelMorph} class
 can be used for single or multiple line text entry.
 
 The following code creates an instance of @class{TextModelMorph},
@@ -248,23 +248,37 @@ Let's combine what we have learned above to create a small application.
 The user can enter their first and last name.
 Clicking the "Greet" button displays a greeting message below the button.
 
-@figure{User Interaction Demo, ch04-userinteraction-example1, 6} 
+@figure{User Interaction Demo, ch04-userinteraction-example1, 7} 
 
 Create the class @class{UserInteractionDemo} as follows:
 
 @smalltalkExample{Object subclass: #UserInteractionDemo
-	instanceVariableNames: 'firstName greetLabel lastName'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Demo'}
+    instanceVariableNames: 'firstName greetLabel lastName'
+    classVariableNames: ''
+    poolDictionaries: ''
+    category: 'Demo'}
 
-Define the instance method @method{rowLabel:} as follows:
+Define the following accessor methods:
 
-@smalltalkExample{rowLabel: aString getter: aSymbol
-    "Answer a row LayoutMorph containing a LabelMorph and a TextModelMorph."
-    | row tmm |
+@smalltalkExample{firstName
+    ^ firstName
+
+firstName: aString
+    firstName := aString
+
+lastName
+    ^ lastName
+
+lastName: aString
+    lastName := aString}
+
+Define the instance method @method{} as follows:
+
+@smalltalkExample{textEntryOn: aSymbol
+    "Answer a TextModelMorph where aSymbol provides the name for the getter and setter."
+    | entry |
         
-    tmm := TextModelMorph
+    entry := TextModelMorph
         textProvider: self
         textGetter: aSymbol
         textSetter: (aSymbol, ':') asSymbol ::
@@ -276,18 +290,26 @@ Define the instance method @method{rowLabel:} as follows:
         morphExtent: 0 @ 0;
         tabToFocus: true;
         wrapFlag: false.
-    tmm layoutSpec proportionalWidth: 1.
+    entry layoutSpec proportionalWidth: 1.
+    ^ entry.}
+
+Define the instance method @method{rowLabel:} as follows:
+
+@smalltalkExample{rowLabeled: aString for: aMorph
+    "Answer a row LayoutMorph containing a LabelMorph and a given morph."
+    | row |
+        
     row := LayoutMorph newRow
         gap: 10;
         addMorph: (LabelMorph contents: aString);
-        addMorph: tmm.
+        addMorph: aMorph.
     row layoutSpec proportionalHeight: 0.
     ^ row.}
 
 Define the instance method @method{greet} as follows:
 
 @smalltalkExample{greet
-    | firstName greeting lastName |
+    | greeting |
 
     greeting := firstName isEmpty
         ifTrue: ''
@@ -297,20 +319,19 @@ Define the instance method @method{greet} as follows:
 Define the instance method @method{initialize} as follows:
 
 @smalltalkExample{initialize
-    | button extent firstNameRow form image lastNameRow window |
-
+    | button extent firstNameEntry form image lastNameEntry window |
+    
     firstName := ''.
     lastName := ''.
     
-    "Relative file paths start from the Cuis-Smalltalk-Dev-UserFiles directory.
-    Select your own image file here."
+    "Relative file paths start from the Cuis-Smalltalk-Dev-UserFiles directory."
     form := Form fromFileNamed: './hot-air-balloon.png' :: magnifyBy: 0.5.
     image := ImageMorph newWith: form.
     
-    firstNameRow := self rowLabel: 'First Name:' getter: #firstName.
-    lastNameRow := self rowLabel: 'Last Name:' getter: #lastName.
+    firstNameEntry := self textEntryOn: #firstName.
+    lastNameEntry := self textEntryOn: #lastName.
     button := PluggableButtonMorph model: self action: #greet label: 'Greet'.
-
+    
     greetLabel := LabelMorph contents: ''.
     
     window := SystemWindow new.
@@ -318,21 +339,20 @@ Define the instance method @method{initialize} as follows:
     window
         setLabel: 'User Interaction Demo';
         addMorph: image;
-        addMorph: firstNameRow;
-        addMorph: lastNameRow;
+        addMorph: (self rowLabeled: 'First Name:' for: firstNameEntry);
+        addMorph: (self rowLabeled: 'Last Name:' for: lastNameEntry);
         addMorph: button;
         addMorph: greetLabel;
         openInWorld.
         
     "Set a background color so it's clear where the TextModelMorphs
-    are placed when they do not have focus.
-    This must be done AFTER the window is opened."
+    are placed when they do not have focus."
     window layoutMorph color: (Color blue alpha: 0.1).
             
     "Set window size to the smallest height that contains its submorphs.
     This must be done AFTER the window is opened."
     extent := window layoutMorph minimumExtent.
-    window morphExtent: 400 @@ extent y.}
+    window morphExtent: 400 @ extent y.}
 
 @menu
 @end menu
