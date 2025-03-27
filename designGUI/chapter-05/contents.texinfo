@@ -28,7 +28,7 @@ With this practice in mind, when it comes to @acronym{GUI} application developme
 
 In the following sections we present the details of this design applied step by step to the memory game presented in the previous chapter.
 
-@cindex @acronym{MVP,Model View Controller}
+@cindex @acronym{MVC,Model View Controller}
 @cindex @acronym{MVP,Model View Presenter}
 @node Model View Presenter
 @section Model View Presenter
@@ -55,6 +55,8 @@ The presenter also handles the user actions mediated by the views of a given mod
 
 Now, let's see how to reshape our memory game to fit it in the @acronym{MVP} design.
 
+
+@cindex @acronym{MVP,Model View Presenter} @subentry model
 @subsection Memory Game Model
 
 The model is the isolated object, without knowledge of the presenter and the view@footnote{Though several models may know about each other.}, it is easier to start from there.
@@ -65,20 +67,18 @@ Our game involves the domain of a game with cards, we define two models:
 
 @itemize
    @item
-   @class{MemoryCardModel}. It knows about the intrinsic characteristics of a card in the context of the memory game. In the earlier game design, the view knows about its @smalltalk{cardColor} and its states @smalltalk{done}, @smalltalk{flipped}; the latter one was deduced by a method based on the color attribute of the view. These three attributes are clearly part of the card model and need to be represented by three attributes:
+   @class{MemoryCardModel}. It knows about the intrinsic characteristics of a card in the context of the memory game. In the earlier game design, the @class{MemoryCard} view knows about its @smalltalk{cardColor} and its states @smalltalk{done}, @smalltalk{flipped}; the latter one was deduced by a method based on the color attribute of the view. These three characteristics are clearly part of the card model and need to be represented by instance attributes:
 
 @smallexample
 Object subclass: #MemoryCardModel
    instanceVariableNames: 'flipped done color'
-   classVariableNames: ''
-   poolDictionaries: ''
-   category: 'MemoryGameV2'
+   @dots{}
 @end smallexample
 
 We add the necessary initialization and methods to externally get the state and to update it:
 
 @smallexample
-MemoryCardModel >> initialize
+MemoryCardModel>>initialize
    done := flipped := false
 
 MemoryCardModel>>setDone
@@ -92,26 +92,104 @@ MemoryCardModel>>isFlipped
 @end smallexample
 
    @item
-   @class{MemoryGameModel}. This model defines what is a memory game. In the previous game design we had 6 attributes, a mix of view and domain related attributes: @smalltalk{size}, @smalltalk{cards}, @smalltalk{tupleSize}, @smalltalk{statusBar}, @smalltalk{playground} and @smalltalk{playing}. Only the first three attributes are related to the characteristic of the game, we may hesitate on the later one @smalltalk{playing}, but it will prove to be more useful in the presenter to determine the state of the application.
+   @class{MemoryGameModel}. This model defines what is a memory game. The previous @class{MemoryGameWindow} had 6 instances variables, a mix of view and domain related attributes: @smalltalk{size}, @smalltalk{cards}, @smalltalk{tupleSize}, @smalltalk{statusBar}, @smalltalk{playground} and @smalltalk{playing}. Only the first three attributes are related to the characteristic of the game, we may hesitate on the later one @smalltalk{playing}, but it will prove to be more useful in the presenter to determine the state of the application.
 
 @smallexample
 Object subclass: #MemoryGameModel
    instanceVariableNames: 'size tupleSize cards'
-   classVariableNames: ''
-   poolDictionaries: ''
-   category: 'MemoryGameV2'
+   @dots{}
 @end smallexample
 
+  @itemize
+    @item
+    @smalltalk{size}. A point representing the disposition of the cards. @smalltalk{4@@3} are 3 rows of 4 cards.
 
+    @item
+    @smalltalk{tupleSize}. An integer, the number of associated cards to find, by default 2.
 
+    @item
+    @smalltalk{cards}. The collection of @class{MemoryCardModel} instances.
+  @end itemize
+
+We have the necessary methods to initialize the instance and to create the card models. Compared to its counterpart @method{MemoryGameWindow>>installCards} of the previous design, the method @method{installCards} here after is much simpler and easier to understand because it only instantiate the card models. Separation of responsibility is paying off:
+
+@smallexample
+MemoryGameModel>>initialize	
+   size := 4 @@ 3.
+   tupleSize := 2
+
+MemoryGameModel>>installCardModels
+   | colours |
+   cards := Array2D newSize: size.
+   colours := self distributeColors.
+   1 to: size y do: [:y |
+      1 to: size x do: [:x | 
+         cards
+            at: x@@y
+            put: (MemoryCardModel new color: colours removeFirst) ] ]
+@end smallexample
+
+In this class, we also import, unchanged, the behaviors of @class{MemoryGameWindow} fitting the game model: @method{distributeColors}, @method{doneCards}, @method{flippedCards}, @method{undoneCards} and @method{isGameWon}.
+
+That's it for the models of the game.
 @end itemize
 
-
- and @class{MemoryCardModel}
-
-
+@cindex @acronym{MVP,Model View Presenter} @subentry view
 @subsection Memory Game View
+We have defined two model classes, so we may expect to define two view classes. Well, not necessary, here we just need to define one view class for the whole game and we use an existing view of @cuis{} for the card model, the @class{PluggableButtonMorph}
 
+We need to reshape @class{MemoryGameWindow} to contain only view related business, first in its attributes then its behaviors. First at all, @strong{a view always knows about its presenter}, it can even know about the model through the mediation of the presenter:
+@smallexample
+MemoryGameView>>presenter: aPresenter
+   presenter := aPresenter.
+   self model: presenter model
+@end smallexample
+
+It also knows about some other views needed for its internal organisation and regulation:
+@smallexample
+SystemWindow subclass: #MemoryGameWindow
+   instanceVariableNames: 'presenter statusBar playground'
+   @dots{}
+@end smallexample
+
+Again the behaviors is stripped down to only view considerations and the @method{initialize} method is shortened. Installing the toolbar slightly differs, the model of the buttons is not any more the view but the presenter:
+
+@smallexample
+MemoryGameWindow>>installToolbar
+   | toolbar button |
+   toolbar := LayoutMorph newRow separation: 2.
+   button := PluggableButtonMorph model: presenter action: #startGame :: 
+      enableSelector: #isStopped;
+   @dots{}
+@end smallexample
+
+Indeed, we explained earlier it is the presenter responsibility to handle user events, the actions remain the same and we can anticipate the related methods will be transferred from the view to the presenter class.
+
+Now, we should look at installing the card view, it relies on the already instantiated card models. The logic of installing the card models then the card views is handled by the presenter, the middle-man:
+
+@smallexample
+MemoryGameView>>installCards
+   | row size |
+   playground removeAllMorphs.
+   size := model size.
+   1 to: size y do: [:y |
+      row := LayoutMorph newRow.
+      1 to: size x do: [:x | | cardModel cardView |
+         cardModel := model cards at: x@@y.
+         cardView := PluggableButtonMorph
+            model: presenter
+            action: #flip:
+            actionArgument: x@@y.
+         @dots{}
+	 cardView layoutSpec proportionalWidth: 1; proportionalHeight: 1.
+	 cardView color: cardModel backColor.
+	 row addMorph: cardView].
+      playground addMorph: row ]
+@end smallexample
+
+For clarity, we have presented above a shortened version of the @method{installCards} method without the dependency between the card model and card view. We discuss it later in this chapter.
+
+@cindex @acronym{MVP,Model View Presenter} @subentry presenter
 @subsection Memory Game Presenter
 
 

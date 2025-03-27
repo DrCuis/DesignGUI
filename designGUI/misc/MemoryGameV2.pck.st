@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7066] on 22 March 2025 at 10:46:29 pm'!
+'From Cuis7.3 [latest update: #7066] on 27 March 2025 at 6:00:44 pm'!
 'Description '!
-!provides: 'MemoryGameV2' 1 5!
+!provides: 'MemoryGameV2' 1 7!
 SystemOrganization addCategory: 'MemoryGameV2'!
 
 
@@ -299,31 +299,6 @@ installToolbar
 	toolbar addMorph: button.
 	self addMorph: toolbar layoutSpec: LayoutSpec new useMorphHeight
 ! !
-
-!MemoryGameWindow methodsFor: 'updating' stamp: 'hlsf 3/22/2025 13:31:54'!
-flip: position
-	| flippedCards |
-	(cards at: position) flip; lock.	
-	
-	" Detect if all flipped cards share the same color "
-	flippedCards := self flippedCards.
-	(flippedCards collect: [:aCard | aCard color]) asSet size = 1 ifFalse: [
-		"Give some time for the play to see the color of this card "
-		self message: 'Colors do not match!!'.
-		self world doOneCycleNow.
-		(Delay forSeconds: 1) wait.
-		" Color does not match, unflip the flipped card and unlock "
-		flippedCards do: [:aCard | aCard flip; unlock].
-		^ self].
-
-	flippedCards size = tupleSize ifTrue: [
-		" We found a n-tuple!! "
-		self message: 'Great!!' bold, ' You find a ', tupleSize asString, '-tuple!!'.
-		flippedCards do: #flash.
-		flippedCards do: #setDone.
-		self isGameWon ifTrue: [
-			self message: 'Congatuluation, you finished the game!!' bold red.
-			playing := false] ]! !
 
 !MemoryGameWindow class methodsFor: 'instance creation' stamp: 'hlsf 3/22/2025 15:37:23'!
 presenter: aPresenter
