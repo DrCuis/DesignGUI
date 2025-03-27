@@ -64,7 +64,7 @@ Define the following instance methods.
     This must be done AFTER the window is opened."
     layout := window layoutMorph.
     layout padding: 10.
-    window morphExtent: 300 @ layout minimumExtent y.} 
+    window morphExtent: 300 @@ layout minimumExtent y.} 
 
 @smalltalkExample{toggleColor
     
@@ -93,6 +93,9 @@ changes its value, and prints its value:
 tmm openInWorld.
 tmm editor actualContents: 'new content'.
 tmm text print.}
+
+Typically you will want to modify many aspects of this morph
+such as its size and whether words automatically wrap to a new lines.
 
 The value associated with a @class{TextModelMorph} is either
 held in a @class{TextModel} object or a @class{Text} object.
@@ -220,7 +223,7 @@ with a given width that never shows scroll bars:
 
 @smalltalkExample{tmm := TextModelMorph withText: '' ::
     hideScrollBarsIndefinitely;
-    morphExtent: 200 @ 0; "calculates required height for one line"
+    morphExtent: 200 @@ 0; "calculates required height for one line"
     wrapFlag: false.}
 
 If the text exceeds the width,
@@ -288,7 +291,7 @@ Define the instance method @method{} as follows:
         hideScrollBarsIndefinitely;
         "Width is made proportional below.
         Setting height to zero causes it to use minimum height for one line."
-        morphExtent: 0 @ 0;
+        morphExtent: 0 @@ 0;
         tabToFocus: true;
         wrapFlag: false.
     entry layoutSpec proportionalWidth: 1.
@@ -353,7 +356,163 @@ Define the instance method @method{initialize} as follows:
     "Set window size to the smallest height that contains its submorphs.
     This must be done AFTER the window is opened."
     extent := window layoutMorph minimumExtent.
-    window morphExtent: 400 @ extent y.}
+    window morphExtent: 400 @@ extent y.}
+
+@node Lists
+@section Lists
+
+The @class{PluggableListMorph} displays a scrollable list of items.
+Users can select an item by clicking it or by typing its first few letters.
+
+Let's create a small application that allows users to select a color
+from a list to change the background color of the window.
+Users can also add new colors and delete existing colors.
+
+In addition to demonstrating the use of @class{PluggableListMorph},
+we will also see how to disable buttons when their use is not appropriate.
+
+@figure{List Demo, ch04-userinteraction-example2, 5} 
+
+Create the following class:
+
+@smalltalkExample{Object subclass: #ListDemo
+    instanceVariableNames: 'addButton colorList colors deleteButton
+        newColorEntry newColorName selectedColorIndex selectedLabel window'
+    classVariableNames: ''
+    poolDictionaries: ''
+    category: 'LayoutMorphDemos'}
+
+Add the following instance methods:
+
+@smalltalkExample{initialize
+    | layout row |
+    
+    colors := SortedCollection newFrom: #(red orange yellow green blue purple).
+    selectedColorIndex := 0.
+    newColorName := ''.
+    
+    colorList := PluggableListMorph
+        withModel: self
+        listGetter: #colors
+        indexGetter: #selectedColorIndex
+        indexSetter: #selectedColorIndex:.
+    colorList layoutSpec proportionalWidth: 1.
+    
+    newColorEntry :=  self textEntryOn: #newColor.
+    newColorEntry emptyTextDisplayMessage: 'new color'.
+    newColorEntry keystrokeAction: [ :event |
+        event keyValue = 13 ifTrue: [ self addColor ]
+    ].
+    
+    addButton := PluggableButtonMorph model: self action: #addColor label: 'Add'.
+    addButton disable.
+    
+    row := LayoutMorph newRow
+        gap: 10;
+        addMorph: newColorEntry;
+        addMorph: addButton.
+
+    deleteButton := PluggableButtonMorph
+        model: self
+        action: #deleteColor
+        label: 'Delete Selected Color'.
+    
+    selectedLabel := LabelMorph contents: ''.
+    
+    window := SystemWindow new.
+    window
+        setLabel: 'List Demo';
+        addMorph: colorList;
+        addMorph: row;
+        addMorph: deleteButton;
+        addMorph: selectedLabel;
+        openInWorld.
+    
+    self selectedColorIndex: 0. "sets initial background color"
+
+    "Set window size to the smallest height that contains its submorphs.
+    This must be done AFTER the window is opened."
+    layout := window layoutMorph.
+    layout separation: 10.
+    window morphExtent: 250 @@ layout minimumExtent y.}
+
+@smalltalkExample{colors
+    ^ colors}
+
+@smalltalkExample{newColor
+    ^ newColorName
+}
+
+@smalltalkExample{newColor: aString
+
+    newColorName := aString.
+    self changed: #newColor.
+    self changed: #clearUserEdits.
+    addButton enable: aString isEmpty not.
+}
+
+@smalltalkExample{selectedColorIndex
+    ^ selectedColorIndex
+}
+
+@smalltalkExample{selectedColorIndex: anIndex
+    | color colorName selected |
+    
+    selectedColorIndex := anIndex.
+
+    selected := anIndex ~= 0.
+    deleteButton enable: selected.
+    colorName := selected ifTrue: [ colors at: anIndex ].
+    
+    selectedLabel contents: (colorName
+        ifNil: ''
+        ifNotNil: [ 'You selected @{1@}.' format: @{ colorName @} ]
+    ).
+
+    color := colorName
+        ifNil: [ Color gray ]
+        ifNotNil: [ [ Color perform: colorName ] on: MessageNotUnderstood do: [ Color gray ] ].
+    window layoutMorph color: (color alpha: 0.6).}
+
+@smalltalkExample{addColor
+    | colorName |
+
+    colorName := newColorName string withBlanksTrimmed.
+    newColorName isEmpty ifFalse: [
+        colors add: colorName asSymbol.
+        colorList updateList.
+        self newColor: ''.
+        self selectedColorIndex: (colors indexOf: colorName).
+    ]}
+
+@smalltalkExample{deleteColor
+
+    selectedColorIndex = 0 ifFalse: [
+        colors removeAt: selectedColorIndex.
+        self selectedColorIndex: 0.
+        colorList updateList.
+        selectedLabel contents: ''.
+    ]}
+
+@smalltalkExample{textEntryOn: aSymbol
+    "Answer a TextModelMorph where aSymbol provides the name for the getter and setter."
+    | entry |
+        
+    entry := TextModelMorph
+        textProvider: self
+        textGetter: aSymbol
+        textSetter: (aSymbol, ':') asSymbol ::
+        acceptOnAny: true;
+        askBeforeDiscardingEdits: false;
+        hideScrollBarsIndefinitely;
+        "Width is made proportional below.
+        Setting height to zero causes it to use minimum height for one line."
+        morphExtent: 0 @@ 0;
+        tabToFocus: true;
+        wrapFlag: false.
+    entry layoutSpec proportionalWidth: 1.
+    ^ entry.
+}
 
 @menu
 @end menu
