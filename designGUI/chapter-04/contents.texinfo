@@ -459,9 +459,10 @@ Add the following instance methods:
     potentialColor ifNotEmpty: [
         colors add: potentialColor asSymbol.
         colorList updateList.
-        self selectedColorIndex: (colors indexOf: potentialColor )].
-    self changed: #clearUserEdits.
-    self changed: #newColor.}
+        self selectedColorIndex: (colors indexOf: potentialColor )
+        self changed: #clearUserEdits.
+        self changed: #newColor.
+    ].}
 
 @smalltalkExample{selectedColorIndex
     ^ selectedColorIndex
