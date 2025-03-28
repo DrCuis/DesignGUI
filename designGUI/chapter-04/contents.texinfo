@@ -376,7 +376,8 @@ we will also see how to disable buttons when their use is not appropriate.
 Create the following class:
 
 @smalltalkExample{Object subclass: #ListDemo
-    instanceVariableNames: 'colorList colors deleteButton newColorEntry selectedColorIndex selectedLabel window'
+    instanceVariableNames: 'colorList colors deleteButton
+        newColorEntry selectedColorIndex selectedLabel window'
     classVariableNames: ''
     poolDictionaries: ''
     category: 'Demos'}
@@ -477,7 +478,7 @@ Add the following instance methods:
     
     selectedLabel contents: (colorName
         ifNil: ''
-        ifNotNil: [ 'You selected {1}.' format: { colorName } ]
+        ifNotNil: [ 'You selected @{1@}.' format: @{ colorName @} ]
     ).
 
     color := colorName
