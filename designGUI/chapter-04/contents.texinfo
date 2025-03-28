@@ -80,6 +80,110 @@ to see its tooltip (a.k.a balloon text).
 Click the "Toggle" button several times and
 note how the window background color changes.
 
+@node Popups
+@section Popups
+
+The class @class{PopUpMenu} provides an easy way to render a dialog that
+displays information, asks the user for confirmation,
+or ask the user to select an option.
+It is similar to the JavaScript DOM functions @code{alert} and @code{confirm}.
+For example:
+
+@figure{PopupMenu inform, ch04-popupmenu-inform, 8}
+
+@smalltalkExample{PopUpMenu inform: 'Something interesting just happened.'.}
+
+@figure{PopupMenu confirm, ch04-popupmenu-confirm, 5}
+
+@smalltalkExample{likesIceCream := PopUpMenu confirm: 'Do you like ice cream?'.
+likesIceCream print. "prints true or false"}
+
+@figure{PopupMenu confirm:trueChoice:falseChoice:, ch04-popupmenu-confirm-truechoice-falsechoice, 5}
+
+@smalltalkExample{likesIceCream := PopUpMenu
+    confirm: 'Do you like ice cream?'
+    trueChoice: 'Love it!'
+    falseChoice: 'Not for me'.
+likesIceCream print. "prints true or false"}
+
+@figure{PopupMenu withCaption:chooseFrom, ch04-popupmenu-withcaption-choosefrom, 4}
+
+@smalltalkExample{color := PopUpMenu withCaption: 'Choose a color.' chooseFrom: #('red' 'green' 'blue').
+color print. "prints choice index 1, 2, or 3"}
+
+The @class{SelectionMenu} class is a subclass of @class{PopupMenu}.
+For example:
+
+@figure{SelectionMenu, ch04-selectionmenu, 3}
+
+@smalltalkExample{
+labels := #(burrito enchilada taco chips quacamole salsa water soda tea).
+lines := #(3 6). "draw lines after these indexes"
+menu := SelectionMenu labels: labels lines: lines.
+selection := menu startUpMenu.
+selection print. "prints selected label index"}
+
+The following code demonstrates opening a @class{SelectionMenu}
+when a button is clicked.
+
+@figure{SelectionMenu closed, ch04-selectionmenu1, 6}
+
+@figure{SelectionMenu open, ch04-selectionmenu2, 6}
+
+@figure{SelectionMenu selected, ch04-selectionmenu3, 6}
+
+Define the following class:
+
+@smalltalkExample{Object subclass: #MenuDemo
+    instanceVariableNames: 'colorButton colorMenu statusLabel colors window'
+    classVariableNames: ''
+    poolDictionaries: ''
+    category: 'Demos'}
+
+Define the following instance methods:
+
+@smalltalkExample{initialize
+    | layout |
+
+    colorButton := PluggableButtonMorph
+        model: self
+        action: #openMenu
+        label: 'Select Color'.
+
+    colors := #(red orange yellow green blue purple).
+    colorMenu := SelectionMenu labels: colors lines: #().
+
+    statusLabel := LabelMorph contents: ''.
+
+    window := SystemWindow new.
+    window
+        setLabel: 'Menu Demo';
+        addMorph: colorButton;
+        addMorph: statusLabel;
+        openInWorld.
+
+    "Set window size to the smallest height that contains its submorphs.
+    This must be done AFTER the window is opened."
+    layout := window layoutMorph.
+    layout separation: 10.
+    window morphExtent: 300 @ layout minimumExtent y.
+
+openMenu
+    | color colorName index |
+
+    index := colorMenu startUpMenu.
+    index = 0 ifFalse: [
+        colorName := colors at: index.
+        colorButton label: colorName.
+        statusLabel contents: ('You selected @{1@}.' format: @{ colorName @}).
+
+        color := colorName
+            ifNil: [ Color gray ]
+            ifNotNil: [ [ Color perform: colorName ] on: MessageNotUnderstood do: [ Color gray ] ].
+        window layoutMorph color: (color alpha: 0.6).
+    ]}
+
+To run this, evaluate @smalltalk{MenuDemo new} in a Workspace.
 @node Text Entry
 @section Text Entry
 
