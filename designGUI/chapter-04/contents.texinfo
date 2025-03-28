@@ -376,21 +376,18 @@ we will also see how to disable buttons when their use is not appropriate.
 Create the following class:
 
 @smalltalkExample{Object subclass: #ListDemo
-    instanceVariableNames: 'addButton colorList colors deleteButton
-        newColorEntry newColorName selectedColorIndex selectedLabel window'
+    instanceVariableNames: 'colorList colors deleteButton newColorEntry selectedColorIndex selectedLabel window'
     classVariableNames: ''
     poolDictionaries: ''
-    category: 'LayoutMorphDemos'}
+    category: 'Demos'}
 
 Add the following instance methods:
 
 @smalltalkExample{initialize
-    | layout row |
+    | addButton layout row |
     
     colors := SortedCollection newFrom: #(red orange yellow green blue purple).
     selectedColorIndex := 0.
-    newColorName := ''.
-    
     colorList := PluggableListMorph
         withModel: self
         listGetter: #colors
@@ -400,12 +397,8 @@ Add the following instance methods:
     
     newColorEntry :=  self textEntryOn: #newColor.
     newColorEntry emptyTextDisplayMessage: 'new color'.
-    newColorEntry keystrokeAction: [ :event |
-        event keyValue = 13 ifTrue: [ self addColor ]
-    ].
     
     addButton := PluggableButtonMorph model: self action: #addColor label: 'Add'.
-    addButton disable.
     
     row := LayoutMorph newRow
         gap: 10;
@@ -434,22 +427,40 @@ Add the following instance methods:
     This must be done AFTER the window is opened."
     layout := window layoutMorph.
     layout separation: 10.
-    window morphExtent: 250 @@ layout minimumExtent y.}
+    window morphExtent: 250 @ layout minimumExtent y.}
+
+@smalltalkExample{addColor
+    self newColor: newColorEntry text}
 
 @smalltalkExample{colors
     ^ colors}
 
+@smalltalkExample{deleteColor
+
+    selectedColorIndex = 0 ifFalse: [
+        colors removeAt: selectedColorIndex.
+        self selectedColorIndex: 0.
+        colorList updateList.
+        selectedLabel contents: ''.
+    ]}
+
 @smalltalkExample{newColor
-    ^ newColorName
-}
+    "In this app there is no need to retrieve this value
+    or even hold it in an instance variable, but
+    TextModelMorph requires that this method exists."
+    
+    ^ ''}
 
-@smalltalkExample{newColor: aString
+@smalltalkExample{newColor: aText
+    | potentialColor |
 
-    newColorName := aString.
-    self changed: #newColor.
+    potentialColor := aText asString withBlanksTrimmed.
+    potentialColor ifNotEmpty: [
+        colors add: potentialColor asSymbol.
+        colorList updateList.
+        self selectedColorIndex: (colors indexOf: potentialColor )].
     self changed: #clearUserEdits.
-    addButton enable: aString isEmpty not.
-}
+    self changed: #newColor.}
 
 @smalltalkExample{selectedColorIndex
     ^ selectedColorIndex
@@ -466,7 +477,7 @@ Add the following instance methods:
     
     selectedLabel contents: (colorName
         ifNil: ''
-        ifNotNil: [ 'You selected @{1@}.' format: @{ colorName @} ]
+        ifNotNil: [ 'You selected {1}.' format: { colorName } ]
     ).
 
     color := colorName
@@ -474,45 +485,22 @@ Add the following instance methods:
         ifNotNil: [ [ Color perform: colorName ] on: MessageNotUnderstood do: [ Color gray ] ].
     window layoutMorph color: (color alpha: 0.6).}
 
-@smalltalkExample{addColor
-    | colorName |
-
-    colorName := newColorName string withBlanksTrimmed.
-    newColorName isEmpty ifFalse: [
-        colors add: colorName asSymbol.
-        colorList updateList.
-        self newColor: ''.
-        self selectedColorIndex: (colors indexOf: colorName).
-    ]}
-
-@smalltalkExample{deleteColor
-
-    selectedColorIndex = 0 ifFalse: [
-        colors removeAt: selectedColorIndex.
-        self selectedColorIndex: 0.
-        colorList updateList.
-        selectedLabel contents: ''.
-    ]}
-
 @smalltalkExample{textEntryOn: aSymbol
     "Answer a TextModelMorph where aSymbol provides the name for the getter and setter."
     | entry |
         
     entry := TextModelMorph
         textProvider: self
-        textGetter: aSymbol
+        textGetter: aSymbol 
         textSetter: (aSymbol, ':') asSymbol ::
-        acceptOnAny: true;
+        acceptOnCR: true;
         askBeforeDiscardingEdits: false;
         hideScrollBarsIndefinitely;
         "Width is made proportional below.
         Setting height to zero causes it to use minimum height for one line."
-        morphExtent: 0 @@ 0;
-        tabToFocus: true;
-        wrapFlag: false.
+        morphExtent: 0 @ 0.
     entry layoutSpec proportionalWidth: 1.
-    ^ entry.
-}
+    ^ entry.}
 
 @menu
 @end menu
