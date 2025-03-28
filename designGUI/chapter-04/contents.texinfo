@@ -427,7 +427,7 @@ Add the following instance methods:
     This must be done AFTER the window is opened."
     layout := window layoutMorph.
     layout separation: 10.
-    window morphExtent: 250 @ layout minimumExtent y.}
+    window morphExtent: 250 @@ layout minimumExtent y.}
 
 @smalltalkExample{addColor
     self newColor: newColorEntry text}
@@ -498,7 +498,7 @@ Add the following instance methods:
         hideScrollBarsIndefinitely;
         "Width is made proportional below.
         Setting height to zero causes it to use minimum height for one line."
-        morphExtent: 0 @ 0.
+        morphExtent: 0 @@ 0.
     entry layoutSpec proportionalWidth: 1.
     ^ entry.}
 
