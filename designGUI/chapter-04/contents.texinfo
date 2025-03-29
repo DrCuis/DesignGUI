@@ -31,44 +31,42 @@ Clicking the button toggles the color between red and blue.
 Create the following class.
 
 @smalltalkExample{Object subclass: #ButtonDemo
-    instanceVariableNames: 'layout'
-    classVariableNames: ''
-    poolDictionaries: ''
-    category: 'Demo'}
+   instanceVariableNames: 'layout'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'Demo'}
 
 Define the following instance methods.
 
-@smalltalkExample{initialize
-    | button extent window |
+@smalltalkMethod{initialize,
+| button extent window |
     
-    button := PluggableButtonMorph
-        model: self
-        action: #toggleColor
-        label: 'Toggle'.
-    button setBalloonText: 'toggle background color'.
-    window := SystemWindow new.
-    window
-        setLabel: 'Button Demo';
-        addMorph: button;
-        openInWorld.
+button := PluggableButtonMorph
+   model: self
+      action: #toggleColor
+      label: 'Toggle'.
+button setBalloonText: 'toggle background color'.
+window := SystemWindow new.
+window
+   setLabel: 'Button Demo';
+   addMorph: button;
+   openInWorld.
         
-    extent := button morphExtent.
-    "Add some space to the left and right of the button label."
-    button morphExtent: (extent x + 15) @ extent y.
+extent := button morphExtent.
+"Add some space to the left and right of the button label."
+button morphExtent: (extent x + 15) @ extent y.
         
-    "Set window size to the smallest height that contains its submorphs.
-    This must be done AFTER the window is opened."
-    layout := window layoutMorph.
-    layout padding: 10.
-    window morphExtent: 300 @@ layout minimumExtent y.} 
+"Set window size to the smallest height that contains its submorphs.
+This must be done AFTER the window is opened."
+layout := window layoutMorph.
+layout padding: 10.
+window morphExtent: 300 @@ layout minimumExtent y.}
 
-@smalltalkExample{toggleColor
-    
-    layout color: (
-        layout color = Color red
-            ifTrue: [ Color blue ]
-            ifFalse: [ Color red ]
-    )}
+@smalltalkMethod{toggleColor,
+layout color: (
+   layout color = Color red
+      ifTrue: [ Color blue ]
+      ifFalse: [ Color red ] )}
 
 Open a Workspace and evaluate @smalltalk{ButtonDemo new}.
 Hover over the "Toggle" button for a second
@@ -112,8 +110,7 @@ For example:
 
 @figure{SelectionMenu, ch04-selectionmenu, 3}
 
-@smalltalkExample{
-labels := #(burrito enchilada taco chips quacamole salsa water soda tea).
+@smalltalkExample{labels := #(burrito enchilada taco chips quacamole salsa water soda tea).
 lines := #(3 6). "draw lines after these indexes"
 menu := SelectionMenu labels: labels lines: lines.
 selection := menu startUpMenu.
@@ -131,53 +128,52 @@ when a button is clicked.
 Define the following class:
 
 @smalltalkExample{Object subclass: #MenuDemo
-    instanceVariableNames: 'colorButton colorMenu statusLabel colors window'
-    classVariableNames: ''
-    poolDictionaries: ''
-    category: 'Demos'}
+   instanceVariableNames: 'colorButton colorMenu statusLabel colors window'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'Demos'}
 
 Define the following instance methods:
 
-@smalltalkExample{initialize
-    | layout |
+@smalltalkMethod{initialize,
+| layout |
 
-    colorButton := PluggableButtonMorph
-        model: self
-        action: #openMenu
-        label: 'Select Color'.
+colorButton := PluggableButtonMorph
+   model: self
+   action: #openMenu
+   label: 'Select Color'.
 
-    colors := #(red orange yellow green blue purple).
-    colorMenu := SelectionMenu labels: colors lines: #().
+colors := #(red orange yellow green blue purple).
+colorMenu := SelectionMenu labels: colors lines: #().
 
-    statusLabel := LabelMorph contents: ''.
+statusLabel := LabelMorph contents: ''.
 
-    window := SystemWindow new.
-    window
-        setLabel: 'Menu Demo';
-        addMorph: colorButton;
-        addMorph: statusLabel;
-        openInWorld.
+window := SystemWindow new.
+window
+   setLabel: 'Menu Demo';
+   addMorph: colorButton;
+   addMorph: statusLabel;
+   openInWorld.
 
-    "Set window size to the smallest height that contains its submorphs.
-    This must be done AFTER the window is opened."
-    layout := window layoutMorph.
-    layout separation: 10.
-    window morphExtent: 300 @ layout minimumExtent y.
+"Set window size to the smallest height that contains its submorphs.
+This must be done AFTER the window is opened."
+layout := window layoutMorph.
+layout separation: 10.
+window morphExtent: 300 @ layout minimumExtent y}
 
-openMenu
-    | color colorName index |
+@smalltalkMethod{openMenu,
+| color colorName index |
 
-    index := colorMenu startUpMenu.
-    index = 0 ifFalse: [
-        colorName := colors at: index.
-        colorButton label: colorName.
-        statusLabel contents: ('You selected @{1@}.' format: @{ colorName @}).
+index := colorMenu startUpMenu.
+index = 0 ifFalse: [
+   colorName := colors at: index.
+   colorButton label: colorName.
+   statusLabel contents: ('You selected @{1@}.' format: @{ colorName @}).
 
-        color := colorName
-            ifNil: [ Color gray ]
-            ifNotNil: [ [ Color perform: colorName ] on: MessageNotUnderstood do: [ Color gray ] ].
-        window layoutMorph color: (color alpha: 0.6).
-    ]}
+   color := colorName
+      ifNil: [ Color gray ]
+      ifNotNil: [ [ Color perform: colorName ] on: MessageNotUnderstood do: [ Color gray ] ].
+window layoutMorph color: (color alpha: 0.6) ]}
 
 To run this, evaluate @smalltalk{MenuDemo new} in a Workspace.
 @node Text Entry

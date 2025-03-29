@@ -6,6 +6,7 @@
 @settitle @value{bookletTitle}
 @codequoteundirected on
 @codequotebacktick on
+@exampleindent 2
 @c Remove ugly black rectangle
 @finalout
 @setfilename DesignGUIMorph.info
@@ -77,22 +78,41 @@ texts. Your help is very valuable.
 @end macro
 @end ifnottex
 
-@alias class=code
-@alias smalltalk=code
-@alias method=code
+@alias class=sansserif
+@alias smalltalk=sansserif
+@alias method=sansserif
 @c label of a button, string keyed in a text field
 @alias label=command 
 @macro msg{messageName}
-@code{#\messageName\}
+@sansserif{#\messageName\}
 @end macro
+
+@c Smalltalk method
+@macro smalltalkMethod{methodName,source}
+@display
+@group
+@iftex
+@exdent@tie{}@tie{}@strong{\methodName\}
+@end iftex
+@ifhtml
+@exdent@strong{\methodName\}
+@end ifhtml
+\source\
+@end group
+@end display
+@iftex
+   @sp 1
+@end iftex
+@end macro
+
 @c Smalltalk example
 @macro smalltalkExample{example}
 @iftex
    @sp 1
 @end iftex
-@smallexample
+@display
 \example\
-@end smallexample
+@end display
 @iftex
    @sp 1
 @end iftex
@@ -101,9 +121,9 @@ texts. Your help is very valuable.
 @c Smalltalk example with caption
 @macro smalltalkExampleCaption{caption,label,example}
 @float Example,\label\
-@smallexample
+@display
 \example\
-@end smallexample
+@end display
 @caption{\caption\}
 @end float
 @iftex

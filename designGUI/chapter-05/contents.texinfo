@@ -69,36 +69,34 @@ Our game involves the domain of a game with cards, we define two models:
    @item
    @class{MemoryCardModel}. It knows about the intrinsic characteristics of a card in the context of the memory game. In the earlier game design, the @class{MemoryCard} view knows about its @smalltalk{cardColor} and its states @smalltalk{done}, @smalltalk{flipped}; the latter one was deduced by a method based on the color attribute of the view. These three characteristics are clearly part of the card model and need to be represented by instance attributes:
 
-@smallexample
+@smalltalkExample{
 Object subclass: #MemoryCardModel
    instanceVariableNames: 'flipped done color'
-   @dots{}
-@end smallexample
+   @dots{}}
 
-We add the necessary initialization and methods to externally get the state and to update it:
+We add the necessary initialization and methods to externally get the state and to update it.
 
-@smallexample
-MemoryCardModel>>initialize
-   done := flipped := false
+@smalltalkMethod{initialize,
+done := flipped := false}
 
-MemoryCardModel>>setDone
-   done := true
+When a card has been successfully associated with cards sharing the same colour, we set it as done and it can't be played anymore 
+@smalltalkMethod{setDone,
+done := true}
 
-MemoryCardModel>>isDone
-   @return{} done
+To evaluate the available card to play, we need to know if a card is done or not
+@smalltalkMethod{isDone,
+@return{} done}
 
-MemoryCardModel>>isFlipped
-   @return{} flipped
-@end smallexample
+During a player move, we need to know if a card is already flipped, if so the play can't flip it again
+@smalltalkMethod{isFlipped,
+@return{} flipped}
 
    @item
    @class{MemoryGameModel}. This model defines what is a memory game. The previous @class{MemoryGameWindow} had 6 instances variables, a mix of view and domain related attributes: @smalltalk{size}, @smalltalk{cards}, @smalltalk{tupleSize}, @smalltalk{statusBar}, @smalltalk{playground} and @smalltalk{playing}. Only the first three attributes are related to the characteristic of the game, we may hesitate on the later one @smalltalk{playing}, but it will prove to be more useful in the presenter to determine the state of the application.
 
-@smallexample
-Object subclass: #MemoryGameModel
+@smalltalkExample{Object subclass: #MemoryGameModel
    instanceVariableNames: 'size tupleSize cards'
-   @dots{}
-@end smallexample
+   @dots{}}
 
   @itemize
     @item
@@ -113,21 +111,18 @@ Object subclass: #MemoryGameModel
 
 We have the necessary methods to initialize the instance and to create the card models. Compared to its counterpart @method{MemoryGameWindow>>installCards} of the previous design, the method @method{installCards} here after is much simpler and easier to understand because it only instantiate the card models. Separation of responsibility is paying off:
 
-@smallexample
-MemoryGameModel>>initialize	
-   size := 4 @@ 3.
-   tupleSize := 2
-
-MemoryGameModel>>installCardModels
-   | colours |
-   cards := Array2D newSize: size.
-   colours := self distributeColors.
-   1 to: size y do: [:y |
-      1 to: size x do: [:x | 
-         cards
-            at: x@@y
-            put: (MemoryCardModel new color: colours removeFirst) ] ]
-@end smallexample
+@smalltalkMethod{initialize,
+size := 4 @@ 3.
+tupleSize := 2}
+@smalltalkMethod{installCardModels,
+| colours |
+cards := Array2D newSize: size.
+colours := self distributeColors.
+1 to: size y do: [:y |
+   1 to: size x do: [:x | 
+      cards
+         at: x@@y
+         put: (MemoryCardModel new color: colours removeFirst) ] ]}
 
 In this class, we also import, unchanged, the behaviors of @class{MemoryGameWindow} fitting the game model: @method{distributeColors}, @method{doneCards}, @method{flippedCards}, @method{undoneCards} and @method{isGameWon}.
 
@@ -139,53 +134,45 @@ That's it for the models of the game.
 We have defined two model classes, so we may expect to define two view classes. Well, not necessary, here we just need to define one view class for the whole game and we use an existing view of @cuis{} for the card model, the @class{PluggableButtonMorph}
 
 We need to reshape @class{MemoryGameWindow} to contain only view related business, first in its attributes then its behaviors. First at all, @strong{a view always knows about its presenter}, it can even know about the model through the mediation of the presenter:
-@smallexample
-MemoryGameView>>presenter: aPresenter
-   presenter := aPresenter.
-   self model: presenter model
-@end smallexample
+@smalltalkMethod{presenter: aPresenter,
+presenter := aPresenter.
+self model: presenter model}
 
 It also knows about some other views needed for its internal organisation and regulation:
-@smallexample
-SystemWindow subclass: #MemoryGameWindow
+@smalltalkExample{SystemWindow subclass: #MemoryGameWindow
    instanceVariableNames: 'presenter statusBar playground'
-   @dots{}
-@end smallexample
+   @dots{}}
 
 Again the behaviors is stripped down to only view considerations and the @method{initialize} method is shortened. Installing the toolbar slightly differs, the model of the buttons is not any more the view but the presenter:
 
-@smallexample
-MemoryGameWindow>>installToolbar
-   | toolbar button |
-   toolbar := LayoutMorph newRow separation: 2.
-   button := PluggableButtonMorph model: presenter action: #startGame :: 
-      enableSelector: #isStopped;
-   @dots{}
-@end smallexample
+@smalltalkMethod{installToolbar,
+| toolbar button |
+toolbar := LayoutMorph newRow separation: 2.
+button := PluggableButtonMorph model: presenter action: #startGame :: 
+   enableSelector: #isStopped;
+@dots{}}
 
 Indeed, we explained earlier it is the presenter responsibility to handle user events, the actions remain the same and we can anticipate the related methods will be transferred from the view to the presenter class.
 
 Now, we should look at installing the card view, it relies on the already instantiated card models. The logic of installing the card models then the card views is handled by the presenter, the middle-man:
 
-@smallexample
-MemoryGameView>>installCards
-   | row size |
-   playground removeAllMorphs.
-   size := model size.
-   1 to: size y do: [:y |
-      row := LayoutMorph newRow.
-      1 to: size x do: [:x | | cardModel cardView |
-         cardModel := model cards at: x@@y.
-         cardView := PluggableButtonMorph
-            model: presenter
-            action: #flip:
-            actionArgument: x@@y.
-         @dots{}
-	 cardView layoutSpec proportionalWidth: 1; proportionalHeight: 1.
-	 cardView color: cardModel backColor.
-	 row addMorph: cardView].
-      playground addMorph: row ]
-@end smallexample
+@smalltalkMethod{installCards,
+| row size |
+playground removeAllMorphs.
+size := model size.
+1 to: size y do: [:y |
+   row := LayoutMorph newRow.
+   1 to: size x do: [:x | | cardModel cardView |
+      cardModel := model cards at: x@@y.
+      cardView := PluggableButtonMorph
+         model: presenter
+         action: #flip:
+         actionArgument: x@@y.
+      @dots{}
+      cardView layoutSpec proportionalWidth: 1; proportionalHeight: 1.
+      cardView color: cardModel backColor.
+      row addMorph: cardView].
+   playground addMorph: row ]}
 
 For clarity, we have presented above a shortened version of the @method{installCards} method without the dependency between the card model and card view. We discuss it later in this chapter.
 
