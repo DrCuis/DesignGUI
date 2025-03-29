@@ -106,11 +106,13 @@ texts. Your help is very valuable.
 
 @c Smalltalk example
 @macro smalltalkExample{example}
-@iftex
-   @sp 1
-@end iftex
 @display
+@iftex
+@sansserif{\example\}
+@end iftex
+@ifhtml
 \example\
+@end ifhtml
 @end display
 @iftex
    @sp 1
@@ -121,7 +123,12 @@ texts. Your help is very valuable.
 @macro smalltalkExampleCaption{caption,label,example}
 @float Example,\label\
 @display
+@iftex
+@sansserif{\example\}
+@end iftex
+@ifhtml
 \example\
+@end ifhtml
 @end display
 @caption{\caption\}
 @end float
