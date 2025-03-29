@@ -37,7 +37,7 @@ Any morph can contain other morphs. We already know a @class{LayoutMorph} contai
 
 Then what happens when the @smalltalk{owner} attribute is @smalltalk{nil}? The morph is simply not visible! This double link between owner and owned is very convenient and necessary for the morph framework depending on the situation. For example, while an owned morph may have its own local coordinates system for its drawing operations, it can refer to its owner to know about its global coordinates situation, from the point of view of the owner or even from the World perspective -- @emph{simplified for readiness}:
 
-@smalltalkExample{Morph>>externalizeToWorld: aPoint
+@smalltalkMethod{Morph>>externalizeToWorld: aPoint,
 "aPoint is in own coordinates. Answer is in world coordinates."
 | inOwners |
 inOwners := self externalize: aPoint.
@@ -45,7 +45,7 @@ inOwners := self externalize: aPoint.
 
 Access to the owner is also useful for mundane aspect as the style. A morph asks its owner's color to draw itself accordingly:
 
-@smalltalkExample{MenuLineMorph>>drawOn: aCanvas 
+@smalltalkMethod{MenuLineMorph>>drawOn: aCanvas,
 | baseColor |
 baseColor := owner color.
 aCanvas
@@ -55,7 +55,7 @@ aCanvas
 
 In the other hand, the owner, depending on its nature, can decide how to dispose its sub-morphs, like does a @class{LayoutMorph} by first requesting which sub-morphs to lay out:
 
-@smalltalkExample{LayoutMorph>>submorphsToLayout
+@smalltalkMethod{LayoutMorph>>submorphsToLayout,
 "Select those that will be layout"
 @return{} submorphs select: [ :m | m visible ]}
 
@@ -162,25 +162,23 @@ There are the expected @smalltalk{owner} and @smalltalk{submorphs} attributes; t
 
 @figure{@class{Morph}'s methods to manipulate properties,ch04-property,8}
 
-This @smalltalk{properties} attribute is used a lot. For example, observe its use case to set a specific name to a @class{Morph} instance:
+This @smalltalk{properties} attribute is used a lot. For example, observe its use case to set and get a specific name to a @class{Morph} instance
 
-@smalltalkExampleCaption{Methods to set and get a morph name, morphNameMethods,
-Morph>>name: anObject
-  "Set the morphName property"
-   self setProperty: #morphName toValue: anObject
-
-      Morph>>name
-   "Answer the value of morphName"
-   @return{} self valueOfProperty: #morphName}
+@anchor{morphNameMethods}
+@smalltalkMethod{name: anObject,
+"Set the morphName property"
+self setProperty: #morphName toValue: anObject}
+@smalltalkMethod{name,
+"Answer the value of morphName"
+@return{} self valueOfProperty: #morphName}
 
 Create a new morph as see in @ref{newInspectMorph}, then in the inspector execute @smalltalk{self name: 'Glouby'}, observe how @smalltalk{properties} was amended with the dictionary entry @smalltalk{#morphName->'Glouby'}; when invoking the morph's halo, its new name is printed too.
 
 @figure{A morph's properties,ch04-morphProperties,8}
 
-Back to the @class{Morph} definition, you can observe there is no attribute to describe the shape of a morph!@footnote{The other attributes are used for internal managment of the morphs and you don't need to care about them.} Indeed a morph has no prestablised shape, its shapes is described dynamically -- at execution time -- through its @method{drawOn:} method:
+Back to the @class{Morph} definition, you can observe there is no attribute to describe the shape of a morph!@footnote{The other attributes are used for internal managment of the morphs and you don't need to care about them.} Indeed a morph has no prestablised shape, its shapes is described dynamically -- at execution time -- through its @method{drawOn:} method
 
-@smalltalkExampleCaption{@class{Morph}'s @method{drawOn:}, morphDrawOn,
-Morph>>drawOn: aCanvas
+@smalltalkMethod{drawOn: aCanvas,
 drawOn: aCanvas
    aCanvas
       fillRectangle: `-75 @@ -70 corner: 75 @@ 70`
@@ -303,10 +301,9 @@ BoxMorph new ::
 @result{} 200@@200 corner: 250@@240.}
 
 @cindex morph @subentry pixel detection
-There are several methods dealing specifically with @class{BoxMorph}, take a look at them and play a bit to foster your understanding. A last bit about this class, earlier at @ref{ch04-morphBitMask} we discussed about pixel detection with a complicated morph containing holes. In this situation, the detection is done with a expensive computed mask. @class{BoxMorph} optimizes this thanks to its rectangular shape:
+There are several methods dealing specifically with @class{BoxMorph}, take a look at them and play a bit to foster your understanding. A last bit about this class, earlier at @ref{ch04-morphBitMask} we discussed about pixel detection with a complicated morph containing holes. In this situation, the detection is done with an expensive computed mask. @class{BoxMorph} optimizes this thanks to its rectangular shape
 
-@smalltalkExampleCaption{Optimized @class{BoxMorph} pixel detection, coversPixelBoxMorph,
-BoxMorph>>coversPixel: worldPoint
+@smalltalkMethod{coversPixel: worldPoint,
 "Answer true as long as worldPoint is inside our shape even if:
    - a submorph (above us) also covers it
    - a sibling that is above us or one of their submorphs also covers it.
