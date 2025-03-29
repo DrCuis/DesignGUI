@@ -40,7 +40,6 @@ Define the following instance methods.
 
 @smalltalkMethod{initialize,
 | button extent window |
-    
 button := PluggableButtonMorph
    model: self
       action: #toggleColor

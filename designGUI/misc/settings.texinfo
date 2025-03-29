@@ -93,16 +93,15 @@ texts. Your help is very valuable.
 @group
 @iftex
 @exdent@tie{}@tie{}@strong{\methodName\}
+@sansserif{\source\}
+@sp 1
 @end iftex
 @ifhtml
 @exdent@strong{\methodName\}
-@end ifhtml
 \source\
+@end ifhtml
 @end group
 @end display
-@iftex
-   @sp 1
-@end iftex
 @end macro
 
 @c Smalltalk example
