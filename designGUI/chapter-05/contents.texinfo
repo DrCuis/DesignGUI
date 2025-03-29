@@ -133,17 +133,19 @@ That's it for the models of the game.
 @subsection Memory Game View
 We have defined two model classes, so we may expect to define two view classes. Well, not necessary, here we just need to define one view class for the whole game and we use an existing view of @cuis{} for the card model, the @class{PluggableButtonMorph}
 
-We need to reshape @class{MemoryGameWindow} to contain only view related business, first in its attributes then its behaviors. First at all, @strong{a view always knows about its presenter}, it can even know about the model through the mediation of the presenter:
+We need to reshape @class{MemoryGameWindow} to contain only view related business, first in its attributes then its behaviors. First at all, @strong{a view always knows about its presenter}, it can even know about the model through the mediation of the presenter
 @smalltalkMethod{presenter: aPresenter,
 presenter := aPresenter.
 self model: presenter model}
 
-It also knows about some other views needed for its internal organisation and regulation:
+It also knows about some other views needed for its internal organisation and regulation
 @smalltalkExample{SystemWindow subclass: #MemoryGameWindow
    instanceVariableNames: 'presenter statusBar playground'
    @dots{}}
 
-Again the behaviors is stripped down to only view considerations and the @method{initialize} method is shortened. Installing the toolbar slightly differs, the model of the buttons is not any more the view but the presenter:
+Again the behaviors is stripped down to only view considerations and the @method{initialize} method is shortened.
+
+Installing the toolbar slightly differs,
 
 @smalltalkMethod{installToolbar,
 | toolbar button |
@@ -152,9 +154,11 @@ button := PluggableButtonMorph model: presenter action: #startGame ::
    enableSelector: #isStopped;
 @dots{}}
 
+the model of the buttons is not any more the view but the @smalltalk{presenter}.
+ 
 Indeed, we explained earlier it is the presenter responsibility to handle user events, the actions remain the same and we can anticipate the related methods will be transferred from the view to the presenter class.
 
-Now, we should look at installing the card view, it relies on the already instantiated card models. The logic of installing the card models then the card views is handled by the presenter, the middle-man:
+Now, we should look at installing the card views,
 
 @smalltalkMethod{installCards,
 | row size |
@@ -174,10 +178,46 @@ size := model size.
       row addMorph: cardView].
    playground addMorph: row ]}
 
-For clarity, we have presented above a shortened version of the @method{installCards} method without the dependency between the card model and card view. We discuss it later in this chapter.
+it relies on the already instantiated card models; we ask the game model all the card models: @smalltalk{model cards}.
+
+Observe how we just use a stock @class{PluggableButtonMorph} as a view for the card, indeed we don't need to specialize its behavior, so we keep it simple. Again, the @smalltalk{presenter}  handles the user click on the card, it should be understood as executing the statement @smalltalk{presenter flip: x@@y}@footnote{The message @msg{model:action:actionArgument:} to instantiate a button is extremely confusing in its @smalltalk{model:} keyword; it is not a model as we discussed earlier but only the receiver of the user action, the @emph{controller} in the sense of the @acronym{MVC} pattern.}
+
+For clarity, we have presented above a shortened version of the @method{installCards} method, without the dependencies between the card models and the card views. The logic of installing the card models then the card views is handled by the presenter, the middle-man, We discuss it in the next section. 
 
 @cindex @acronym{MVP,Model View Presenter} @subentry presenter
 @subsection Memory Game Presenter
+We define a new class @class{MemoryGame} as our presenter,
+
+@smalltalkExample{Object subclass: #MemoryGame
+   instanceVariableNames: 'model view playing'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'MemoryGameV2'}
+
+It acts as the entry point of a GUI application, therefore its name is kept short with no @emph{Presenter} fragment. A new game instance is then invoked by a simple
+
+@smalltalkExample{MemoryGame new}
+
+As we explained earlier, the presenter instantiates both the model and view,
+
+@smalltalkMethod{initialize,
+model := MemoryGameModel new.
+view := MemoryGameWindow presenter: self.
+self startGame.
+view openInWorld}
+
+observe the game model is attached neither to the view nor to the presenter.
+
+From the initialization, the game then is started
+
+@smalltalkMethod{startGame,
+model installCardModels.
+view installCards.
+view message: 'Starting a new game' bold green.
+view setLabel: 'P L A Y I N G'.
+playing := true}
+
+by invoking card models and views installations, it is asked to each object in charge of that business.
 
 
 @node The Three Musketeers
