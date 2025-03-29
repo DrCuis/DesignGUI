@@ -31,7 +31,7 @@ The @class{LayoutMorph} is such a class, so these can be nested
 which enables achieving practically any layout.
 
 Let's layout three instances of @class{ColoredBoxMorph}.  Using this
-kind of morph for examples allows us to clearly see their bounds.
+kind of morph for examples allows us to clearly see their bounds
 
 @smalltalkExampleCaption{Layout base example, layoutExample1,
 box1 := ColoredBoxMorph new color: Color red; morphExtent: 50 @@ 50.
@@ -106,8 +106,9 @@ right-align.  The following symbols can also be used for the argument:
 To change the minor axis alignment, @strong{send to each submorph} the
 message @msg{offAxisEdgeWeight:} with a floating point argument.  It
 takes the same argument values as the @msg{axisEdgeWeight:} message.
+
 Again, this message must be sent to each of the submorphs, not to the
-@class{LayoutMorph}.
+@class{LayoutMorph}
 
 @smalltalkExample{layout submorphsDo: [:submorph |
    submorph layoutSpec offAxisEdgeWeight: 0]}
@@ -219,7 +220,7 @@ free space and the second one three quarters.}
 @node Nest of layouts
 @section Nest of layouts
 To wrap up our discussion on using the @class{LayoutMorph} class,
-let's look at an example that nests layouts.
+let's look at an example that nests layouts
 
 @smalltalkExampleCaption{Nesting layouts,layoutNested1,
 column1 := LayoutMorph newColumn
@@ -248,8 +249,9 @@ row openInWorld.}
 @cindex layout @subentry debugging
 We can add a colored border to any morph that is an instance of a
 subclass of @class{BorderedBoxMorph}.  This is useful for debugging.
+
 Let's add borders to some of the morphs in the previous example
-@ref{layoutNested1}.
+@ref{layoutNested1}
 
 @smalltalkExampleCaption{Revealed nested layouts,layoutNested2,
 column1 := LayoutMorph newColumn
