@@ -180,7 +180,7 @@ size := model size.
 
 it relies on the already instantiated card models; we ask the game model all the card models: @smalltalk{model cards}.
 
-Observe how we just use a stock @class{PluggableButtonMorph} as a view for the card, indeed we don't need to specialize its behavior, so we keep it simple. Again, the @smalltalk{presenter}  handles the user click on the card, it should be understood as executing the statement @smalltalk{presenter flip: x@@y}@footnote{The message @msg{model:action:actionArgument:} to instantiate a button is extremely confusing in its @smalltalk{model:} keyword; it is not a model as we discussed earlier but only the receiver of the user action, the @emph{controller} in the sense of the @acronym{MVC} pattern.}
+Observe how we just use a stock @class{PluggableButtonMorph} as a view for the card, indeed we don't need to specialize its behavior, so we keep it simple. Again, the @smalltalk{presenter}  handles the user click on the card, it should be understood as executing the statement @smalltalk{presenter flip: x@@y} at the event@footnote{The message @msg{model:action:actionArgument:} to instantiate a button is extremely confusing in its @smalltalk{model:} keyword; it is not a model as we discussed earlier but only the receiver of the user action, the @emph{controller} in the sense of the @acronym{MVC} pattern.}
 
 For clarity, we have presented above a shortened version of the @method{installCards} method, without the dependencies between the card models and the card views. The logic of installing the card models then the card views is handled by the presenter, the middle-man, We discuss it in the next section. 
 
@@ -198,7 +198,7 @@ It acts as the entry point of a GUI application, therefore its name is kept shor
 
 @smalltalkExample{MemoryGame new}
 
-As we explained earlier, the presenter instantiates both the model and view,
+As we explained earlier, the presenter instantiates both the model and the view,
 
 @smalltalkMethod{initialize,
 model := MemoryGameModel new.
