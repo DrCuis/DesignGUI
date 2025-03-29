@@ -3,11 +3,7 @@
 
 @*
 
-This chapter does not cover low-level event handling like
-mouse clicks, mouse hovers, and key presses.
-Instead, it covers how to use existing widgets, pluggable morphs, etc.,
-and how to set up a model.
-Important facets to cover include the update/changes and observer pattern.
+This chapter covers the use of widgets of the base @cuis{} image. We hope the use case examples we explain in the sections of this chapter give you enought knowledge to explore further the @cuis{} widget and tools present in the base image. We disucss core functionnalities as associating a widget to a model, handling user interactions and updating widget from a model. We conclude the chapter with a fully functional. @xref{Memory Game v1}.
 
 @node Buttons
 @section Buttons
