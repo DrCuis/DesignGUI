@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7066] on 27 March 2025 at 6:00:44 pm'!
+'From Cuis7.3 [latest update: #7092] on 29 March 2025 at 11:02:16 pm'!
 'Description '!
-!provides: 'MemoryGameV2' 1 7!
+!provides: 'MemoryGameV2' 1 8!
 SystemOrganization addCategory: 'MemoryGameV2'!
 
 
@@ -92,15 +92,14 @@ initialize
 	super initialize.
 	done := flipped := false! !
 
-!MemoryGame methodsFor: 'callback ui' stamp: 'hlsf 3/22/2025 22:41:36'!
+!MemoryGame methodsFor: 'callback ui' stamp: 'hlsf 3/29/2025 23:00:43'!
 flip: position
 	| flippedCards |
 	(model cards at: position) 
 		flip;
 		triggerEvent: #lock.	
-	
-	" Do the flipped cards share the same color? "
 	flippedCards := model flippedCards.
+	" Do the flipped cards share the same color? "
 	(flippedCards collect: [:aCard | aCard color]) asSet size = 1 ifFalse: [
 		" NO "
 		" Some delay for the player to see the colors of these flipped cards "

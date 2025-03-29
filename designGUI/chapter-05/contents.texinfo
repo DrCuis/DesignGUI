@@ -219,6 +219,31 @@ playing := true}
 
 by invoking card models and views installations, it is asked to each object in charge of that business.
 
+We already learn the @method{flip:} method, called when the user click on a card, is now defined in the presenter.
+
+The method is quite similar to the previous iteration, except now we only know about the card model, the associated card view is unknown
+
+@smalltalkMethod{flip: position,
+| flippedCards |
+(model cards at: position) 
+   flip;
+   triggerEvent: #lock.	
+flippedCards := model flippedCards.
+@dots{}
+   " Unflip and unlock the flipped cards "
+   flippedCards do: [:aCard | 
+      aCard flip; 
+         triggerEvent: #flash;
+         triggerEvent: #unlock].
+   @return{} self].
+@dots{}
+   " We found a n-tuple! "
+   view message: 'Great!' bold@comma{} ' You find a '@comma{} model tupleSize asString@comma{} '-tuple!'.
+   flippedCards do: [:aCard | aCard triggerEvent: #flash].
+   flippedCards do: #setDone.
+@dots{}}
+
+To update the state of a card view, a card model trigger an event which is propagated to any card view listening to the event. We cover this technique in the next section.
 
 @node The Three Musketeers
 @section The Three Musketeers
