@@ -3,10 +3,18 @@
 
 @*
 
-This chapter covers the use of widgets of the base @cuis{} image. We hope the use case examples we explain in the sections of this chapter give you enought knowledge to explore further the @cuis{} widget and tools present in the base image. We disucss core functionnalities as associating a widget to a model, handling user interactions and updating widget from a model. We conclude the chapter with a fully functional. @xref{Memory Game v1}.
+This chapter covers the use of widgets of the base @cuis{} image. We hope the use case examples we explain in the sections of this chapter give you enought knowledge to explore further the @cuis{} widget and tools present in the base image. We disucss core functionnalities as associating a widget to a model, handling user interactions and updating widget from a model. We conclude the chapter with the fully functional @ref{Memory Game v1}.
 
-@node Buttons
-@section Buttons
+@menu
+* Button::
+* Menu::
+* Text entry::
+* List::
+@end menu
+
+@cindex widget @subentry button
+@node Button
+@section Button
 
 Perhaps the simplest user interaction to implement
 is responding to button clicks.
@@ -53,7 +61,7 @@ window
         
 extent := button morphExtent.
 "Add some space to the left and right of the button label."
-button morphExtent: (extent x + 15) @ extent y.
+button morphExtent: (extent x + 15) @@ extent y.
         
 "Set window size to the smallest height that contains its submorphs.
 This must be done AFTER the window is opened."
@@ -73,25 +81,29 @@ to see its tooltip (a.k.a balloon text).
 Click the "Toggle" button several times and
 note how the window background color changes.
 
-@node Popups
-@section Popups
+@cindex widget @subentry menu
+@node Menu
+@section Menu
+@cuis{} offers several easy to use options for menus to inform or to ask the user to make a choice.
 
+@cindex widget @subentry menu @subentry pop up
+@subsection Pop up
 The class @class{PopUpMenu} provides an easy way to render a dialog that
 displays information, asks the user for confirmation,
 or ask the user to select an option.
 It is similar to the JavaScript DOM functions @code{alert} and @code{confirm}.
 For example:
 
-@figure{PopupMenu inform, ch04-popupmenu-inform, 8}
+@figure{A pop up menu to inform, ch04-popupmenu-inform, 6}
 
 @smalltalkExample{PopUpMenu inform: 'Something interesting just happened.'.}
 
-@figure{PopupMenu confirm, ch04-popupmenu-confirm, 5}
+@figure{A pop up menu to answer Yes or No, ch04-popupmenu-confirm, 4}
 
 @smalltalkExample{likesIceCream := PopUpMenu confirm: 'Do you like ice cream?'.
 likesIceCream print. "prints true or false"}
 
-@figure{PopupMenu confirm:trueChoice:falseChoice:, ch04-popupmenu-confirm-truechoice-falsechoice, 5}
+@figure{A pop up menu to select among two choices, ch04-popupmenu-confirm-truechoice-falsechoice, 4}
 
 @smalltalkExample{likesIceCream := PopUpMenu
     confirm: 'Do you like ice cream?'
@@ -99,87 +111,94 @@ likesIceCream print. "prints true or false"}
     falseChoice: 'Not for me'.
 likesIceCream print. "prints true or false"}
 
-@figure{PopupMenu withCaption:chooseFrom, ch04-popupmenu-withcaption-choosefrom, 4}
+@figure{A pop up menu to select among several choices, ch04-popupmenu-withcaption-choosefrom, 3}
 
 @smalltalkExample{color := PopUpMenu withCaption: 'Choose a color.' chooseFrom: #('red' 'green' 'blue').
 color print. "prints choice index 1, 2, or 3"}
 
-The @class{SelectionMenu} class is a subclass of @class{PopupMenu}.
-For example:
+@cindex widget @subentry menu @subentry selection
+@subsection Selection menu
 
-@figure{SelectionMenu, ch04-selectionmenu, 3}
+The @class{SelectionMenu} class is a subclass of @class{PopupMenu}, it gives a bit more flexibility to the developer. Indeed, once the user selected a menu entry, instead of returning this index entry as @class{PopUp Menu} does, it returns an associated object to this entry. It is therefore more flexible.
 
-@smalltalkExample{labels := #(burrito enchilada taco chips quacamole salsa water soda tea).
+For example,
+
+@smalltalkExample{labels := #('Red sky at sunset' 'A Clockwork Orange' 'Yellow submarine' 'Green peace'
+   'The Blue dot' 'Purple rain').
 lines := #(3 6). "draw lines after these indexes"
 menu := SelectionMenu labels: labels lines: lines.
 selection := menu startUpMenu.
-selection print. "prints selected label index"}
+selection print. "prints the selected menu entry index"}
 
-The following code demonstrates opening a @class{SelectionMenu}
-when a button is clicked.
+still return the index of the selected menu entry, which may not be very helpful.
 
-@figure{SelectionMenu closed, ch04-selectionmenu1, 6}
+@figure{A selection menu without title, ch04-selectionmenu, 3}
 
-@figure{SelectionMenu open, ch04-selectionmenu2, 6}
+What we want is a color object instead of an index. To do so, we tell @class{SelectionMenu}
+about a collection of colors to pick-up the returned value from depending on the user selected menu entry
 
-@figure{SelectionMenu selected, ch04-selectionmenu3, 6}
+@smalltalkExample{@dots{}
+colors := @{Color red . Color orange. Color yellow . Color green . Color blue . Color purple@}.
+menu := SelectionMenu labels: labels lines: lines selections: colors.
+selection := menu startUpMenu.
+selection print. "prints the selected color"}
 
-Define the following class:
+In the following example we demonstrate a use case of @class{SelectionMenu} in a @class{MenuDemo} class
 
 @smalltalkExample{Object subclass: #MenuDemo
-   instanceVariableNames: 'colorButton colorMenu statusLabel colors window'
+   instanceVariableNames: 'colorButton statusLabel window'
    classVariableNames: ''
    poolDictionaries: ''
    category: 'Demos'}
 
-Define the following instance methods:
+@figure{A button to invoke a selection menu, ch04-selectionmenu1, 4.5}
+
+We put in place all the widgetery involved
 
 @smalltalkMethod{initialize,
-| layout |
-
 colorButton := PluggableButtonMorph
    model: self
    action: #openMenu
    label: 'Select Color'.
-
-colors := #(red orange yellow green blue purple).
-colorMenu := SelectionMenu labels: colors lines: #().
-
 statusLabel := LabelMorph contents: ''.
 
 window := SystemWindow new.
+window layoutMorph separation: 10.
 window
    setLabel: 'Menu Demo';
    addMorph: colorButton;
    addMorph: statusLabel;
-   openInWorld.
+   openInWorld;
+   morphExtent: (300 @@ window layoutMorph minimumExtent y)}
 
-"Set window size to the smallest height that contains its submorphs.
-This must be done AFTER the window is opened."
-layout := window layoutMorph.
-layout separation: 10.
-window morphExtent: 300 @ layout minimumExtent y}
+Once the button is clicked, we request at rune time the menu with the appropriate selection of colors to pick an answer from
+@smalltalkMethod{colorMenu,
+@return{} SelectionMenu 
+   labels: #('Red sky at sunset' 'A Clockwork Orange' 'Yellow submarine' 'Green peace'
+      'The Blue dot' 'Purple rain')
+   selections: @{Color red . Color orange. Color yellow . Color green . Color blue . Color purple@}}
 
+@figure{A selection menu open, ch04-selectionmenu2, 6}
+
+then we adjust the window color and button label accordingly
 @smalltalkMethod{openMenu,
-| color colorName index |
+| selectedColor |
+(selectedColor := self colorMenu startUpMenu) ifNotNil: [
+   colorButton label: selectedColor name.
+   statusLabel contents: ('You selected @{1@}.' format: @{ selectedColor name @}).
+   window layoutMorph color: (selectedColor alpha: 0.6) ]}
 
-index := colorMenu startUpMenu.
-index = 0 ifFalse: [
-   colorName := colors at: index.
-   colorButton label: colorName.
-   statusLabel contents: ('You selected @{1@}.' format: @{ colorName @}).
+@figure{Result of the user selection in the menu, ch04-selectionmenu3, 4.5}
 
-   color := colorName
-      ifNil: [ Color gray ]
-      ifNotNil: [ [ Color perform: colorName ] on: MessageNotUnderstood do: [ Color gray ] ].
-window layoutMorph color: (color alpha: 0.6) ]}
 
 To run this, evaluate @smalltalk{MenuDemo new} in a Workspace.
-@node Text Entry
-@section Text Entry
 
-The @class{TextModelMorph} class
-can be used for single or multiple line text entry.
+@cindex widget @subentry text entry
+@node Text entry
+@section Text entry
+
+The @class{TextModelMorph} class can be used for single or multiple
+line text entry.
 
 The following code creates an instance of @class{TextModelMorph},
 changes its value, and prints its value:
@@ -453,8 +472,9 @@ Define the instance method @method{initialize} as follows:
     extent := window layoutMorph minimumExtent.
     window morphExtent: 400 @@ extent y.}
 
-@node Lists
-@section Lists
+@cindex widget @subentry list
+@node List
+@section List
 
 The @class{PluggableListMorph} displays a scrollable list of items.
 Users can select an item by clicking it or by typing its first few letters.

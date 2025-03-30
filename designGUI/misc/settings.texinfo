@@ -40,8 +40,8 @@ texts. Your help is very valuable.
 
 @c Todo note, with an index entry to group them all
 @macro todo{note}
-@cindex @strong{to be written}, \note\
-@strong{To be written.} \note\
+@cindex @strong{todo}, \note\
+@strong{Todo.} \note\
 @end macro
 
 @c comment, with an index entry to group them all
