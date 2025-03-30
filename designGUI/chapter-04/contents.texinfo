@@ -123,8 +123,8 @@ The @class{SelectionMenu} class is a subclass of @class{PopupMenu}, it gives a b
 
 For example,
 
-@smalltalkExample{labels := #('Red sky at sunset' 'A Clockwork Orange' 'Yellow submarine' 'Green peace'
-   'The Blue dot' 'Purple rain').
+@smalltalkExample{labels := #('Red sky at sunset' 'A Clockwork Orange'
+   'Yellow submarine' 'Green peace' 'The Blue dot' 'Purple rain').
 lines := #(3 6). "draw lines after these indexes"
 menu := SelectionMenu labels: labels lines: lines.
 selection := menu startUpMenu.
@@ -393,7 +393,8 @@ lastName: aString
 Define the instance method @method{} as follows:
 
 @smalltalkExample{textEntryOn: aSymbol
-    "Answer a TextModelMorph where aSymbol provides the name for the getter and setter."
+    "Answer a TextModelMorph where aSymbol provides
+     the name for the getter and setter."
     | entry |
         
     entry := TextModelMorph
