@@ -130,7 +130,7 @@ menu := SelectionMenu labels: labels lines: lines.
 selection := menu startUpMenu.
 selection print. "prints the selected menu entry index"}
 
-still return the index of the selected menu entry, which may not be very helpful.
+still returns the index of the selected menu entry, which may not be very helpful.
 
 @figure{A selection menu without title, ch04-selectionmenu, 3}
 
@@ -171,7 +171,7 @@ window
    openInWorld;
    morphExtent: (300 @@ window layoutMorph minimumExtent y)}
 
-Once the button is clicked, we request at rune time the menu with the appropriate selection of colors to pick an answer from
+Once the button is clicked, we request at run time the menu with the appropriate selection of colors to pick an answer from
 @smalltalkMethod{colorMenu,
 @return{} SelectionMenu 
    labels: #('Red sky at sunset' 'A Clockwork Orange' 'Yellow submarine' 'Green peace'
