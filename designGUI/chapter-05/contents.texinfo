@@ -1,5 +1,5 @@
-@node Design GUI application
-@chapter Design GUI application
+@node Design a GUI application
+@chapter Design a GUI application
 
 @quotation
 Don't ask whether you can do something, but how to do it.
@@ -249,6 +249,36 @@ To update the state of a card view, a card model trigger an event which is propa
 @section The Three Musketeers
 
 The model, the view and the presenter are tied together. Unlike the three musketeers which were tied together by friendship and the fight for justice, our three objects are tied together by the dependency mechanism we were a little acclimated with in the previous chapter.
+
+Earlier we wrote a model does not know about its view(s). However how can a view be notified its model changed?
+
+@cindex dependency @subentry update
+@cindex dependency @subentry change
+@subsection update/change
+
+In the @acronym{MVC} design, a view is added as a dependent object to the model it wants to receive update from.
+
+@smalltalkExample{model addDependent: aView.
+@dots{}
+model changed: #color}
+
+Then the dependent view receives @msg{update:} message with an argument exposing the changed facet in the model. It must handle it appropriately
+
+@smalltalkMethod{view>>update: aSymbol,
+aSymbol == #color ifTrue: [self color: model color]
+@dots{}}
+
+A view can stop listening to a model to not receive @msg{update:} message anymore
+
+@smalltalkExample{model removeDependent: aView}
+
+There are two drawbacks to this design: all the changed facets in the model are handled in an unique @method{update:} method in each listening view, if there are a lot of facets to handle, the @method{update:} becomes cluttered. The update is sent to all the views, independently of there interest for a particular facet; think about a view not interested in the color model, it still receives color update.
+
+This is why there is the observer patter we discuss in the next section.
+
+
+@cindex dependency @subentry observer pattern
+@subsection The observer pattern
 
 How the M-V-P are tied together?
 
