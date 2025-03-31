@@ -3,7 +3,13 @@
 
 @*
 
-This chapter covers the use of widgets of the base @cuis{} image. We hope the use case examples we explain in the sections of this chapter give you enought knowledge to explore further the @cuis{} widget and tools present in the base image. We disucss core functionnalities as associating a widget to a model, handling user interactions and updating widget from a model. We conclude the chapter with the fully functional @ref{Memory Game v1}.
+This chapter covers the use of widgets in the base @cuis{} image.
+We hope the examples presented in this chapter provide
+enough knowledge to further explore the @cuis{} widgets and tools
+present in the base image. We discuss core functionalities such as
+associating a widget to a model, handling user interactions, and
+updating a widget from a model. We conclude the chapter with the
+fully functional @ref{Memory Game v1}.
 
 @menu
 * Button::
@@ -84,7 +90,8 @@ note how the window background color changes.
 @cindex widget @subentry menu
 @node Menu
 @section Menu
-@cuis{} offers several easy to use options for menus to inform or to ask the user to make a choice.
+@cuis{} offers several easy to use options for menus
+to inform or to ask the user to make a choice.
 
 @cindex widget @subentry menu @subentry pop up
 @subsection Pop up
@@ -134,8 +141,9 @@ still returns the index of the selected menu entry, which may not be very helpfu
 
 @figure{A selection menu without title, ch04-selectionmenu, 3}
 
-What we want is a color object instead of an index. To do so, we tell @class{SelectionMenu}
-about a collection of colors to pick-up the returned value from depending on the user selected menu entry
+What we want is a color object instead of an index. To do so,
+we tell @class{SelectionMenu} about a collection of colors from which to
+obtain the returned value depending on the user selected menu entry.
 
 @smalltalkExample{@dots{}
 colors := @{Color red . Color orange. Color yellow . Color green . Color blue . Color purple@}.
@@ -153,7 +161,7 @@ In the following example we demonstrate a use case of @class{SelectionMenu} in a
 
 @figure{A button to invoke a selection menu, ch04-selectionmenu1, 4.5}
 
-We put in place all the widgetery involved
+We put in place all the widgetery involved.
 
 @smalltalkMethod{initialize,
 colorButton := PluggableButtonMorph
@@ -171,7 +179,9 @@ window
    openInWorld;
    morphExtent: (300 @@ window layoutMorph minimumExtent y)}
 
-Once the button is clicked, we request at run time the menu with the appropriate selection of colors to pick an answer from
+Once the button is clicked, we request at run time the menu with
+the appropriate selection of colors from which to pick an answer.
+
 @smalltalkMethod{colorMenu,
 @return{} SelectionMenu 
    labels: #('Red sky at sunset' 'A Clockwork Orange' 'Yellow submarine' 'Green peace'
@@ -190,8 +200,26 @@ then we adjust the window color and button label accordingly
 
 @figure{Result of the user selection in the menu, ch04-selectionmenu3, 4.5}
 
-
 To run this, evaluate @smalltalk{MenuDemo new} in a Workspace.
+
+@cindex widget @subentry menu @subentry string request
+@subsection String request
+
+The class @class{StringRequestMorph} prompts the user to enter a text response.
+It can verify the response using a provided block that returns
+a Boolean value indicating whether the response is valid.
+It can also evaluate a block if the user clicks the cancel button.
+
+For example:
+
+@figure{A StringRequestMorph open, ch04-stringrequestmorph, 6}
+
+@smalltalkExample{StringRequestMorph
+    request: 'Comment'
+    initialAnswer: 'no comment'
+    verifying: [ :answer | answer isEmpty not ]
+    do: [ :answer | answer print ]
+    orCancel: [ 'canceled' print ].}
 
 @cindex widget @subentry text entry
 @node Text entry
