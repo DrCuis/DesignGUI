@@ -60,20 +60,18 @@ button := PluggableButtonMorph
       label: 'Toggle'.
 button setBalloonText: 'toggle background color'.
 window := SystemWindow new.
-window
-   setLabel: 'Button Demo';
-   addMorph: button;
-   openInWorld.
+window setLabel: 'Button Demo'; addMorph: button.
         
 extent := button morphExtent.
 "Add some space to the left and right of the button label."
 button morphExtent: (extent x + 15) @@ extent y.
         
-"Set window size to the smallest height that contains its submorphs.
-This must be done AFTER the window is opened."
+"Set window size to the smallest height that contains its submorphs."
 layout := window layoutMorph.
 layout padding: 10.
-window morphExtent: 300 @@ layout minimumExtent y.}
+window
+   morphExtent: 300 @@ layout minimumExtent y;
+   openInWorld.}
 
 @smalltalkMethod{toggleColor,
 layout color: (
@@ -489,17 +487,17 @@ Define the instance method @method{initialize} as follows:
         addMorph: (self rowLabeled: 'First Name:' for: firstNameEntry);
         addMorph: (self rowLabeled: 'Last Name:' for: lastNameEntry);
         addMorph: button;
-        addMorph: greetLabel;
+        addMorph: greetLabel.
+            
+    "Set window size to the smallest height that contains its submorphs."
+    extent := window layoutMorph minimumExtent.
+    window
+        morphExtent: 400 @@ extent y;
         openInWorld.
         
     "Set a background color so it's clear where the TextModelMorphs
     are placed when they do not have focus."
-    window layoutMorph color: (Color blue alpha: 0.1).
-            
-    "Set window size to the smallest height that contains its submorphs.
-    This must be done AFTER the window is opened."
-    extent := window layoutMorph minimumExtent.
-    window morphExtent: 400 @@ extent y.}
+    window layoutMorph color: (Color blue alpha: 0.1).}
 
 @cindex widget @subentry list
 @node List
@@ -563,16 +561,16 @@ Add the following instance methods:
         addMorph: colorList;
         addMorph: row;
         addMorph: deleteButton;
-        addMorph: selectedLabel;
-        openInWorld.
-    
-    self selectedColorIndex: 0. "sets initial background color"
+        addMorph: selectedLabel.
 
-    "Set window size to the smallest height that contains its submorphs.
-    This must be done AFTER the window is opened."
+    "Set window size to the smallest height that contains its submorphs."
     layout := window layoutMorph.
     layout separation: 10.
-    window morphExtent: 250 @@ layout minimumExtent y.}
+    window
+        morphExtent: 250 @@ layout minimumExtent y;
+        openInWorld.
+    
+    self selectedColorIndex: 0. "sets initial background color"}
 
 @smalltalkExample{addColor
     self newColor: newColorEntry text}
