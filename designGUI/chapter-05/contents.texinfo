@@ -243,15 +243,38 @@ flippedCards := model flippedCards.
    flippedCards do: #setDone.
 @dots{}}
 
-To update the state of a card view, a card model trigger an event which is propagated to any card view listening to the event. We cover this technique in the next section.
+@cindex event @subentry trigger
+Therefore, to update the state of a card view, a card model triggers events which are propagated to any card view listening to the events. An event is coded as a symbol representing an aspect of the model that changed. The symbol name is arbitrary chosen to be meaningful. In the @method{flip:} method there are three events:
+@itemize
+   @item
+   @smalltalk{#lock}. It informs the card is locked and it can not be played anymore
+
+   @item
+   @smalltalk{#flash}. It informs the card is revealing itself
+
+   @item
+   @smalltalk{#unlock}. It informs the card is unlocked and it can be played again.
+@end itemize
+
+When triggering an event, it is additionally possible to pass along a parameter. Observe  this feature in the model's @method{flip} method to inform about the card color changed
+
+@smalltalkMethod{MemoryCardModel>>flip,
+| newColor |
+flipped := flipped not.
+newColor := flipped ifTrue: [color ] ifFalse: [self backColor].
+self triggerEvent: #color with: newColor }
+
+How a view can listen to a given event is discussed in the next section.
 
 @node The Three Musketeers
 @section The Three Musketeers
 
-The model, the view and the presenter are tied together. Unlike the three musketeers which were tied together by friendship and the fight for justice, our three objects are tied together by the dependency mechanism we were a little acclimated with in the previous chapter.
+The model, the view and the presenter are tied together. Unlike the three musketeers which were tied together by friendship and the fight for justice, our three objects are tied together by the dependency mechanism we already discussed in the previous sections.
 
 Earlier we wrote a model does not know about its view(s). However how can a view be notified its model changed?
 
+@cindex event @subentry update
+@cindex event @subentry change
 @cindex dependency @subentry update
 @cindex dependency @subentry change
 @subsection update/change
@@ -262,25 +285,50 @@ In the @acronym{MVC} design, a view is added as a dependent object to the model 
 @dots{}
 model changed: #color}
 
-Then the dependent view receives @msg{update:} message with an argument exposing the changed facet in the model. It must handle it appropriately
+Then the dependent view receives @msg{update:} message with an argument exposing the changed aspect in the model. It must handle it appropriately
 
-@smalltalkMethod{view>>update: aSymbol,
-aSymbol == #color ifTrue: [self color: model color]
+@smalltalkMethod{view>>update: aspect,
+aspect == #color ifTrue: [self color: model color]
 @dots{}}
+
+
+Looking at the implementation of the @method{changed:} method is interesting
+
+@smalltalkMethod{Object>>changed: aspectSymbol,
+"Receiver changed. The change is denoted by the argument. 
+Usually the argument is a Symbol that is part of the observer's change 
+protocol. Inform all of the observers.
+Note: In Smalltalk-80 observers were called 'dependents'."
+
+self 
+   triggerEvent: #changed:
+   with: aspectSymbol}
+
+Underneath it is the trigger event we met in the previous section.
+
 
 A view can stop listening to a model to not receive @msg{update:} message anymore
 
 @smalltalkExample{model removeDependent: aView}
 
-There are two drawbacks to this design: all the changed facets in the model are handled in an unique @method{update:} method in each listening view, if there are a lot of facets to handle, the @method{update:} becomes cluttered. The update is sent to all the views, independently of there interest for a particular facet; think about a view not interested in the color model, it still receives color update.
+There are two drawbacks to this design: all the changed aspects in the model are handled in an unique @method{update:} method in each listening view, if there are a lot of aspects to handle, the @method{update:} becomes cluttered. The update is sent to all the views, independently of there interest for a particular aspect; think about a view not interested in the color model, it still receives color update.
 
-This is why there is the observer patter we discuss in the next section.
-
+This is why there is the observer pattern we discuss in the next section.
 
 @cindex dependency @subentry observer pattern
 @subsection The observer pattern
 
-How the M-V-P are tied together?
+When several views are tied to an identical model, a given view may only be interested to receive update of a specific aspect of the model.
 
-Why observer patter over change/update?
-In fact both: at widget change/update; at app level observer pattern
+To do so we specifically register the aspect a view is interested by
+@smalltalkExample{model when: #border send: #adjustBorder to: view.
+model when: #color send: #setColor: to: anotherView}
+
+then the model triggers events
+@smalltalkExample{model triggertEvent: border.
+model triggerEvent: #color with: Color red}
+
+and the effects on the views are equivalent to the sent messages
+@smalltalkExample{view adjustBorder.
+anotherView setColor: Color red}
+
