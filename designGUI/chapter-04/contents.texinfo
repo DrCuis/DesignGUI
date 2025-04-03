@@ -273,6 +273,10 @@ and where the current value is held.
 
 @end enumerate
 
+To display prompting text inside a @class{TextModelMorph}
+until the user begins typing a value,
+send it @msg{emptyTextDisplayMessage:} with a string message.
+
 The default background color of a @class{TextModelMorph} is white.
 A @class{TextModelMorph} only displays a border when it has focus.
 One way to make its bounds apparent when it doesn't have focus
@@ -416,7 +420,7 @@ lastName
 lastName: aString
     lastName := aString}
 
-Define the instance method @method{} as follows:
+Define the instance method @method{textEntryOn:} as follows:
 
 @smalltalkExample{textEntryOn: aSymbol
     "Answer a TextModelMorph where aSymbol provides
@@ -438,7 +442,7 @@ Define the instance method @method{} as follows:
     entry layoutSpec proportionalWidth: 1.
     ^ entry.}
 
-Define the instance method @method{rowLabel:} as follows:
+Define the instance method @method{rowLabeled:} as follows:
 
 @smalltalkExample{rowLabeled: aString for: aMorph
     "Answer a row LayoutMorph containing a LabelMorph and a given morph."
