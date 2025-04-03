@@ -87,6 +87,7 @@ A journey in Morph world.
 @verbatiminclude misc/MemoryGameV1-untabbed.pck.st
 @end smallformat
 @appendix Memory Game v2
+@anchor{Memory Game V2}
 @smallformat
 @verbatiminclude misc/MemoryGameV2-untabbed.pck.st
 @end smallformat

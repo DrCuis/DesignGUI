@@ -160,6 +160,7 @@ Indeed, we explained earlier it is the presenter responsibility to handle user e
 
 Now, we should look at installing the card views,
 
+@anchor{MemoryGameWindow>>installCards}
 @smalltalkMethod{installCards,
 | row size |
 playground removeAllMorphs.
@@ -247,13 +248,13 @@ flippedCards := model flippedCards.
 Therefore, to update the state of a card view, a card model triggers events which are propagated to any card view listening to the events. An event is coded as a symbol representing an aspect of the model that changed. The symbol name is arbitrary chosen to be meaningful. In the @method{flip:} method there are three events:
 @itemize
    @item
-   @smalltalk{#lock}. It informs the card is locked and it can not be played anymore
+   @smalltalk{lock}. It informs the card is locked and it can not be played anymore
 
    @item
-   @smalltalk{#flash}. It informs the card is revealing itself
+   @smalltalk{flash}. It informs the card is revealing itself
 
    @item
-   @smalltalk{#unlock}. It informs the card is unlocked and it can be played again.
+   @smalltalk{unlock}. It informs the card is unlocked and it can be played again.
 @end itemize
 
 When triggering an event, it is additionally possible to pass along a parameter. Observe  this feature in the model's @method{flip} method to inform about the card color changed
@@ -264,7 +265,7 @@ flipped := flipped not.
 newColor := flipped ifTrue: [color ] ifFalse: [self backColor].
 self triggerEvent: #color with: newColor }
 
-How a view can listen to a given event is discussed in the next section.
+All in all, there are four events triggered by a card model: @smalltalk{lock}, @smalltalk{flash}, @smalltalk{unlock} and @smalltalk{color}. How a view can listen to a given event is discussed in the next section.
 
 @node The Three Musketeers
 @section The Three Musketeers
@@ -275,8 +276,7 @@ Earlier we wrote a model does not know about its view(s). However how can a view
 
 @cindex event @subentry update
 @cindex event @subentry change
-@cindex dependency @subentry update
-@cindex dependency @subentry change
+@cindex dependency @seeentry{event}
 @subsection update/change
 
 In the @acronym{MVC} design, a view is added as a dependent object to the model it wants to receive update from.
@@ -291,8 +291,13 @@ Then the dependent view receives @msg{update:} message with an argument exposing
 aspect == #color ifTrue: [self color: model color]
 @dots{}}
 
+A view can stop listening to a model to not receive @msg{update:} message anymore
 
-Looking at the implementation of the @method{changed:} method is interesting
+@smalltalkExample{model removeDependent: aView}
+
+There are two drawbacks to this design: all the changed aspects in the model are handled in an unique @method{update:} method in each listening view, if there are a lot of aspects to handle, the @method{update:} becomes cluttered. Moreover, the update is sent to all the views, independently of there interest for a particular aspect; think about a view not interested in the change of the color aspect of a model, it still receives color update.
+
+The changed/update mechanism appeared with the @acronym{MVC} design, looking at the implementation of the @method{changed:} method is interesting
 
 @smalltalkMethod{Object>>changed: aspectSymbol,
 "Receiver changed. The change is denoted by the argument. 
@@ -304,18 +309,12 @@ self
    triggerEvent: #changed:
    with: aspectSymbol}
 
-Underneath it is the trigger event we met in the previous section.
+underneath it is implemented with the trigger event we met in the previous section. Indeed, it is now superseded and implemented with the observer pattern which offers more flexibility. We discuss it in the next section.
 
+The changes/update mechanism is still largely used in the Morphic widget, therefore it is worth getting acquainted with. 
 
-A view can stop listening to a model to not receive @msg{update:} message anymore
-
-@smalltalkExample{model removeDependent: aView}
-
-There are two drawbacks to this design: all the changed aspects in the model are handled in an unique @method{update:} method in each listening view, if there are a lot of aspects to handle, the @method{update:} becomes cluttered. The update is sent to all the views, independently of there interest for a particular aspect; think about a view not interested in the color model, it still receives color update.
-
-This is why there is the observer pattern we discuss in the next section.
-
-@cindex dependency @subentry observer pattern
+@cindex observer pattern @seeentry{event}
+@cindex event @subentry observer pattern
 @subsection The observer pattern
 
 When several views are tied to an identical model, a given view may only be interested to receive update of a specific aspect of the model.
@@ -325,10 +324,47 @@ To do so we specifically register the aspect a view is interested by
 model when: #color send: #setColor: to: anotherView}
 
 then the model triggers events
-@smalltalkExample{model triggertEvent: border.
+@smalltalkExample{model triggertEvent: #border.
 model triggerEvent: #color with: Color red}
 
 and the effects on the views are equivalent to the sent messages
 @smalltalkExample{view adjustBorder.
 anotherView setColor: Color red}
 
+The sent message is set at the registering time of the event with the message @msg{when:send:to:} and the optional parameter is set when triggering the event with the message @msg{triggerEvent:with:}.
+
+An additional flexibility of the observer pattern: it is not required to subclass the view to implement a specific method, as it was necessary with the @method{update:} method.
+
+In our memory game, this is one reason we dont't need to define a card view class, we use the stock @class{PluggableButtonMorph}. Observe how we register these events, we previously left out this part (@xref{MemoryGameWindow>>installCards})
+
+@smalltalkMethod{installCards,
+@dots{}
+cardView := PluggableButtonMorph model: presenter action: #flip: actionArgument: x@@y.
+cardModel
+   when: #color send: #color: to: cardView;
+   when: #lock send:#lock to: cardView;
+   when: #unlock send: #unlock to: cardView;
+   when: #flash send: #flash to: cardView.			
+cardView layoutSpec proportionalWidth: 1; proportionalHeight: 1.
+@dots{}}
+
+
+One last detail, to foster your understanding of the relation between these two event mechanisms, the @method{addDependent:} method is also implemented with the observer pattern
+
+@smalltalkMethod{Object>>addDependent: anObserver,
+"Make the given object one of the receiver's observers (dependents).
+Receivers of this message@comma{} i.e. objects being observed@comma{} are usually called Models.
+Observing can also be set up sending one of the #when:send:to: or #addDependent: messages.
+Models will send themselves #changed:@comma{} #changed or one of the #triggerEvent* messages to notify possible observers.
+If appropriate@comma{} it is best to make Models inherit from ActiveModel@comma{} for performance reasons."
+
+self
+   when: #changed:
+   send: #update:
+   to: anObserver.
+@return{} anObserver}
+
+
+@xref{Memory Game V2} for the complete game code.
+
+We end here our chapter regarding the design of a GUI application. The more you will use this design, the more you will appreciate it, particularly when project grows.
