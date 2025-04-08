@@ -530,125 +530,113 @@ Create the following class:
 
 Add the following instance methods:
 
-@smalltalkExample{initialize
-    | addButton layout row |
+@smalltalkMethod{initialize,
+| addButton layout row |
     
-    colors := SortedCollection newFrom: #(red orange yellow green blue purple).
-    selectedColorIndex := 0.
-    colorList := PluggableListMorph
-        withModel: self
-        listGetter: #colors
-        indexGetter: #selectedColorIndex
-        indexSetter: #selectedColorIndex:.
-    colorList layoutSpec proportionalWidth: 1.
+colors := SortedCollection newFrom: #(red orange yellow green blue purple).
+selectedColorIndex := 0.
+colorList := PluggableListMorph
+   withModel: self
+   listGetter: #colors
+   indexGetter: #selectedColorIndex
+   indexSetter: #selectedColorIndex:.
+colorList layoutSpec proportionalWidth: 1.
     
-    newColorEntry :=  self textEntryOn: #newColor.
-    newColorEntry emptyTextDisplayMessage: 'new color'.
+newColorEntry :=  self textEntryOn: #newColor.
+newColorEntry emptyTextDisplayMessage: 'new color'.
     
-    addButton := PluggableButtonMorph model: self action: #addColor label: 'Add'.
+addButton := PluggableButtonMorph model: self action: #addColor label: 'Add'.
     
-    row := LayoutMorph newRow
-        gap: 10;
-        addMorph: newColorEntry;
-        addMorph: addButton.
+row := LayoutMorph newRow
+   gap: 10;
+   addMorph: newColorEntry;
+   addMorph: addButton.
 
-    deleteButton := PluggableButtonMorph
-        model: self
-        action: #deleteColor
-        label: 'Delete Selected Color'.
+deleteButton := PluggableButtonMorph
+   model: self
+   action: #deleteColor
+   label: 'Delete Selected Color'.
     
-    selectedLabel := LabelMorph contents: ''.
+selectedLabel := LabelMorph contents: ''.
+window := SystemWindow new.    
+window
+   setLabel: 'List Demo';
+   addMorph: colorList;
+   addMorph: row;
+   addMorph: deleteButton;
+   addMorph: selectedLabel;
+   openInWorld.
+
+"sets initial background color"
+self selectedColorIndex: 0. 
+
+"Set window size to the smallest height that contains its submorphs."
+layout := window layoutMorph.
+layout separation: 10.
+window morphExtent: 250 @ layout minimumExtent y}
+
+@smalltalkMethod{addColor,
+self newColor: newColorEntry text}
+
+@smalltalkMethod{colors,
+@return{} colors}
+
+@smalltalkExample{deleteColor,
+selectedColorIndex = 0 ifFalse: [
+   colors removeAt: selectedColorIndex.
+   self selectedColorIndex: 0.
+   colorList updateList.
+   selectedLabel contents: '' ]}
+
+@smalltalkMethod{newColor,
+"In this app there is no need to retrieve this value or even hold it in an instance variable@comma{} but TextModelMorph requires that this method exists."
     
-    window := SystemWindow new.
-    window
-        setLabel: 'List Demo';
-        addMorph: colorList;
-        addMorph: row;
-        addMorph: deleteButton;
-        addMorph: selectedLabel.
+@return{} ''}
 
-    "Set window size to the smallest height that contains its submorphs."
-    layout := window layoutMorph.
-    layout separation: 10.
-    window
-        morphExtent: 250 @@ layout minimumExtent y;
-        openInWorld.
+@smalltalkMethod{newColor: aText,
+| potentialColor |
+
+potentialColor := aText asString withBlanksTrimmed.
+potentialColor ifNotEmpty: [
+   colors add: potentialColor asSymbol.
+   colorList updateList.
+   self selectedColorIndex: (colors indexOf: potentialColor )
+   self changed: #clearUserEdits.
+   self changed: #newColor ]}
+
+@smalltalkMethod{selectedColorIndex,
+@return{} selectedColorIndex}
+
+@smalltalkMethod{selectedColorIndex: anIndex,
+| color colorName selected |
     
-    self selectedColorIndex: 0. "sets initial background color"}
+selectedColorIndex := anIndex.
 
-@smalltalkExample{addColor
-    self newColor: newColorEntry text}
-
-@smalltalkExample{colors
-    ^ colors}
-
-@smalltalkExample{deleteColor
-
-    selectedColorIndex = 0 ifFalse: [
-        colors removeAt: selectedColorIndex.
-        self selectedColorIndex: 0.
-        colorList updateList.
-        selectedLabel contents: ''.
-    ]}
-
-@smalltalkExample{newColor
-    "In this app there is no need to retrieve this value
-    or even hold it in an instance variable, but
-    TextModelMorph requires that this method exists."
+selected := anIndex ~= 0.
+deleteButton enable: selected.
+colorName := selected ifTrue: [ colors at: anIndex ].
     
-    ^ ''}
+selectedLabel contents: (colorName
+   ifNil: ''
+   ifNotNil: [ 'You selected @{1@}.' format: @{ colorName @} ] ).
 
-@smalltalkExample{newColor: aText
-    | potentialColor |
+color := colorName
+   ifNil: [ Color gray ]
+   ifNotNil: [ [ Color perform: colorName ] on: MessageNotUnderstood do: [ Color gray ] ].
+window layoutMorph color: (color alpha: 0.6)}
 
-    potentialColor := aText asString withBlanksTrimmed.
-    potentialColor ifNotEmpty: [
-        colors add: potentialColor asSymbol.
-        colorList updateList.
-        self selectedColorIndex: (colors indexOf: potentialColor )
-        self changed: #clearUserEdits.
-        self changed: #newColor.
-    ].}
-
-@smalltalkExample{selectedColorIndex
-    ^ selectedColorIndex
-}
-
-@smalltalkExample{selectedColorIndex: anIndex
-    | color colorName selected |
-    
-    selectedColorIndex := anIndex.
-
-    selected := anIndex ~= 0.
-    deleteButton enable: selected.
-    colorName := selected ifTrue: [ colors at: anIndex ].
-    
-    selectedLabel contents: (colorName
-        ifNil: ''
-        ifNotNil: [ 'You selected @{1@}.' format: @{ colorName @} ]
-    ).
-
-    color := colorName
-        ifNil: [ Color gray ]
-        ifNotNil: [ [ Color perform: colorName ] on: MessageNotUnderstood do: [ Color gray ] ].
-    window layoutMorph color: (color alpha: 0.6).}
-
-@smalltalkExample{textEntryOn: aSymbol
-    "Answer a TextModelMorph where aSymbol provides the name for the getter and setter."
-    | entry |
+@smalltalkMethod{textEntryOn: aGetter,
+"Answer a TextModelMorph where aGetter provides the symbol for the getter."
+| entry |
         
-    entry := TextModelMorph
-        textProvider: self
-        textGetter: aSymbol 
-        textSetter: (aSymbol, ':') asSymbol ::
-        acceptOnCR: true;
-        askBeforeDiscardingEdits: false;
-        hideScrollBarsIndefinitely;
-        "Width is made proportional below.
-        Setting height to zero causes it to use minimum height for one line."
-        morphExtent: 0 @@ 0.
-    entry layoutSpec proportionalWidth: 1.
-    ^ entry.}
+entry := TextModelMorph
+   textProvider: self textGetter: aGetter textSetter: (aGetter@comma{} ':') asSymbol ::
+   acceptOnCR: true;
+   askBeforeDiscardingEdits: false;
+   hideScrollBarsIndefinitely.
 
-@menu
-@end menu
+Setting height to zero causes it to use minimum height for one line."
+entry morphExtent: 0 @@ 0.
+"Width is made proportional.
+entry layoutSpec proportionalWidth: 1.
+@return{} entry}
