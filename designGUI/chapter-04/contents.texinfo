@@ -16,6 +16,7 @@ fully functional @ref{Memory Game v1}.
 * Menu::
 * Text entry::
 * List::
+* Memory game::
 @end menu
 
 @cindex widget @subentry button
@@ -581,7 +582,7 @@ self newColor: newColorEntry text}
 @smalltalkMethod{colors,
 @return{} colors}
 
-@smalltalkExample{deleteColor,
+@smalltalkMethod{deleteColor,
 selectedColorIndex = 0 ifFalse: [
    colors removeAt: selectedColorIndex.
    self selectedColorIndex: 0.
@@ -640,3 +641,174 @@ entry morphExtent: 0 @@ 0.
 "Width is made proportional.
 entry layoutSpec proportionalWidth: 1.
 @return{} entry}
+
+@node Memory game
+@section Memory game
+To illustrate user interactions with the mouse, we present in this section a memory color game. This is a board game where a collection of cards are presented to the user with a common neutral color, each card has its own color, hidden at game start-up. The user must find the cards sharing the same color. When the user clicks on a card, its color is revealed, the card with the matching color must be found. When a pair of cards are found, these cards are not playable anymore; if not, the cards' color are hidden again.
+
+Two morphs are used in the design of the game: a kind of @class{SystemWindow} and a kind of @class{PluggableButtonMorph}. The complete source is presented in the appendix @ref{Memory Game v1} of the book. We will not present every part of the code design, but we will focus on the illustrative ones in regard of the topic of this chapter.
+
+@figure{Memory color game,ch04-MemoryGame,8}
+
+@cindex widget @subentry button
+@subsection The card
+What are the attributes we want a card to have? We need a card to have a specific @emph{card color} and a status flag to inform if we are @emph{done} with the card.
+
+The card is a morph able to paint itself with a color. It reacts to user click to flip itself between its own @emph{card color} and the common neutral color. What we want is a kind of button:
+
+@smalltalkExample{PluggableButtonMorph subclass: #MemoryCard
+   instanceVariableNames: 'cardColor done'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'MemoryGameV1'}
+
+the default color, common to all the card is white
+
+@smalltalkMethod{defaultColor,
+@return{} Color white}
+
+it knows to be flipped when its @smalltalk{cardColor} is used as the color of the button
+
+@smalltalkMethod{isFlipped,
+@return{} color = cardColor }
+
+and the card can flip between this common color and its own @smalltalk{cardColor}
+
+@smalltalkMethod{flip,
+color := self isFlipped ifTrue: [self defaultColor] ifFalse: [cardColor].
+self redrawNeeded}
+
+@smalltalk{color} is used to paint the button; when adjusting it, we send the message @msg{redrawNeeded} to the button to force its redraw.
+
+@cindex widget @subentry window
+@subsection The board
+What are the attributes of the game board? It knows about the @emph{playground} set with a specific @emph{size} where the @emph{cards} are presented to the user. It communicates messages through its @emph{status bar} and it knows if the user is @emph{playing} or not.
+
+The game is presented in a window with all these attributes:
+
+@smalltalkExample{SystemWindow subclass: #MemoryGameWindow
+   instanceVariableNames: 'size cards tupleSize statusBar playground playing'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'MemoryGameV1'}
+
+The board presents a toolbar, its playground and status bar in the window column @smalltalk{layoutMoprh}
+
+@smalltalkMethod{initialize,
+super initialize.
+size := 4 @@ 3.
+tupleSize := 2.
+playing := true.
+playground := LayoutMorph newColumn.
+self installToolbar.
+self addMorph: playground.
+self installCards.
+self installStatusBar}
+
+Indeed, by default a @class{SystemWindow} comes with a layout, set as a column. The @smalltalk{playground} is also a column layout, the cards are arranged into it in several rows.
+
+@cuis{} does not come with any notion of toolbar, but it is fairly easy to create one with a row layout and buttons:
+
+@smalltalkMethod{installToolbar,
+| toolbar button |
+toolbar := LayoutMorph newRow separation: 2.
+button := PluggableButtonMorph model: self action: #startGame :: 
+   enableSelector: #isStopped;
+   icon: Theme current playIcon;
+   borderWidth: 2;
+   borderColor: Color black;
+   setBalloonText: 'Play the game';
+   morphExtent: 32 asPoint.
+toolbar addMorph: button.
+@dots{}
+self addMorph: toolbar layoutSpec: LayoutSpec new useMorphHeight}
+
+Observe the @smalltalk{enableSelector: #isStopped}, indeed the ``Play'' button is only active when the game @smalltalk{isStopped}. The same applies with the ``Stop'' button -- not shown here. The toolbar height -- row layout -- is shrunk to the height of its submorphs, to do so the toolbar is added to the window with the appropriate specification @smalltalk{LayoutSpec new useMorphHeight}.
+
+The cards are installed in several rows in the @smalltalk{playground}, previously emptied. We remember about each card in a special @smalltalk{cards} array we can access with x and y coordinates, also the position in the playground. The colors to be used are randomly chosen and arranged in  :
+
+@smalltalkMethod{installCards,
+| colors  row |
+playground removeAllMorphs.
+cards := Array2D  newSize: size.
+colors := self distributeColors shuffled.
+1 to: size y do: [:y |
+   row := LayoutMorph newRow.
+   1 to: size x do: [:x | | card |
+      card := MemoryCard model: self action: #flip: actionArgument: x@@y.
+      card layoutSpec proportionalWidth: 1; proportionalHeight: 1.
+      card cardColor: colors removeFirst.
+      row addMorph: card.
+      cards at: x@@y put: card ].
+   playground addMorph: row ]}
+
+We make the card interactive (it is a button), when clicked the message @msg{flip:} is sent to the game window with argument the position in the @smalltalk{cards} array and playground:
+
+@smalltalkExample{MemoryCard model: self action: #flip: actionArgument: x@@y}
+
+@cindex morph @subentry @msg{lock}
+The core of the game logic is in the @method{flip:} method. It first flips and locks@footnote{The @msg{lock} message is part of the @class{Morph} protocol, it suppresses all kind of user interaction with a given morph.} the clicked card
+
+@smalltalkMethod{flip: position,
+| flippedCards |
+(cards at: position) flip; lock.}
+
+then it detects if all the flipped cards share the same color. To do so, we do a clever trick of Smalltalk: we collect all the colors of the flipped cards, then converts the collection of color as a @class{Set}, all duplicated colors are removed. If the resulting set size is not 1, it means cards have different colors. In that case inform the user with a message, then unflip and unlock the clicked cards:
+
+@smalltalkExample{flippedCards := self flippedCards.
+(flippedCards collect: [:aCard | aCard cardColor]) asSet size = 1 ifFalse: [
+   "Give some time for the player to see the color of this card "
+   self message: 'Colors do not match!'.
+   self world doOneCycleNow.
+   (Delay forSeconds: 1) wait.
+   " Color does not match@comma{} unflip the flipped cards and unlock "
+   flippedCards do: [:aCard | aCard flip; unlock].
+   @return{} self]}
+
+If the colors match, we check if we reach the @smalltalk{tupleSize} association count -- initialized by default to 2, to make pair of cards. If so, we make the cards to flash and we mark them as @smalltalk{done} so they can't be played anymore
+
+@smalltalkExample{
+   flippedCards size = tupleSize ifTrue: [
+      " We found a n-tuple! "
+      self message: 'Great!' bold@comma{} ' You find a '@comma{} tupleSize asString@comma{} '-tuple!'.
+      flippedCards do: #flash.
+      flippedCards do: #setDone.}
+
+At this point of the game logic, in the event of a game win, we inform the user and update the game status
+
+@smalltalkExample{
+      self isGameWon ifTrue: [
+         self message: 'Congatuluation@comma{} you finished the game!' bold red.
+         playing := false] ]}
+
+
+During the game logic, at several occurrences, we informed the user
+through messages. The message are printed in the status bar set at initialize time:
+
+@smalltalkMethod{installStatusBar,
+statusBar := TextParagraphMorph new
+   padding: 2;
+   color: Color transparent;
+   borderWidth: 1;
+   borderColor: self borderColor twiceLighter ;
+   setHeightOnContent.
+self addMorph: statusBar layoutSpec: LayoutSpec new useMorphHeight.
+self message: 'Welcome to '@comma{} 'Memory Game' bold}
+
+Its companion method to inform with a message is then a question of updating the @class{TextParagraphMorph} contents:
+
+@smalltalkMethod{message: aText,
+statusBar contents: aText ;
+   redrawNeeded }
+
+@cindex text
+@cindex widget @subentry text
+
+A message set to the status bar can be more than a plain string, it can be a @class{Text} instance with styling attributes. To do so, we send dedicated messages to a string, for example @smalltalk{'hello' bold} converts the 'hello' string as a @class{Text} set with a bold styling attribute.
+
+Examples of styling:
+
+@smalltalkExample{'Hello' red bold.
+'Hello ' italic, ' my love' red bold.}
+
+To discover more messages, browse the method categories @label{text conversion ...} of the @class{CharacterSequence} class.
