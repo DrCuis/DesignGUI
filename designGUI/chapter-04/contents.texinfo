@@ -648,7 +648,7 @@ To illustrate user interactions with the mouse, we present in this section a mem
 
 Two morphs are used in the design of the game: a kind of @class{SystemWindow} and a kind of @class{PluggableButtonMorph}. The complete source is presented in the appendix @ref{Memory Game v1} of the book. We will not present every part of the code design, but we will focus on the illustrative ones in regard of the topic of this chapter.
 
-@figure{Memory color game,ch04-MemoryGame,8}
+@figure{Memory color game, ch04-memoryGame,8}
 
 @cindex widget @subentry button
 @subsection The card
