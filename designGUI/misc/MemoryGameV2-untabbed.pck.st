@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7066] on 27 March 2025 at 6:00:44 pm'!
+'From Cuis7.3 [latest update: #7095] on 10 April 2025 at 10:56:43 am'!
 'Description '!
-!provides: 'MemoryGameV2' 1 7!
+!provides: 'MemoryGameV2' 1 9!
 SystemOrganization addCategory: 'MemoryGameV2'!
 
 
@@ -92,15 +92,14 @@ initialize
    super initialize.
    done := flipped := false! !
 
-!MemoryGame methodsFor: 'callback ui' stamp: 'hlsf 3/22/2025 22:41:36'!
+!MemoryGame methodsFor: 'callback ui' stamp: 'hlsf 3/29/2025 23:00:43'!
 flip: position
    | flippedCards |
    (model cards at: position) 
       flip;
       triggerEvent: #lock.   
-   
-   " Do the flipped cards share the same color? "
    flippedCards := model flippedCards.
+   " Do the flipped cards share the same color? "
    (flippedCards collect: [:aCard | aCard color]) asSet size = 1 ifFalse: [
       " NO "
       " Some delay for the player to see the colors of these flipped cards "
@@ -188,21 +187,13 @@ distributeColors
    tupleSize - 1 timesRepeat: [colors := colors, colors].
    ^ colors shuffled! !
 
-!MemoryGameModel methodsFor: 'accessing' stamp: 'hlsf 3/22/2025 15:09:49'!
+!MemoryGameModel methodsFor: 'accessing' stamp: 'hlsf 4/10/2025 10:55:03'!
 doneCards
-   | doneCards |
-   doneCards := OrderedCollection new.   
-   cards do: [:aCard | 
-      aCard isDone ifTrue: [doneCards add: aCard] ].
-   ^ doneCards ! !
+   ^ cards elements select: #isDone! !
 
-!MemoryGameModel methodsFor: 'accessing' stamp: 'hlsf 3/22/2025 15:10:37'!
+!MemoryGameModel methodsFor: 'accessing' stamp: 'hlsf 4/10/2025 10:55:14'!
 flippedCards
-   | flippedCards |
-   flippedCards := OrderedCollection new.   
-   cards do: [:aCard | 
-      (aCard isDone not and: [aCard isFlipped]) ifTrue: [flippedCards add: aCard] ].
-   ^ flippedCards ! !
+   ^ cards elements select: [:aCard | aCard isDone not and: [aCard isFlipped] ]! !
 
 !MemoryGameModel methodsFor: 'accessing' stamp: 'hlsf 3/22/2025 15:55:16'!
 size
@@ -218,13 +209,9 @@ undoneCards
       removeAll: self doneCards;
       yourself.! !
 
-!MemoryGameModel methodsFor: 'testing' stamp: 'hlsf 3/22/2025 15:13:27'!
+!MemoryGameModel methodsFor: 'testing' stamp: 'hlsf 4/10/2025 10:54:49'!
 isGameWon
-   | doneCards |
-   doneCards := OrderedCollection new.   
-   cards do: [:aCard | 
-      aCard isDone ifTrue: [doneCards add: aCard] ].
-   ^ doneCards size = (size x * size y)! !
+   ^ (cards elements select: #isDone) size = (size x * size y)! !
 
 !MemoryGameWindow methodsFor: 'accessing' stamp: 'hlsf 3/15/2025 18:52:39'!
 adoptWidgetsColor: paneColor

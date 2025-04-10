@@ -648,10 +648,13 @@ To illustrate user interactions with the mouse, we present in this section a mem
 
 Two morphs are used in the design of the game: a kind of @class{SystemWindow} and a kind of @class{PluggableButtonMorph}. The complete source is presented in the appendix @ref{Memory Game v1} of the book. We will not present every part of the code design, but we will focus on the illustrative ones in regard of the topic of this chapter.
 
+The game is started with
+@smalltalkExample{MemoryGameWindow new openInWorld}
+
 @figure{Memory color game, ch04-memoryGame,8}
 
 @cindex widget @subentry button
-@subsection The card
+@unnumberedsubsec The card
 What are the attributes we want a card to have? We need a card to have a specific @emph{card color} and a status flag to inform if we are @emph{done} with the card.
 
 The card is a morph able to paint itself with a color. It reacts to user click to flip itself between its own @emph{card color} and the common neutral color. What we want is a kind of button:
@@ -681,7 +684,7 @@ self redrawNeeded}
 @smalltalk{color} is used to paint the button; when adjusting it, we send the message @msg{redrawNeeded} to the button to force its redraw.
 
 @cindex widget @subentry window
-@subsection The board
+@unnumberedsubsec The board
 What are the attributes of the game board? It knows about the @emph{playground} set with a specific @emph{size} where the @emph{cards} are presented to the user. It communicates messages through its @emph{status bar} and it knows if the user is @emph{playing} or not.
 
 The game is presented in a window with all these attributes:
@@ -705,8 +708,9 @@ self addMorph: playground.
 self installCards.
 self installStatusBar}
 
-Indeed, by default a @class{SystemWindow} comes with a layout, set as a column. The @smalltalk{playground} is also a column layout, the cards are arranged into it in several rows.
+Indeed, by default a @class{SystemWindow} comes with a layout, set as a column. The @smalltalk{playground} is also a column layout, the cards are arranged into in several rows.
 
+@subsubsection Installing the game
 @cuis{} does not come with any notion of toolbar, but it is fairly easy to create one with a row layout and buttons:
 
 @smalltalkMethod{installToolbar,
@@ -723,9 +727,9 @@ toolbar addMorph: button.
 @dots{}
 self addMorph: toolbar layoutSpec: LayoutSpec new useMorphHeight}
 
-Observe the @smalltalk{enableSelector: #isStopped}, indeed the ``Play'' button is only active when the game @smalltalk{isStopped}. The same applies with the ``Stop'' button -- not shown here. The toolbar height -- row layout -- is shrunk to the height of its submorphs, to do so the toolbar is added to the window with the appropriate specification @smalltalk{LayoutSpec new useMorphHeight}.
+Observe @smalltalk{enableSelector: #isStopped}, indeed the ``Play'' button is only active when the game @smalltalk{isStopped}. The same applies with the ``Stop'' button -- not shown here. The toolbar height -- row layout -- is shrunk to the height of its submorphs, to do so the toolbar is added to the window with the appropriate specification @smalltalk{LayoutSpec new useMorphHeight}.
 
-The cards are installed in several rows in the @smalltalk{playground}, previously emptied. We remember about each card in a special @smalltalk{cards} array we can access with x and y coordinates, also the position in the playground. The colors to be used are randomly chosen and arranged in  :
+The cards are installed in several rows in the @smalltalk{playground}, previously emptied. We remember about each card in a special @smalltalk{cards} array we can access with x and y coordinates, also the position of a card in the playground. The colors to be used are randomly chosen and arranged in:
 
 @smalltalkMethod{installCards,
 | colors  row |
@@ -742,18 +746,19 @@ colors := self distributeColors shuffled.
       cards at: x@@y put: card ].
    playground addMorph: row ]}
 
-We make the card interactive (it is a button), when clicked the message @msg{flip:} is sent to the game window with argument the position in the @smalltalk{cards} array and playground:
+We make the card interactive, it is a button, when clicked the message @msg{flip:} is sent to the game window with argument the position in the @smalltalk{cards} array and playground:
 
 @smalltalkExample{MemoryCard model: self action: #flip: actionArgument: x@@y}
 
 @cindex morph @subentry @msg{lock}
+@subsubsection Game logic
 The core of the game logic is in the @method{flip:} method. It first flips and locks@footnote{The @msg{lock} message is part of the @class{Morph} protocol, it suppresses all kind of user interaction with a given morph.} the clicked card
 
 @smalltalkMethod{flip: position,
 | flippedCards |
 (cards at: position) flip; lock.}
 
-then it detects if all the flipped cards share the same color. To do so, we do a clever trick of Smalltalk: we collect all the colors of the flipped cards, then converts the collection of color as a @class{Set}, all duplicated colors are removed. If the resulting set size is not 1, it means cards have different colors. In that case inform the user with a message, then unflip and unlock the clicked cards:
+then it detects if all the flipped cards share the same color. To do so, we do a clever trick of Smalltalk: we collect all the colors of the flipped cards, then converts the collection of color as a @class{Set} instance, all duplicated colors are removed. If the size of the resulting set is not 1, it means cards have different colors. In that case, we inform the user with a message, then unflip and unlock the clicked cards:
 
 @smalltalkExample{flippedCards := self flippedCards.
 (flippedCards collect: [:aCard | aCard cardColor]) asSet size = 1 ifFalse: [
@@ -782,8 +787,9 @@ At this point of the game logic, in the event of a game win, we inform the user 
          playing := false] ]}
 
 
+@subsubsection Messages to the user
 During the game logic, at several occurrences, we informed the user
-through messages. The message are printed in the status bar set at initialize time:
+through messages. The message are printed in the status bar set at initialization time:
 
 @smalltalkMethod{installStatusBar,
 statusBar := TextParagraphMorph new
@@ -795,7 +801,7 @@ statusBar := TextParagraphMorph new
 self addMorph: statusBar layoutSpec: LayoutSpec new useMorphHeight.
 self message: 'Welcome to '@comma{} 'Memory Game' bold}
 
-Its companion method to inform with a message is then a question of updating the @class{TextParagraphMorph} contents:
+Its companion method to write a new text message just updates the contents of the @class{TextParagraphMorph} instance:
 
 @smalltalkMethod{message: aText,
 statusBar contents: aText ;
@@ -804,7 +810,7 @@ statusBar contents: aText ;
 @cindex text
 @cindex widget @subentry text
 
-A message set to the status bar can be more than a plain string, it can be a @class{Text} instance with styling attributes. To do so, we send dedicated messages to a string, for example @smalltalk{'hello' bold} converts the 'hello' string as a @class{Text} set with a bold styling attribute.
+A message sent to the status bar can be more than a plain string, it can be a @class{Text} instance with styling attributes. To do so, we send specific messages to a string, for example @smalltalk{'hello' bold} converts the 'hello' string as a @class{Text} set with a bold style.
 
 Examples of styling:
 
@@ -812,3 +818,30 @@ Examples of styling:
 'Hello ' italic, ' my love' red bold.}
 
 To discover more messages, browse the method categories @label{text conversion ...} of the @class{CharacterSequence} class.
+
+
+@subsubsection Access and test
+In the core logic of the game, we accessed the flipped cards in the playground. It is a matter of selecting the cards both @emph{not done} and @emph{flipped}.
+
+@smalltalkMethod{flippedCards,
+@return{} cards elements select: [:aCard | aCard isDone not and: [aCard isFlipped] ]}
+
+The @class{Array2D} instance of the @smalltalk{cards} variable offers access to its cells with x and y coordinates; however it does not offer the whole range of the @class{Collection} protocol, and particularly the @method{select:} method. Nevertheless, its underneath @smalltalk{elements} attribute is an @class{Array}, part of the @class{Collection} hierarchy, we use it to get the whole power of the @class{Collection} protocol.
+
+We proceed the same to select the done cards
+@smalltalkMethod{doneCards,
+@return{} cards elements select: #isDone}
+
+and undone cards are selected by a subtracting operation, prone to resist to code evolution in the card protocol
+
+@smalltalkMethod{undoneCards,
+@return{} cards elements asOrderedCollection 
+   removeAll: self doneCards;
+   yourself}
+
+In the core logic of the game, we test if the game is won, it is a matter of testing if all the cards @emph{are done}, in that case this count is equal to the number of cards in the game
+
+@smalltalkMethod{isGameWon,
+@return{} (cards elements select: #isDone) size = (size x * size y)}
+
+The remaining methods of the game does not require comment, they can be read in the complete source code of the @ref{Memory Game v1}.

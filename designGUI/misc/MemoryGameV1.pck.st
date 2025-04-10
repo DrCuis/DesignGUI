@@ -1,26 +1,26 @@
-'From Cuis7.3 [latest update: #7066] on 19 March 2025 at 4:40:42 pm'!
+'From Cuis7.3 [latest update: #7095] on 10 April 2025 at 10:53:03 am'!
 'Description '!
-!provides: 'MemoryGameV1' 1 5!
-SystemOrganization addCategory: 'MemoryGameV1'!
+!provides: 'MemoryGameV1' 1 6!
+SystemOrganization addCategory: #MemoryGameV1!
 
 
-!classDefinition: #MemoryCard category: 'MemoryGameV1'!
+!classDefinition: #MemoryCard category: #MemoryGameV1!
 PluggableButtonMorph subclass: #MemoryCard
 	instanceVariableNames: 'cardColor done'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV1'!
-!classDefinition: 'MemoryCard class' category: 'MemoryGameV1'!
+!classDefinition: 'MemoryCard class' category: #MemoryGameV1!
 MemoryCard class
 	instanceVariableNames: ''!
 
-!classDefinition: #MemoryGameWindow category: 'MemoryGameV1'!
+!classDefinition: #MemoryGameWindow category: #MemoryGameV1!
 SystemWindow subclass: #MemoryGameWindow
 	instanceVariableNames: 'size cards tupleSize statusBar playground playing'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV1'!
-!classDefinition: 'MemoryGameWindow class' category: 'MemoryGameV1'!
+!classDefinition: 'MemoryGameWindow class' category: #MemoryGameV1!
 MemoryGameWindow class
 	instanceVariableNames: ''!
 
@@ -66,13 +66,9 @@ flip
 	color := self isFlipped ifTrue:  [self defaultColor] ifFalse: [cardColor ].
 	self redrawNeeded ! !
 
-!MemoryGameWindow methodsFor: 'testing' stamp: 'hlsf 3/16/2025 17:30:44'!
+!MemoryGameWindow methodsFor: 'testing' stamp: 'hlsf 4/10/2025 10:52:04'!
 isGameWon
-	| doneCards |
-	doneCards := OrderedCollection new.	
-	cards do: [:aCard | 
-		aCard isDone ifTrue: [doneCards add: aCard] ].
-	^ doneCards size = (size x * size y)! !
+	^ (cards elements select: #isDone) size = (size x * size y)! !
 
 !MemoryGameWindow methodsFor: 'testing' stamp: 'hlsf 3/18/2025 23:42:35'!
 isPlayed
@@ -86,21 +82,13 @@ isStopped
 adoptWidgetsColor: paneColor
 " Does nothing, let the buttons have their own colors "! !
 
-!MemoryGameWindow methodsFor: 'accessing' stamp: 'hlsf 3/16/2025 17:26:44'!
+!MemoryGameWindow methodsFor: 'accessing' stamp: 'hlsf 4/10/2025 10:51:16'!
 doneCards
-	| doneCards |
-	doneCards := OrderedCollection new.	
-	cards do: [:aCard | 
-		aCard isDone ifTrue: [doneCards add: aCard] ].
-	^ doneCards ! !
+	^ cards elements select: #isDone! !
 
-!MemoryGameWindow methodsFor: 'accessing' stamp: 'hlsf 3/16/2025 17:26:15'!
+!MemoryGameWindow methodsFor: 'accessing' stamp: 'hlsf 4/10/2025 10:40:18'!
 flippedCards
-	| flippedCards |
-	flippedCards := OrderedCollection new.	
-	cards do: [:aCard | 
-		(aCard isDone not and: [aCard isFlipped]) ifTrue: [flippedCards add: aCard] ].
-	^ flippedCards ! !
+	^ cards elements select: [:aCard | aCard isDone not and: [aCard isFlipped] ]! !
 
 !MemoryGameWindow methodsFor: 'accessing' stamp: 'hlsf 3/16/2025 17:16:57'!
 message: aText
