@@ -9,7 +9,7 @@ Copyright @copyright{} 2025 @value{writers}
 
 Compilation : @today{}
 
-Documentation source: @url{https://github.com/hilaire/Cuis-Booklets} 
+Documentation source: @url{https://github.com/DrCuis/DesignGUI-booklet} 
 
 The contents of this booklet are protected under Creative Commons
 Attribution-ShareAlike 4.0 International.
