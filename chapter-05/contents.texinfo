@@ -365,6 +365,6 @@ self
 @return{} anObserver}
 
 
-@xref{Memory Game V2} for the complete game code.
+@xref{Memory Game v2} for the complete game code.
 
 We end here our chapter regarding the design of a GUI application. The more you will use this design, the more you will appreciate it, particularly when a project grows.
