@@ -13,7 +13,7 @@ In the previous chapter we explained how to handle user interactions on widgets 
 @menu
 * Responsibilities::
 * Model View Presenter::
-* The Three Musketeers ::
+* The Three Musketeers::
 @end menu
 
 @node Responsibilities
@@ -367,4 +367,4 @@ self
 
 @xref{Memory Game V2} for the complete game code.
 
-We end here our chapter regarding the design of a GUI application. The more you will use this design, the more you will appreciate it, particularly when project grows.
+We end here our chapter regarding the design of a GUI application. The more you will use this design, the more you will appreciate it, particularly when a project grows.
