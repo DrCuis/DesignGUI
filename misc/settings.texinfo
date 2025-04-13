@@ -16,6 +16,9 @@
 @c 7x9.25 inches 17.8x23.5 cm
 @c @smallbook
 
+@codequoteundirected off
+@codequotebacktick on
+
 @c Macro definitions
 @macro bookQuote
 @quotation
@@ -90,7 +93,7 @@ texts. Your help is very valuable.
 
 @c Smalltalk method
 @macro smalltalkMethod{methodName,source}
-@display
+@example
 @group
 @iftex
 @exdent@ @ @strong{\methodName\}
@@ -102,19 +105,19 @@ texts. Your help is very valuable.
 \source\
 @end ifhtml
 @end group
-@end display
+@end example
 @end macro
 
 @c Smalltalk example
 @macro smalltalkExample{example}
-@display
+@example
 @iftex
 @sansserif{\example\}
 @end iftex
 @ifhtml
 \example\
 @end ifhtml
-@end display
+@end example
 @iftex
    @sp 1
 @end iftex
@@ -123,14 +126,14 @@ texts. Your help is very valuable.
 @c Smalltalk example with caption
 @macro smalltalkExampleCaption{caption,label,example}
 @float Example,\label\
-@display
+@example
 @iftex
 @sansserif{\example\}
 @end iftex
 @ifhtml
 \example\
 @end ifhtml
-@end display
+@end example
 @caption{\caption\}
 @end float
 @iftex

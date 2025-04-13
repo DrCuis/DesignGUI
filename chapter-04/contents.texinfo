@@ -524,7 +524,9 @@ We define an action method for the unique button of our small application
 
 @smalltalkMethod{greet,
 | greeting |
-greeting := firstName ifEmpty: [''] ifNotEmpty: [ 'Hello @{1@} @{2@}!' format: @{firstName. lastName@} ].
+greeting := firstName
+   ifEmpty: ['']
+   ifNotEmpty: [ 'Hello @{1@} @{2@}!' format: @{firstName. lastName@} ].
 greetLabel contents: greeting}
 
 
@@ -534,7 +536,8 @@ Finally our our @method{initialize} method is packing all the involved morph tog
 | button image window |
 	
 "Relative file paths start from the Cuis-Smalltalk-Dev-UserFiles directory."
-image := ImageMorph newWith: (Form fromFileNamed: './hot-air-balloon.png' :: magnifyBy: 0.5).
+image := ImageMorph newWith: (Form fromFileNamed: './hot-air-balloon.png' ::
+   magnifyBy: 0.5).
 button := PluggableButtonMorph model: self action: #greet label: 'Greet'.
 greetLabel := LabelMorph contents: ''.
 	
