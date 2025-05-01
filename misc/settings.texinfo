@@ -111,12 +111,14 @@ texts. Your help is very valuable.
 @c Smalltalk example
 @macro smalltalkExample{example}
 @example
+@group
 @iftex
 @sansserif{\example\}
 @end iftex
 @ifhtml
 \example\
 @end ifhtml
+@end group
 @end example
 @iftex
    @sp 1

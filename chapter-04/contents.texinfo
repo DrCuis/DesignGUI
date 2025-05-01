@@ -361,19 +361,8 @@ By default, when there are more lines than fit in the height, a
 vertical scroll bar appears.  When wrapping is turned off, if the text
 does not fit in the width then a horizontal scroll bar appears.
 
-To prevent scroll bars from appearing, send one of the following
-messages to an instance:
-
-@itemize
-@item
-@msg{hHideScrollBar} for horizontal (doesn't seem to work!)
-
-@item
-@msg{vHideScrollBar} for vertical (doesn't seem to work!)
-
-@item
-@msg{hideScrollBarsIndefinitely} for both
-@end itemize
+To prevent scroll bars from appearing, send the following message to an
+instance @msg{hideScrollBarsIndefinitely}.
 
 @cindex widget @subentry text entry @subentry extent
 The default size of a @class{TextModelMorph} is 200 by 100.  This is
@@ -431,6 +420,7 @@ The user must select "Yes" to close the window.
 To disable this check for a particular instance of @class{TextModelMorph},
 send it @msg{askBeforeDiscardingEdits:} with the argument @smalltalk{false}.
 
+@cindex widget @subentry text entry @subentry one line
 The following code creates a single-line text input with a given width
 that never shows scroll bars:
 
@@ -484,15 +474,10 @@ Define the following accessor methods:
 @smalltalkMethod{firstName: aString,
 firstName := aString}
 
-@smalltalkMethod{lastName,
-@return{} lastName ifNil: [lastName := '']}
-
-@smalltalkMethod{lastName: aString,
-lastName := aString}
-
 @dots{}
 
-As we need two input fields, we define the instance method @method{textEntryOn:}
+As we need two input fields, we define the instance method
+@method{textEntryOn:}
 
 @smalltalkMethod{textEntryOn: aSymbol,
 "Answer a TextModelMorph where aSymbol provides the name for the getter and setter."
@@ -502,11 +487,14 @@ entry := TextModelMorph textProvider: self textGetter: aSymbol textSetter: (aSym
    askBeforeDiscardingEdits: false;
    hideScrollBarsIndefinitely;
    " Height to zero causes it to use minimum height for one line. "
-   morphExtent: 0 @ 0;
+   morphExtent: 0 @@ 0;
    tabToFocus: true;
    wrapFlag: false.
 entry layoutSpec proportionalWidth: 1. " width is 100 % " 
 @return{} entry}
+
+
+@cindex widget @subentry label
 
 Our text entries are then packed in row with the appropriate label
 
@@ -530,7 +518,8 @@ greeting := firstName
 greetLabel contents: greeting}
 
 
-Finally our our @method{initialize} method is packing all the involved morph together
+Finally our @method{initialize} method is packing all the involved morph
+together
 
 @smalltalkMethod{initialize,
 | button image window |
@@ -558,6 +547,8 @@ window morphExtent: 400 @@ window minimumExtent y.
 window layoutMorph 
    separation: 10;
    color: (Color blue alpha: 0.1)}
+
+In @ref{Which components? Where to find more?}, you will learn how to use additional @cuis{} packages to ease the creation of such dialog window.
 
 			
 @cindex widget @subentry list
@@ -674,7 +665,7 @@ deleteButton enable: selected.
 colorName := selected ifTrue: [ colors at: anIndex ].
     
 selectedLabel contents: (colorName
-   ifNil: ''
+   ifNil: ['']
    ifNotNil: [ 'You selected @{1@}.' format: @{ colorName @} ] ).
 
 color := colorName
@@ -692,9 +683,7 @@ entry := TextModelMorph
    askBeforeDiscardingEdits: false;
    hideScrollBarsIndefinitely.
 
-Setting height to zero causes it to use minimum height for one line."
 entry morphExtent: 0 @@ 0.
-"Width is made proportional.
 entry layoutSpec proportionalWidth: 1.
 @return{} entry}
 

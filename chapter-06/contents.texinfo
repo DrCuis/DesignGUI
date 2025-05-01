@@ -3,6 +3,160 @@
 
 @*
 
+
+In this chapter we present additional morphs useful to build GUI. Some of these components ease the process of designing GUI dialog as presented in @ref{Handle user interaction}. However, many bring additional features, we will present a selection of those ones.
+
 @menu
+* Cuis-Smalltalk-UI::
+* Easing GUI design::
+* Additional features::
 @end menu
+
+@cindex widget @subentry additional components
+@node Cuis-Smalltalk-UI
+@section Cuis-Smalltalk-UI
+
+Checkout you have the @file{Cuis-Smalltalk-UI} repository already installed. It
+comes with several @cuis{} packages for GUI building. If not present in your host, clone its repository in your parent directory of your installed @file{Cuis-Smalltalk-Dev} system:
+
+@example
+cd yourPath/Cuis-Smalltalk-Dev
+cd ..
+git clone --depth 1 http://github.com/Cuis-Smalltalk/Cuis-Smalltalk-UI
+@end example
+
+The repository contents is divided in several packages whose classes are listed for reference in the @file{README} page of the repository.
+
+In the following chapter we install individually the appropriate package
+when needed.
+
+@node Easing GUI design
+@section Easing GUI design
+Let's star the exploration with a few components to ease the creation of
+a GUI.
+
+@cindex widget @subentry label @subentry squeeze
+@subsection Label that squeeze
+Sometime, label may have a tendency to occupy more place than available. It becomes particularly true when you do not control the content of a label when an application is translated in other languages, with a more or less verbose way to express messages or concepts.
+
+The @class{SqueezeLabelMorph} tries its best to contract a message in a
+given amount of character. It is part of the @file{UI-Core.pck.st} package, in a Workspace install it by executing the appropriate command:
+
+@smalltalkExample{Feature require: 'UI-Core'}
+
+This kind of label is set with a minimum number of characters it is willing to display. If that minimum number is lower than the label's content, it will contract the text:
+
+@smalltalkExample{(SqueezeLabelMorph 
+   contents: 'I am a very looong label with maybe not enought place for me'
+   minCharsToShow: 20) openInWorld.}
+
+The content of the label is very long, particularly as we inform the label accepts to be squeezed to a minimum of 20 characters. Observe how such squeezed label reveals its complete content in a balloon text when the pointer is hovering it.
+
+@figure{A label squeezed to 20 characters,ch06-squeezeLabel,6}
+
+When more space is made available to the label, more text of its content is revealed:
+
+@figure{A squeezed label given some more space,ch06-squeezeLabelMore,6}
+
+When packing a @class{SqueezeLabel} in a layout morph with other morph, it will have consequence on the minimal width of the owner layout.
+
+Compare the two examples with a squeezed and regular label:
+
+@smalltalkExample{| label row | 
+label := SqueezeLabelMorph 
+	contents: 'I am a very long label'
+	minCharsToShow: 15.
+row := LayoutMorph newRow.
+row
+   addMorph: label;
+   addMorph: (TextModelMorph withText: 'some input' :: morphExtent: 100@@0).
+row openInWorld}
+
+The whole layout is contracted to a smaller width
+
+@figure{A text entry with a squeezed label,ch06-squeezeLabelLayout,4}
+
+when comparing to a regular label use case
+
+@figure{A text entry with a regular label,ch06-labelLayout,5}
+
+@smalltalkExample{| row | 
+row := LayoutMorph newRow.
+row
+   addMorph: (LabelMorph contents: 'I am a very long label');
+   addMorph: (TextModelMorph withText: 'some input' :: morphExtent: 100@@0).
+row openInWorld}
+
+It is up to you to decide between the compactness of the GUI and the readability of the labels.
+
+@cindex widget @subentry text entry @subentry one line
+@subsection One line entry
+In @ref{Text entry}, we presented a quite complex and feature complete class to handle multiple line of text editing. When only one line editing is needed it is a bit overkill, in that circumstance you can alternatively use the @class{TextEntryMorph}, part of the @file{UI-Entry} package:
+
+@example
+Feature require: 'UI-Entry'
+@end example
+
+This class is quite simple and contrary to the @class{TextModelMorph} it
+does need a text model. Therefore there is no such things as changed and
+update mechanism involved, it is a passive morph.
+
+However, it offers two options to interact with other objects:
+
+@enumerate
+@item
+Send it the message @msg{acceptCancelReceiver:} to attach an object answering to the @msg{accept} and @msg{cancel} messages when the @kbd{Enter} or @kbd{Esc} keys are pressed.
+
+@item
+Send it the message @msg{crAction:} to set a block of code, with no argument, to be executed when the @kbd{Enter} key is pressed.
+@end enumerate
+
+Let's experiment with the associated object answering to the @msg{accept} and @msg{cancel} messages. We need a @class{TextEntryDemo} class:
+
+@smalltalkExample{Object subclass: #TextEntryDemo
+   instanceVariableNames: 'value entry'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'DesignGUI-Booklet'}
+
+At initialize time we create all the needed objects:
+
+@smalltalkMethod{initialize,
+value := '42'.
+entry := TextEntryMorph contents: value.
+entry acceptCancelReceiver: self.
+entry openInWorld}
+
+Now we make our @class{TextEntryDemo} to respond to the @msg{accept} and @msg{cancel} messages.
+
+When pressing @kbd{Enter}, we update our @smalltalk{value} attribute
+@smalltalkMethod{accept,
+value := entry contents.
+'I accepted the input ' print.
+('value = '@comma{} value) print}
+
+but when pressing @kbd{Esc} we just delete the morph
+
+@smalltalkMethod{cancel,
+'I discarded the input' print.
+entry delete}
+
+
+Observe we only need the accessors @msg{contents}/@msg{contents:} to set and retrieve its content. It is a very simple class to use. If dependency mechanism where to be needed, an intermediate object as the @class{TextEntryDemo} can still be used with the observer pattern.
+
+@subsection Labelling widget
+
+@subsection Packing in Panel & Dialog
+
+@node Additional features
+@section Additional features
+
+@subsection Radio and Check buttons
+CheckButton/RadioButon Morph and more interestingly CheckGroup/RadioGroup
+@subsection Drop down button
+    DropDownButtonMorph and all related family
+@subsection Decorating Widget
+
+@subsection Importing icons
+
 
