@@ -2,3 +2,4 @@
 @chapter Advanced design patterns in GUI
 
 @*
+
