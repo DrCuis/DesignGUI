@@ -144,9 +144,38 @@ entry delete}
 
 Observe we only need the accessors @msg{contents}/@msg{contents:} to set and retrieve its content. It is a very simple class to use. If dependency mechanism where to be needed, an intermediate object as the @class{TextEntryDemo} can still be used with the observer pattern.
 
+@cindex widget @subentry labelling
 @subsection Labelling widget
 
+In @ref{textModelMorphExample,,example of text entry}, we use layout to associate a text entry with a label. It is something very common when building a GUI, the @class{LabelGroup} does exactly that for an arbitrary number of morphs.
+
+@example
+Feature require: 'UI-Widgets'
+@end example
+
+When creating a @class{LabelGroup}, the user gets a layout to be inserted in a dialog or a window. The @ref{textModelMorphExample,, example of text entry} could be simplified in its GUI construction:
+
+@smalltalkExample{(LabelGroup with: @{
+'First Name:' -> TextEntryMorph new.
+'Last Name:' -> TextEntryMorph new@}) openInWorld}
+
+@figure{Text entries associated with labels,ch06-labelGroup,3.5}
+
+The label group also gives access to the controls, although it is not a very efficient way to access the input widgets used in the group, it is handy:
+
+@figure{Access to the controls of a label group,ch06-labelGroupControls,6}
+
+A label group is very handy when constructing small dialog, in the next section we revisit @ref{textModelMorphExample,, example of text entry} with the morphs we learn in this section and the previous ones.
+
 @subsection Packing in Panel & Dialog
+Small window the user interact with are called dialog or
+panel, @file{Cuis-Smalltalk-UI} offers several alternatives to use.
+
+@example
+Feature require: 'UI-Panel'
+@end example
+
+- rework the text entry morph: subclass Panel, implement a model class, need a pciture too, use text entry and label group
 
 @node Additional features
 @section Additional features

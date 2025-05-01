@@ -452,6 +452,7 @@ their ASCII codes and character representations to the Transcript.
    evt keyValue print.
    evt keyCharacter print ]}
 
+@anchor{textModelMorphExample}
 Let's combine what we have learned above to create a small
 application.  The user can enter their first and last name.  Clicking
 the "Greet" button displays a greeting message below the button.
