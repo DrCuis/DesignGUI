@@ -298,8 +298,46 @@ self color: (Color perform: aColorSymbol asLowercase asSymbol)}
 
 @figure{Our enhanced dialog to select color with radio buttons,ch06-greetLabelRadio,6}
 
+@cindex widget @subentry drop down button
 @subsection Drop down button
-    DropDownButtonMorph and all related family
+A drop down button is a button whose content is selected from a drop down list. When the user clicks such a button, a menu is displayed below the button. The content of the list is textual when using the class @class{DropDownListMorph} or it can be any kind of morph when using the class @class{DropDownButtonMorph}.
+
+We can add a drop down button to let the user selects an icon to decorate our greeting dialog.
+
+We adjust our existing code to add an image morph to the pane and the drop down button
+
+@smalltalkMethod{newPane,
+@dots{} 
+   'Last Name: ' -> (lastName := TextEntryMorph contents: '') .
+   'Prefered icon: ' -> self dropDownIcons @rbracechar{} .
+@dots{}
+column 
+   addMorph: (myImage := ImageMorph new);
+   addMorph: group layoutSpec: (LayoutSpec  fixedWidth: 300);
+@dots{}}
+
+the creation of the button is delegated to another method:
+
+@smalltalkMethod{dropDownIcons,
+| morphs listModel | 
+morphs := #(addressBookIcon chatIcon clockIcon doItIcon findIcon) collect: [:anIcon |
+   ImageMorph new ::
+      image: ((Theme current perform: anIcon) magnifyTo: 32@@32) ].
+listModel := ListModel with: morphs.
+listModel when: #listSelectionChanged send: #updateIcon: to: self.
+@return{} DropDownButtonMorph 
+   withModel: listModel listGetter: #list indexGetter: #listIndex indexSetter: #listIndex:}
+
+We create a collection of image morphs each with a different icon. We use a @class{ListModel} to hold the collection and trigger event when the @emph{list selection is changed}. In that circumstance the message @msg{updateIcon:} is sent to the dialog with argument the list model, this method is straightforward:
+
+@smalltalkMethod{updateIcon: aListModel,
+myImage image: aListModel selectedItem form}
+
+@figure{A Drop down button of image morphs,ch06-dropDownButton,6}
+
+It is possible to use an application model instead of a @class{ListModel}. In that circumstance the associated getter and setter would be implemented in this model too.
+
+
 @subsection Decorating Widget
 
 @subsection Importing icons
