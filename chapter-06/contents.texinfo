@@ -145,6 +145,7 @@ entry delete}
 Observe we only need the accessors @msg{contents}/@msg{contents:} to set and retrieve its content. It is a very simple class to use. If dependency mechanism where to be needed, an intermediate object as the @class{TextEntryDemo} can still be used with the observer pattern.
 
 @cindex widget @subentry labelling
+@cindex widget @subentry group
 @subsection Labelling widget
 
 In @ref{textModelMorphExample,,example of text entry}, we use layout to associate a text entry with a label. It is something very common when building a GUI, the @class{LabelGroup} does exactly that for an arbitrary number of morphs.
@@ -153,7 +154,7 @@ In @ref{textModelMorphExample,,example of text entry}, we use layout to associat
 Feature require: 'UI-Widgets'
 @end example
 
-When creating a @class{LabelGroup}, the user gets a layout to be inserted in a dialog or a window. The @ref{textModelMorphExample,, example of text entry} could be simplified in its GUI construction:
+When creating a @class{LabelGroup}, we associate labels and widgets/controls in an unique group. In return the user gets a layout to be inserted in a dialog or a window.
 
 @smalltalkExample{(LabelGroup with: @{
 'First Name:' -> TextEntryMorph new.
@@ -161,27 +162,142 @@ When creating a @class{LabelGroup}, the user gets a layout to be inserted in a d
 
 @figure{Text entries associated with labels,ch06-labelGroup,3.5}
 
-The label group also gives access to the controls, although it is not a very efficient way to access the input widgets used in the group, it is handy:
+The group also gives access to the controls, although it is not a very efficient way to access the input widgets used in the group, it is handy:
 
 @figure{Access to the controls of a label group,ch06-labelGroupControls,6}
 
-A label group is very handy when constructing small dialog, in the next section we revisit @ref{textModelMorphExample,, example of text entry} with the morphs we learn in this section and the previous ones.
+A label group is useful when constructing small dialog, in the next section we build one with the morphs we learnt in this section and the previous ones.
 
+@cindex panel
+@cindex dialog
+@cindex window @subentry panel
+@cindex window @subentry dialog
 @subsection Packing in Panel & Dialog
-Small window the user interact with are called dialog or
-panel, @file{Cuis-Smalltalk-UI} offers several alternatives to use.
+Small window the user interact with are called dialog or panel, @file{Cuis-Smalltalk-UI} offers several alternatives to use.
 
 @example
 Feature require: 'UI-Panel'
 @end example
 
-- rework the text entry morph: subclass Panel, implement a model class, need a pciture too, use text entry and label group
+Let's rewrite the @ref{textModelMorphExample,, example of text entry} with what we just learnt. The end result will look like this:
+
+@figure{A greeting dialog,ch06-greetingDialog,6}
+
+
+In the hierarchy provided by the @file{UI-Panel} package, we use the @class{DialogPanel} class. It offers both an area to plug our interactive components and an area for our button.
+
+@smalltalkExample{DialogPanel subclass: #GreetingPanel
+   instanceVariableNames: 'firstName lastName greetLabel'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'DesignGUI-Booklet'}
+
+We set the default color of the dialog
+
+@smalltalkMethod{defaultColor,
+@return{} `Color lightOrange`}
+
+then install the iconic buttons for its title
+
+@smalltalkMethod{initialize,
+super initialize.
+self showButtonsNamed: #(close expand)}
+
+To know about the available buttons for the title bar of a panel, read the class @class{WindowTitleMorph}. The expand action needs a rewrite of its associated action
+
+@smalltalkMethod{expandButtonClicked,
+self fullScreen}
+
+We set our components in the dedicated @method{newPane} method of the @class{Dialog} hierarchy:
+
+@smalltalkMethod{newPane,
+| column group |
+column := LayoutMorph newColumn :: 
+   color: Color transparent;
+   gap: 10 .
+group := LabelGroup with: @{
+   'First Name: ' -> (firstName := TextEntryMorph contents: '') .
+   'Last Name: ' -> (lastName := TextEntryMorph contents: '') @}.
+greetLabel := LabelMorph contents: '' font: nil emphasis: 1.
+column 
+   addMorph: group layoutSpec: (LayoutSpec fixedWidth: 300);
+   addMorph: greetLabel layoutSpec: (
+      LayoutSpec proportionalWidth: 0 fixedHeight: 20 offAxisEdgeWeight: #center).
+@return{} column}
+
+The button has its own method too for installation:
+
+@smalltalkMethod{newButtonArea,
+@return{} PluggableButtonMorph model: self action: #greet label: 'Greet' ::
+   color: self widgetsColor}
+
+Finally we implement the @method{greet} action of the button to update the @smalltalk{greetLabel}:
+
+@smalltalkMethod{greet,
+greetLabel contents: (
+   'Hello @{1@} @{2@}!' format: @{firstName contents. lastName contents@})}
+
 
 @node Additional features
 @section Additional features
 
+In the next sections we present a very small selection of useful components. There are many more to explore in the repository, they all come with example methods to learn from in their class side.
+
 @subsection Radio and Check buttons
-CheckButton/RadioButon Morph and more interestingly CheckGroup/RadioGroup
+
+These widgets are found in the @file{UI-Click-Select} package. 
+
+@cindex widget @subentry check button
+In a GUI, a check button represents a boolean value. There are used in group with a text label or any kind of morph to represent its iconic representation.
+
+@smalltalkExample{| column group |
+column := LayoutMorph newColumn.
+group := CheckGroup fromList: #('Cuis' 'Pharo' 'Squeak').
+group buttons do: [:each | each when: #checkSelection send: #show: to: Transcript].
+column
+   addMorph: (LabelMorph contents: 'I use...' bold);
+   addMorph: group.
+column openInWorld}
+
+@figure{A group of check button,ch06-checkGroup,1.5}
+
+To meaningfully manage the check and uncheck events, different action methods can be set for each check box. The previous example could be rewritten
+
+@smalltalkExample{@dots{}
+cuisCheck := [:check |
+   check isSelected
+   ifTrue: ['I use Cuis' print] ifFalse: ['I don''t use Cuis' print] ] .
+group buttons first 
+   when: #checkSelection 
+   send: #value: 
+   to: cuisCheck.
+@dots{}}
+
+Do not add the @smalltalk{cuisCheck} variable in the declaration, at the first line of the script, otherwise it will be garbage collected. Indeed action event are weakly referenced -- i.e. it does not add a count to its reference use.
+
+Of course in an application, you will use a method selector as the argument of the @msg{to:} keyword.
+
+@cindex widget @subentry radio button
+
+In a radio group, only one check button is selected at a time, when a new button is selected, the previously selected button is deselected. A radio button is drawn differently, as a circle. We can alter our previous greeting dialog to add a radio group to selected a preferred color:
+
+@smalltalkMethod{newPane,
+| column group radioColors |
+@dots{}
+radioColors := RadioGroup fromList: #(Blue White Red).
+radioColors when: #informRadioSelection send: #setColor: to: self.
+column 
+   addMorph: group layoutSpec: (LayoutSpec  fixedWidth: 300);
+   addMorph: radioColors beRow;
+@dots{}}
+
+and the associated action method
+
+@smalltalkMethod{setColor: aColorSymbol, 
+self color: (Color perform: aColorSymbol asLowercase asSymbol)}
+
+@figure{Our enhanced dialog to select color with radio buttons,ch06-greetLabelRadio,6}
+
 @subsection Drop down button
     DropDownButtonMorph and all related family
 @subsection Decorating Widget
