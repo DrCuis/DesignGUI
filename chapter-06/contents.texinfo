@@ -93,9 +93,7 @@ It is up to you to decide between the compactness of the GUI and the readability
 @subsection One line entry
 In @ref{Text entry}, we presented a quite complex and feature complete class to handle multiple line of text editing. When only one line editing is needed it is a bit overkill, in that circumstance you can alternatively use the @class{TextEntryMorph}, part of the @file{UI-Entry} package:
 
-@example
-Feature require: 'UI-Entry'
-@end example
+@smalltalkExample{Feature require: 'UI-Entry'}
 
 This class is quite simple and contrary to the @class{TextModelMorph} it
 does need a text model. Therefore there is no such things as changed and
@@ -150,9 +148,7 @@ Observe we only need the accessors @msg{contents}/@msg{contents:} to set and ret
 
 In @ref{textModelMorphExample,,example of text entry}, we use layout to associate a text entry with a label. It is something very common when building a GUI, the @class{LabelGroup} does exactly that for an arbitrary number of morphs.
 
-@example
-Feature require: 'UI-Widgets'
-@end example
+@smalltalkExample{Feature require: 'UI-Widgets'}
 
 When creating a @class{LabelGroup}, we associate labels and widgets/controls in an unique group. In return the user gets a layout to be inserted in a dialog or a window.
 
@@ -175,9 +171,7 @@ A label group is useful when constructing small dialog, in the next section we b
 @subsection Packing in Panel & Dialog
 Small window the user interact with are called dialog or panel, @file{Cuis-Smalltalk-UI} offers several alternatives to use.
 
-@example
-Feature require: 'UI-Panel'
-@end example
+@smalltalkExample{Feature require: 'UI-Panel'}
 
 Let's rewrite the @ref{textModelMorphExample,, example of text entry} with what we just learnt. The end result will look like this:
 
@@ -351,6 +345,8 @@ The class @class{DecoratedPane} is part of the @file{UI-Panel}, it is likely alr
 
 Let's go back to our greeting panel and decorate the @smalltalk{greetLabel} with an information label and two quick buttons: one to reset the greeting and a second one to greet the author of the running @cuis{} image. We need to edit again our @method{newPane} method:
 
+@cindex icon
+
 @smalltalkMethod{newPane,
 | column group radioColors decorator |
 @dots{}
@@ -383,6 +379,40 @@ Observe the @class{PluggableButtonMorph},  we use @class{BlockClosure} as a mode
 
 @figure{The greeting label decorated with two quick buttons, ch06-decoratedPane,6}
 
+@cindex icon @subentry importing
 @subsection Importing icons
+Icons are important when designing GUI, @cuis{} comes with a few set of icons. Explore the @label{icons} method category of the @class{Theme} class, each of these methods returns a @class{Form} to use as an icon in a @class{PluggableButtonMorph}.
+
+@smalltalkExample{PluggableButtonMorph 
+   model: self action: #close :: 
+   icon: Theme current closeIcon}
 
 
+@cindex icon @subentry @class{ContentPack}
+
+There are additional icons found in @class{ContentPack} instances. Invoke an explorer on @smalltalk{Theme content}@footnote{In a Workspace, highlight @smalltalk{Theme content} and do @kbd{Ctrl-Shift-I}} to browse those packs: 
+
+@figure{Content packs in @cuis{},ch06-contentPacks,9}
+
+To use one particular icon of a given content pack, you specify its size, the name of the content pack it belong to and the icon name without the file extension:
+
+@smalltalkExample{Theme current fetch: #('16x16' 'actions' 'appointment-new')}
+
+Several icons come with @emph{shortcut} found in the @class{Theme} class. 
+
+
+Now you may want to use alternative icons, this is where you can use the @class{IconImporter} class:
+@smalltalkExample{Feature require: 'UI-Graphic-Import'}
+
+It let you import both @acronym{PNG} and @acronym{SVG} graphic files and scale them at different sizes. You create an instance with a path where to search for the icons:
+
+@smalltalkExample{icons := IconImporter path: '/home/dev/Dynamic-Book/icons'}
+
+Then you ask for a @class{Form} or an @class{ImageMorph} of a given icon. To search for the file @file{group.svg} and scale it to 32x32 pixels:
+
+@smalltalkExample{icons getForm: #group32}
+
+There are several options to explore in @class{IconImporter}, particularly when you need to adjust the icons size to the screen density:
+@smalltalkExample{icons getForm: #group ofSize: MyApp iconSize}
+
+with @class{MyApp} deducing the @method{iconSize} from user preferences.
