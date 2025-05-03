@@ -337,8 +337,51 @@ myImage image: aListModel selectedItem form}
 
 It is possible to use an application model instead of a @class{ListModel}. In that circumstance the associated getter and setter would be implemented in this model too.
 
+@cindex widget @subentry decorated
+@subsection Decorating component
+Decorating a component is a nice way to set a label around one or several widgets, but it is much more than that. The decorated components are highlighted with a surrounding line and a textual label, then an optional list of quick buttons. The quick buttons can be anythings to operate on the surrounded components.
 
-@subsection Decorating Widget
+The class @class{DecoratedPane} is part of the @file{UI-Panel}, it is likely already installed on the @cuis{} system of the reader if the previous sections of this booklet were read. A decorate pane expect a morph to decorate, a string and an optional collection of buttons:
+
+@smalltalkExample{(DecoratedPane 
+   open: (Sample03Smiley new)
+   label: 'Be Happy') openInWorld }
+
+@figure{A smiley decorated with a 'Be Happy' slogan',ch06-beHappy,3}
+
+Let's go back to our greeting panel and decorate the @smalltalk{greetLabel} with an information label and two quick buttons: one to reset the greeting and a second one to greet the author of the running @cuis{} image. We need to edit again our @method{newPane} method:
+
+@smalltalkMethod{newPane,
+| column group radioColors decorator |
+@dots{}
+greetLabel := LabelMorph contents: '' font: nil emphasis: 1.
+decorator := DecoratedPane 
+   open: greetLabel 
+   label: 'Decorated Label'  
+   quickButtons: @{
+      PluggableButtonMorph 
+         model: [greetLabel contents: 'Hello ', Utilities authorName] action: #value :: 
+         icon: (Theme current fetch: #('16x16' 'actions' 'contact-new')) ; 
+         setBalloonText: 'Say hello to the Smalltalk author of this running Cuis image.' .
+      PluggableButtonMorph 
+         model: [greetLabel contents: ''] action: #value :: 
+         icon: (Theme current fetch: #('16x16' 'actions' 'edit-clear')); 
+         setBalloonText: 'Take back my greeting.' @}.
+@dots{}}
+
+Then in the column morph, we add the @smalltalk{decorator} instead of the @smalltalk{greetLabel}
+ 
+@smalltalkMethod{newPane,
+@dots{}
+column
+   @dots{}
+   addMorph: radioColors beRow;
+   addMorph: decorator.
+@dots{} }
+
+Observe the @class{PluggableButtonMorph},  we use @class{BlockClosure} as a model and the message @msg{value} as the action to get it executed at button click. In a real application you will more likely use an instance as a model and an associated method of its protocol.
+
+@figure{The greeting label decorated with two quick buttons, ch06-decoratedPane,6}
 
 @subsection Importing icons
 
