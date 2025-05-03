@@ -401,18 +401,42 @@ To use one particular icon of a given content pack, you specify its size, the na
 Several icons come with @emph{shortcut} found in the @class{Theme} class. 
 
 
-Now you may want to use alternative icons, this is where you can use the @class{IconImporter} class:
+Now you may want to use alternative icons, this is where you use the @class{IconImporter} class:
+
 @smalltalkExample{Feature require: 'UI-Graphic-Import'}
 
-It let you import both @acronym{PNG} and @acronym{SVG} graphic files and scale them at different sizes. You create an instance with a path where to search for the icons:
+Beware, it installs the @file{SVG} package too and its dependencies.
+
+It lets you import both @acronym{PNG} and @acronym{SVG} graphic files and scale them at different square sizes. You create an instance with a path where to search for the icons:
 
 @smalltalkExample{icons := IconImporter path: '/home/dev/Dynamic-Book/icons'}
 
-Then you ask for a @class{Form} or an @class{ImageMorph} of a given icon. To search for the file @file{group.svg} and scale it to 32x32 pixels:
+Then you ask for a @class{Form} or an @class{ImageMorph} of a given icon. To use the file @file{group.svg} located in @file{ '/home/dev/Dynamic-Book/icons'} as an icon and scale it to a 32x32 pixels form, you write
 
 @smalltalkExample{icons getForm: #group32}
 
+or to request an image moprh for direct use in a GUI of your own
+
+@smalltalkExample{(icons getMorph: #group32) openInHand}
+
+
+@figure{Request an @class{ImageMorph} from a graphic file,ch06-iconImporterMorph,1}
+
+The requested icons of a given size are cached in the icon importer, later request of the same icon and size has then a minimal processing cost.
+
 There are several options to explore in @class{IconImporter}, particularly when you need to adjust the icons size to the screen density:
-@smalltalkExample{icons getForm: #group ofSize: MyApp iconSize}
+
+@smalltalkExample{" to request an icon of a size set a execution time "
+icons getForm: #group ofSize: MyApp iconSize.
+" to open an image morph with the given icon "
+(icons getMorph: #group ofSize: 64) openInWorld}
 
 with @class{MyApp} deducing the @method{iconSize} from user preferences.
+
+When dealing with @acronym{SVG} graphic, monochrome icon may be painted with a given color:
+
+@smalltalkExample{icons getForm: #group ofSize: 64 fill: Color red}
+
+@figure{Get a picture as an icon and paint it in red,ch06-iconImporterFill,1.5}
+
+
