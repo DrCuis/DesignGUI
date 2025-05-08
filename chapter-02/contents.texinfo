@@ -4,6 +4,13 @@
 @*
 
 @cindex layout @subentry @class{LayoutMorph}
+How to arrange components with each others is the corner stone of GUI
+design. A text entry may come with a text label to indicate what input
+is expected from the user. Those are two widgets -- one passive text
+label and one active text input entry -- the GUI designer needs to
+decide how to arrange them. In a column? In a row? Centered? This
+chapter covers this topic.
+
 Instances of the class @class{LayoutMorph} actively manage the
 position and size of morphs that are added to them, referred to as submorphs.
 
