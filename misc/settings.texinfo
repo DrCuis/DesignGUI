@@ -1,6 +1,6 @@
 @documentlanguage en
 @documentencoding UTF-8
-@set bookletTitle How to design GUI with Morph
+@set bookletTitle Design GUI with Morph
 @set cuisVersion 7.0 or later
 @set writers H. Fernandes with M. Volkmann
 @settitle @value{bookletTitle}

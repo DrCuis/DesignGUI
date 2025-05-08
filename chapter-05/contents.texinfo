@@ -8,7 +8,13 @@ Don't ask whether you can do something, but how to do it.
 
 @*
 
-In the previous chapter we explained how to handle user interactions on widgets as button and text editor. We illustrated it with a complete memory game; we did not particularly pay attention to how the responsibilities were spread across the various involved objects. In a small project it does not really mater, however as soon as you want your project to grow it may lead to complicate code, difficult to make evolve and to maintain.
+In the previous chapter we explained how to handle user interactions
+on widgets as button and text editor. We illustrated it with a
+complete memory game; we did not particularly pay attention to how the
+responsibilities were spread across the various involved objects. In a
+small project it does not really mater, however as soon as you want
+your project to grow it may lead to complicate code, difficult to make
+evolve and to maintain.
 
 @menu
 * Responsibilities::

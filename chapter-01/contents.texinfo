@@ -1,9 +1,20 @@
 @node Introduction
 @chapter Introduction
 
-This booklet is a collection of how-to guides to learn how to build @acronym{GUI,Graphic User Interface} with @cuis{} and its Morphic system.
+This booklet is a collection of how-to guides to learn how to build
+basic @acronym{GUI,Graphic User Interface} with @cuis{} and its
+Morphic system. Some chapters additionally brings deeper knowledge as
+the chapters @ref{What is a Morph after all?} and @ref{Design a GUI
+application}. Most chapters can be read independently to serve the
+needs of the reader.
 
-The standard @cuis{} framework for building user interfaces is Morphic 3, it is the most refined version of Morphic found in Smalltalk system. The classes provided by this framework are in the class category @label{Morphic}. What non-Smalltalk GUI libraries refer to as @emph{components} or @emph{widgets} are called @emph{Morphs} in @cuis{}; therefore in the rest of this book the terms Morph, widget, component are interchangeable.
+The standard @cuis{} framework for building user interfaces is Morphic
+3, it is the most refined version of the Morphic system found in Smalltalk
+environments. The classes provided by this framework are in the class
+category @label{Morphic}. What non-Smalltalk GUI libraries refer to as
+@emph{components} or @emph{widgets} are called @emph{Morphs} in
+@cuis{}; therefore in the rest of this book the terms Morph, widget,
+component are interchangeable.
 
 @menu
 * Overview::
@@ -12,9 +23,14 @@ The standard @cuis{} framework for building user interfaces is Morphic 3, it is 
 
 @node Overview
 @section Overview
-There are many provided morphs that are subclasses of the class @class{Morph} and it's easy to create custom morphs.
+There are many provided morphs that are subclasses of the class
+@class{Morph} and it's easy to create custom morphs.
 
-The primary way of organizing morphs is to create instances of @class{LayoutMorph} and add submorphs to them. Instances of @class{LayoutMorph} can be nested to achieve pretty much any layout. It is used massively, in a @cuis{} image with several browsers open, there are tenth of layout.
+The primary way of organizing morphs is to create instances of
+@class{LayoutMorph} and add submorphs to them. Instances of
+@class{LayoutMorph} can be nested to achieve pretty much any
+layout. It is used massively, in a @cuis{} image with several browsers
+open, there are tenth of layout.
 
 Execute the code bellow with @kbd{Ctrl-p} to get the result printed in your image
 
@@ -31,11 +47,17 @@ box openInWorld}
 
 to render a pink rectangle.
 
-Open the halo for this morph by holding down a key and clicking it. The key to hold down depends on your platform. It is the @kbd{Command} key in macOS and the @kbd{Control} key in other platforms. Click the red button in the upper-left of the halo to remove the morph.
+Open the halo for this morph by holding down a key and clicking
+it. The key to hold down depends on your platform. It is the
+@kbd{Command} key in macOS and the @kbd{Control} key in other
+platforms. Click the red button in the upper-left of the halo to
+remove the morph.
 
 @node Quick Start
 @section Quick Start
-Rendering a single morph isn't particularly interesting. Let's render some label, a text input, and a button to implement a simple application.
+Rendering a single morph isn't particularly interesting. Let's render
+some label, a text input, and a button to implement a simple
+application.
 
 In a new Workspace execute the following code
 
@@ -77,8 +99,12 @@ view
 
 @figure{My first interface,ch01-morphicGreeter,6}
 
-This morph is a bit like a ``Hello World'' panel, it should be inserted in window with proper title and icon to operate on. To remove this panel, you need again the request its halo, it is not very practical. Let's change the simple app we've built so it can be
-inside a window. In the previous code, edit the end of the script to insert our view in a @class{SystemWindow} instance
+This morph is a bit like a ``Hello World'' panel, it should be
+inserted in window with proper title and icon to operate on. To remove
+this panel, you need again the request its halo, it is not very
+practical. Let's change the simple app we've built so it can be inside
+a window. In the previous code, edit the end of the script to insert
+our view in a @class{SystemWindow} instance
 
 @smalltalkExample{[...]
 view
