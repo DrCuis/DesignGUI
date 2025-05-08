@@ -1,7 +1,9 @@
 @node Introduction
 @chapter Introduction
 
-The standard @cuis{} framework for building user interfaces is Morphic 3. The classes provided by this framework are in the class category @label{Morphic}. What non-Smalltalk GUI libraries refer to as @emph{components} or @emph{widgets} are called @emph{Morphs} in @cuis{}; therefore in the rest of this book the terms Morph, widget, component are interchangeable.
+This booklet is a collection of how-to guides to learn how to build @acronym{GUI,Graphic User Interface} with @cuis{} and its Morphic system.
+
+The standard @cuis{} framework for building user interfaces is Morphic 3, it is the most refined version of Morphic found in Smalltalk system. The classes provided by this framework are in the class category @label{Morphic}. What non-Smalltalk GUI libraries refer to as @emph{components} or @emph{widgets} are called @emph{Morphs} in @cuis{}; therefore in the rest of this book the terms Morph, widget, component are interchangeable.
 
 @menu
 * Overview::

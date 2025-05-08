@@ -127,28 +127,27 @@ The @class{Morph} class is the root class to all kind of @class{Morph}, sub-clas
 In a stock @cuis{} system, browse the @class{Morph} class; it is in the @label{Morphic>Kernel} class category, here are the most fundamental type of @class{Morph}s:
 
 @cindex morph @subentry kernel
-@indentedblock
-@class{Morph}
-   @indentedblock
-   @class{PlacedMorph}
-      @indentedblock
-      @class{BoxMorph}
-       @indentedblock
-       @class{ColoredBoxMorph}
-         @indentedblock
-         @class{BorderedBoxMorph}
-         
-         @class{PasteUpMorph}
 
-            @indentedblock
-            @class{WorldMorph}
-            @end indentedblock            
-         @end indentedblock
-       @end indentedblock
-      @class{HandMorph}
-      @end indentedblock      
-   @end indentedblock
-@end indentedblock
+@itemize
+@item @class{Morph}
+   @itemize
+   @item @class{PlacedMorph}
+      @itemize
+      @item @class{BoxMorph}
+       @itemize
+       @item @class{ColoredBoxMorph}
+         @itemize
+         @item @class{BorderedBoxMorph}        
+         @item @class{PasteUpMorph}
+            @itemize
+            @item @class{WorldMorph}
+            @end itemize            
+         @end itemize
+       @end itemize
+      @item @class{HandMorph}
+      @end itemize      
+   @end itemize
+@end itemize
 
 Observe how the @class{Morph} has only @class{PlacedMorph} as its subclass, this is odd and it requires some scrunity by looking at the differences between these two classes. Indeed, if @class{Morph} has only one sub-class, the two should be merged.
 
