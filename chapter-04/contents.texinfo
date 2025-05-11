@@ -577,7 +577,8 @@ Create the following class:
     poolDictionaries: ''
     category: 'Demos'}
 
-Add the following instance methods:
+Add the following instance methods. We start with a bit tool long
+@method{initialize} method responsible to build the whole GUI.
 
 @smalltalkMethod{initialize,
 | addButton layout row |
@@ -624,6 +625,19 @@ layout := window layoutMorph.
 layout separation: 10.
 window morphExtent: 250 @ layout minimumExtent y}
 
+Observe at the begining of the @method{initialize} method the creation
+of the list, its model is @smalltalk{self}, therefore an instance of
+@class{ListDemo}. In a real application it should be a model object
+representing some type of data. Associated to the model are the
+messages to send to @smalltalk{self} to retrieve the list contents
+(@msg{colors}), to get the index of the selected entry in the list
+(@msg{selectedColorIndex}) and to set the selected index
+(@msg{selectedColorIndex:}).
+
+The methods responding to these message are implemented in
+@class{ListDemo}:
+
+
 @smalltalkMethod{addColor,
 self newColor: newColorEntry text}
 
@@ -642,6 +656,12 @@ selectedColorIndex = 0 ifFalse: [
     
 @return{} ''}
 
+
+When a new color is input by the user, we add it to the
+@smalltalk{colors} collection, update the list then select this color
+from the list. To prepare for any additional new color input, we clear
+the text entry by emitting the event @smalltalk{#newColor}.
+
 @smalltalkMethod{newColor: aText,
 | potentialColor |
 
@@ -653,8 +673,19 @@ potentialColor ifNotEmpty: [
    self changed: #clearUserEdits.
    self changed: #newColor ]}
 
+@cindex collection @subentry index
+Remember, in Smalltalk index of a collection naturally starts with
+one. Therefore, an index of zero naturally indicates that no item is
+selected in the collection.
+
 @smalltalkMethod{selectedColorIndex,
 @return{} selectedColorIndex}
+
+This method is called when the user clicks or unclicks an item of the
+list. As recalled earlier, an index of zero indicates that no item was
+@smalltalk{selected}. If the color can not be determined by the name
+added to the list or is empty, a default gray color is set as the
+background color of the window.
 
 @smalltalkMethod{selectedColorIndex: anIndex,
 | color colorName selected |
