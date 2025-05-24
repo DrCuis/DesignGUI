@@ -18,7 +18,7 @@ like Dr.Geo use this pattern and lot more as:
        
 @itemize
 
-@imte @strong{Flyweight.} factory
+@item @strong{Flyweight.} factory
 
 @item @strong{Builder.} to build geometric items
 
