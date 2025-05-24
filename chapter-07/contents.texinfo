@@ -3,3 +3,32 @@
 
 @*
 
+In section @ref{Design a GUI application} we presented a fundamental
+design pattern of GUI application. As the development of your GUI
+application progresses and grows in complexity, you may want to use
+additional design patterns. The book @emph{Design Patterns Smalltalk
+Companion} is a must to read for any serious application
+development. Design patterns help to develop code easier to maintain
+code; by its mutual understanding it also eases collaboration.
+
+On largely used design pattern to consider is the @strong{Command
+Pattern}, it implements the undo and redo operations. An application
+like Dr.Geo use this pattern and lot more as:
+
+       
+@itemize
+
+@imte @strong{Flyweight.} factory
+
+@item @strong{Builder.} to build geometric items
+
+@item @strong{Template Method.} to build geometric items
+
+@item @strong{State.} To manage tools
+
+@item @strong{Bridge.} DrGSvgCanvas
+
+@item @strong{Strategy.} To manage hierarchy of platform
+
+
+@end itemize

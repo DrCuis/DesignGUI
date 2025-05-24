@@ -652,7 +652,8 @@ selectedColorIndex = 0 ifFalse: [
    selectedLabel contents: '' ]}
 
 @smalltalkMethod{newColor,
-"In this app there is no need to retrieve this value or even hold it in an instance variable@comma{} but TextModelMorph requires that this method exists."
+"In this app there is no need to retrieve this value or even hold it in an instance variable@comma{}
+ but TextModelMorph requires that this method exists."
     
 @return{} ''}
 
