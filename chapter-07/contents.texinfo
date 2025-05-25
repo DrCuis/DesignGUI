@@ -11,24 +11,182 @@ Companion} is a must to read for any serious application
 development. Design patterns help to develop code easier to maintain
 code; by its mutual understanding it also eases collaboration.
 
-On largely used design pattern to consider is the @strong{Command
-Pattern}, it implements the undo and redo operations. An application
-like Dr.Geo use this pattern and lot more as:
+In the following sections we present several of these patterns with concrete use
+cases in application.
 
-       
+@menu
+* Command::Manage undo and redo operations
+* Flyweight::Factory to create or retrieve objects
+* Builder::Build object according to user given input
+* Template Method::Generalize a building process then specialize 
+* State::Manage GUI tools and tool states
+* Bridge::Output a GUI representation to a file
+* Strategy::Adapt to various host platform
+@end menu
+
+@node Command
+@section Command
+
+Among the design patterns it is likely one that impact the most the
+end-user: it lets you implement the undo and redo operations.
+
+The template repository
+@label{CuisApp}@footnote{@url{https://github.com/hilaire/CuisApp}}
+demonstrates the design of a picture viewer, as a simple Cuis
+application example. The user can rotate, flip and scale a picture
+
+Its undo and redo actions are implemented with three classes:
+
 @itemize
 
-@item @strong{Flyweight.} factory
+@item
+@class{AppCommandStack}. Its instance records the history of
+commands. It is a sort of @class{ReadWriteStream} with additional
+behavior, particularly to truncate the stack of commands. Indeed, when
+a new command is inserted in the stack -- it may not be at the end
+depending on the user activation of the @label{undo} action -- the
+tail of the stack must be truncated with the @method{truncate}
+method. A @method{previous} method is also needed for the @label{undo}
+action.
 
-@item @strong{Builder.} to build geometric items
+@item
+@class{AppCommandManager}. Its instance manages the stack of commands:
+create new commands from user actions then undo and redo commands. For
+each specific user action, there is a dedicated method:
+@method{flipHorizontally}, @method{rotateLeft}, @method{zoomIn}, etc.
 
-@item @strong{Template Method.} to build geometric items
+All these methods share the same pattern: instantiate a command, then
+execute it:
 
-@item @strong{State.} To manage tools
+@smalltalkMethod{flipHorizontally,
+|command|
+command := stack nextPut: (AppFlipHCommand presenter: presenter).
+@return{} command execute}
 
-@item @strong{Bridge.} DrGSvgCanvas
+Some command requires additional parameters:
 
-@item @strong{Strategy.} To manage hierarchy of platform
+@smalltalkMethod{rotateLeft,
+|command|
+command := stack nextPut: (AppRotateCommand presenter: presenter).
+command degrees: -90.
+@return{} command execute}
 
+@item
+@class{AppCommand}. The top-level class of a hierarchy of commands,
+one for each user operations. There are the sub classes
+@class{AppFlipHCommand}, @class{AppRotateCommand}, etc. Each of these
+classes implement the @method{execute} and @method{unexecute} methods
+differently.
+
+For some action as flip horizontally, the @method{unexecute} is
+identical to @method{execute}:
+
+@smalltalkMethod{AppFlipHCommand>>execute,
+self imageMorph image: (self imageMorph form flippedBy: #vertical)}
+
+@smalltalkMethod{AppFlipHCommand>>unexecute,
+self execute}
+
+Rotating requires an additional behavior (@method{rotatedBy:} not
+copied here) :
+
+@smalltalkMethod{AppRotateCommand>>execute,
+self imageMorph image: (self rotatedBy: degrees)}
+
+@smalltalkMethod{AppRotateCommand>>unexecute,
+self imageMorph image: (self rotatedBy: degrees negated)}
+
+The @method{execute} and @method{unexecute} methods void there
+effects. In some circumstance, the @method{execute} may have a
+destructive effect as it happens in the zoom out action, an additional
+attribute is then used to keep a copy of the initial data:
+
+@smalltalkMethod{AppZoomOutCommand>>execute,
+cacheForm := self imageMorph form.
+self imageMorph image: (cacheForm magnifyBy: 0.5)}
+
+So undoing restore properly the data:
+
+@smalltalkMethod{AppZoomOutCommand>>unexecute,
+self imageMorph image: cacheForm}
+
+How @method{execute} and @method{unexecute} are implemented really
+depends on the nature of the command.
 
 @end itemize
+
+@ignore 
+---
+  config:
+    class:
+      hideEmptyMembersBox: true
+---
+classDiagram
+class Command{
+   presenter
+   execute()
+   unexecute()
+}
+
+class RotateCommand{
+   degrees
+   degrees:()
+   rotateBy:()
+}
+class ZoomOutCommand {
+   cacheForm
+}
+
+class CommandStack~ReadWriteStream~
+class CommandManager {
+   stack
+   presenter
+   undo()
+   redo()
+   rotateLeft()
+   rotateRight()
+   flipHorizontally()
+   flipVertically()
+   zoomIn()
+   zoomOut()
+}
+
+Command <|-- FlipHCommand
+Command <|-- FlipVCommand
+Command <|-- RotateCommand
+Command <|-- ZoomInCommand
+Command <|-- ZoomOutCommand
+
+CommandStack --> "0..n" Command
+CommandManager --> "1" CommandStack
+
+@end ignore
+
+
+@figure{Command pattern diagram (for ease of reading the @emph{App}
+prefix is removed),commandDiagram,16}
+
+@node Flyweight
+@section Flyweight
+factory
+
+@node Builder
+@section Builder
+to build geometric items
+
+@node Template Method
+@section Template Method
+to build geometric items
+
+@node State
+@section State
+To manage tools
+
+@node Bridge
+@section Bridge
+DrGSvgCanvas
+
+@node Strategy
+@section Strategy
+To manage hierarchy of platform
+
