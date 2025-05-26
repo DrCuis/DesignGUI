@@ -91,6 +91,11 @@ A journey in Morph world.
 @smallformat
 @verbatiminclude misc/MemoryGameV2-untabbed.pck.st
 @end smallformat
+@node Memory Game v3
+@appendix Memory Game v3
+@smallformat
+@verbatiminclude misc/MemoryGameV3-untabbed.pck.st
+@end smallformat
 
 @c Indexes
 @node Indexes

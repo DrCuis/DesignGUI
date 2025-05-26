@@ -8,8 +8,8 @@ design pattern of GUI application. As the development of your GUI
 application progresses and grows in complexity, you may want to use
 additional design patterns. The book @emph{Design Patterns Smalltalk
 Companion} is a must to read for any serious application
-development. Design patterns help to develop code easier to maintain
-code; by its mutual understanding it also eases collaboration.
+development. Design patterns help to develop code easier to maintain;
+there are a common ground easing mutual understanding.
 
 In the following sections we present several of these patterns with concrete use
 cases in application.
@@ -24,6 +24,9 @@ cases in application.
 * Strategy::Adapt to various host platform
 @end menu
 
+@cindex undo
+@cindex redo
+@cindex design pattern @subentry command
 @node Command
 @section Command
 
@@ -162,9 +165,92 @@ CommandManager --> "1" CommandStack
 
 @end ignore
 
-
 @figure{Command pattern diagram (for ease of reading the @emph{App}
 prefix is removed),commandDiagram,16}
+
+@subsection Memory game with undo/redo
+
+What will be the implication to implement the undo and redo actions
+within our game? Our game is simple, the user can only click one card
+at a time, therefore we want to record this and also the consequences
+on the game state, if any. The consequences can be none, matching
+cards or non matching cards; each resulting in a different changed
+game state.
+
+When implementing the user interaction with a command, the
+@method{execute} method will deal with these three possible
+outcomes. Its @method{unexecute} counterpart will have to reverse the
+game to its original state.
+
+If the game state has a small memory footprint, it is less cumbersome
+to just save its state before executing each user action. The game
+state is the collection of each card's status: the done and flipped
+Boolean values.
+
+Our Memory game just need to be flanked with the command classes we
+described earlier, unchanged. Then the @class{Command} hierarchy will
+have one subclass @class{PlayCardCommand}:
+
+@smalltalkExample{Command subclass: #PlayCardCommand
+   tanceVariableNames: 'status position'
+   @dots{}}
+
+It captures the game state in its @smalltalk{status} attribute, of
+the same nature as the cards array in the Memory game model:
+
+@smalltalkMethod{initialize,
+status := Array2D newSize: presenter model cards size}
+
+At command execution,  
+
+@smalltalkMethod{execute,
+self backupModels.
+presenter flip: position}
+
+the game state is backed up before flipping the card:
+
+@smalltalkMethod{backupModels,
+| size |
+size := presenter model cards size.
+1 to: size y do: [:y |
+   1 to: size x do: [:x | | card |
+      card := presenter model cards at: x@@y.
+      status at: x@@y put: (Array with: card isFlipped with: card isDone) ]]}
+
+The undo action restores the game state before execution:
+
+@smalltalkMethod{unexecute,
+" Restore the status of the card models "
+| size |
+size := status size.
+1 to: size y do: [:y |
+   1 to: size x do: [:x | | cardStatus card |
+      card := presenter model cards at: x@@y.
+      cardStatus := status at: x@@y.
+      card 
+         flip: cardStatus first;
+         done: cardStatus second ] ]}
+
+The card models's @method{flip:} and @method{done:} methods are refactored to
+trigger events propagated to the card view:
+
+@smalltalkMethod{MemoryCardModel>>flip: boolean,
+" Set my flip state and trigger a color event for my view accordingly to my flip state "
+| newColor |
+flipped = boolean ifTrue: [@return{} self].
+flipped := boolean.
+newColor := flipped ifTrue: [color] ifFalse: [self backColor].
+self triggerEvent: #color with: newColor}
+
+and
+
+@smalltalkMethod{done: boolean,
+done = boolean ifTrue: [@return{} self].
+done := boolean.
+self triggerEvent: (done ifTrue: [#lock] ifFalse: [#unlock])}
+
+In @ref{Memory Game v3}, you will find the complete source of the
+modifier Memory game.
 
 @node Flyweight
 @section Flyweight
