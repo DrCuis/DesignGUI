@@ -11,8 +11,8 @@ Companion} is a must to read for any serious application
 development. Design patterns help to develop code easier to maintain;
 there are a common ground easing mutual understanding.
 
-In the following sections we present several of these patterns with concrete use
-cases in application.
+In the following sections we present several of these patterns with
+concrete use cases in application developed with the @cuis{} system.
 
 @menu
 * Command::Manage undo and redo operations
@@ -250,11 +250,129 @@ done := boolean.
 self triggerEvent: (done ifTrue: [#lock] ifFalse: [#unlock])}
 
 In @ref{Memory Game v3}, you will find the complete source of the
-modifier Memory game.
+modified Memory game: toolbar with undo and redo buttons.
 
+
+@cindex design pattern @subentry flyweight
+@cindex flyweight
 @node Flyweight
 @section Flyweight
-factory
+
+The idea of the flyweight pattern is to have in one place objects. It
+is often associated with the factory pattern, so this will be both the
+place were object are manufactured or retrieved.
+
+DrGeo use the flyweight and factory patterns to manage the geometric
+objects created by the user. A geometric object is manufactured once
+the user provided enough information by selecting a set of existing
+objects in a sketch.
+
+To create a segment AB, the user selects point A and point B. If the
+user creates a new segment and selects again the point A and the point
+B, a new segment is not created but instead the existing segment AB is
+answered. Identically, if the user selects point B then point A, the
+same existing segment AB is answered. 
+
+This mechanism occurs in the flyweight factory. In DrGeo there are
+three classes. An abstract @class{DrGFactory}:
+
+@smalltalkExample{Object subclass: #DrGFactory
+   instanceVariableNames: 'pool last'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'DrGeo-Factories'}
+
+then two sub-classes @class{DrGMacroFactory} and @class{DrGMathItem}
+to manage the pool of macro-constructions and mathematics items.
+
+The existing objects are hold in a pool of objects,
+
+@smalltalkMethod{initialize,
+pool := OrderedCollection new}
+
+when a new object is pushed in the factory, the pool is first searched
+for its existence,
+
+@smalltalkMethod{pushAsLastWhenInPool: anItem,
+"if this item has a twin in the pool@comma{} push as last this last one and return true@comma{}
+otherwise return false"
+
+@return{} (self findInPool: anItem)
+   ifNotNil: [ :item | 
+      self last: item.
+      true ]
+   ifNil: [ false ]}
+
+
+To find in the pool, its index, if any, is searched
+
+@smalltalkMethod{findInPool: item,
+"Try to find a twin of this mathItem@comma{} if so return the twin@comma{} otherwise nil"
+@return{} self at: (self indexOf: item in: pool)}
+
+
+Determining if an object has a twin depends on the nature of each
+object.  It is done through hash and equality check at the object
+level
+
+@smalltalkMethod{indexOf: anItem in: aPool,
+"No identity equality but hashed value to detect duplicated object we must consider as equal"
+@return anItem 
+   ifNil: [0]
+   ifNotNil: [aPool findFirst: [ :each | 
+      each hash = anItem hash
+      "double check when hash is equal (can be a collision)"
+      and: [each = anItem] ] ]}
+
+
+@cindex design pattern @subentry template method
+
+If we look at our segment AB example, we need to able to establish segment AB and segment BA are the same mathematics object.
+
+In DrGeo, the geometric object model uses the template method pattern to
+establish how equality is articulated:
+
+@smalltalkMethod{DrGMathItem>>= aMathItem,
+@return{} aMathItem isMathItem 
+   ifFalse: [false]
+   ifTrue: [self basicType == aMathItem basicType
+      and: [self nodeType == aMathItem nodeType
+      and: [self parentsEqual: aMathItem]]]}
+
+For a segment defined by two points, @smalltalk{basicType} is
+@smalltalk{#segment} and @smalltalk{nodeType} is
+@smalltalk{#'2pts'}.
+
+The subclasses of @class{DrGMathItem} implement the
+@method{parentsEqual:}. In @class{DrGSegment2ptsItem} we cross check
+if the extremities of the segments are the same points:
+
+@smalltalkMethod{parentsEqual: aMathItem,
+((parents first = aMathItem parents first) and:
+[parents second = aMathItem parents second])
+   ifTrue: [@return{} true].
+   
+((parents first = aMathItem parents second) and:
+[parents second = aMathItem parents first])
+   ifTrue: [@return{} true].
+   
+@return{} false}
+
+Comparing can be slow, therefore we compare first the hash value of
+each objects, pre-computed:
+objects:
+
+@smalltalkMethod{rehash,
+@return{} hash := ((parents sorted: [:ptA :ptB | ptA point <= ptB point]) hash 
+   bitXor: self nodeType hash) 
+   bitXor: self basicType hash}
+
+These details show the tricky part in this pattern: how to establish
+two objects are identical. With objects representing mathematics items
+it is difficult, the identity check done by DrGeo is very
+limited. After all, we could have two segments mathematically
+identical through a process of transformations and only a mathematics
+solver could establish it.
 
 @node Builder
 @section Builder
