@@ -24,8 +24,10 @@ concrete use cases in application developed with the @cuis{} system.
 * Strategy::Adapt to various host platform
 @end menu
 
-@cindex undo
-@cindex redo
+@cindex undo @seeentry{design pattern}
+@cindex redo @seeentry{design pattern}
+@cindex design pattern @subentry undo
+@cindex design pattern @subentry redo
 @cindex design pattern @subentry command
 @node Command
 @section Command
@@ -254,13 +256,13 @@ modified Memory game: toolbar with undo and redo buttons.
 
 
 @cindex design pattern @subentry flyweight
-@cindex flyweight
 @node Flyweight
 @section Flyweight
 
-The idea of the flyweight pattern is to have in one place objects. It
-is often associated with the factory pattern, so this will be both the
-place were object are manufactured or retrieved.
+The idea of the flyweight pattern is to have objects in one place and
+to avoid duplication. It is often associated with the factory pattern,
+so this will be both the place where objects are manufactured or
+retrieved.
 
 DrGeo use the flyweight and factory patterns to manage the geometric
 objects created by the user. A geometric object is manufactured once
@@ -290,8 +292,8 @@ The existing objects are hold in a pool of objects,
 @smalltalkMethod{initialize,
 pool := OrderedCollection new}
 
-when a new object is pushed in the factory, the pool is first searched
-for its existence,
+when a new object is pushed in the factory, it is first searched in
+the pool,
 
 @smalltalkMethod{pushAsLastWhenInPool: anItem,
 "if this item has a twin in the pool@comma{} push as last this last one and return true@comma{}
@@ -327,7 +329,8 @@ level
 
 @cindex design pattern @subentry template method
 
-If we look at our segment AB example, we need to able to establish segment AB and segment BA are the same mathematics object.
+If we look at our segment AB example, we want to establish segment AB
+and segment BA are the same mathematics object.
 
 In DrGeo, the geometric object model uses the template method pattern to
 establish how equality is articulated:
@@ -360,7 +363,7 @@ if the extremities of the segments are the same points:
 
 Comparing can be slow, therefore we compare first the hash value of
 each objects, pre-computed:
-objects:
+
 
 @smalltalkMethod{rehash,
 @return{} hash := ((parents sorted: [:ptA :ptB | ptA point <= ptB point]) hash 
@@ -374,9 +377,78 @@ limited. After all, we could have two segments mathematically
 identical through a process of transformations and only a mathematics
 solver could establish it.
 
+@cindex design pattern @subentry builder
 @node Builder
 @section Builder
-to build geometric items
+A builder is an object specialized to construct one or several types
+of object, the type of the constructed object depends on the nature of
+the inputs sent to the builder. Explained differently, depending on
+input received by the builder, it will figure out what and how to
+construct a new object with the provided inputs.
+
+@cindex design pattern @subentry template method
+
+In DrGeo there is a whole hierarchy of 39 builders. The abstract class
+@class{DrGMathItemBuilder} provides the general mechanism through
+template methods. When an object is added to the builder, first it is
+asked if it is wanted or not. Next, once the object is added to the
+builder, it is asked if the builder is ready to build a new object, if
+so an event propagated to whatever is listening
+
+@smalltalkMethod{add: aMathItemCollection at: aPoint,
+"
+Add a math item in the selection list of the builder@comma{} aPoint is the position where the action took place. Return true if mathItem accepted
+"
+(self isWanted: aMathItemCollection at: aPoint) ifTrue: [
+   self addItem: aMathItemCollection at: aPoint.
+   "Are we done? If so notify our dependent"
+   self readyToBuild ifTrue: [self triggerEvent: #readyToBuild].
+   @return{} true].
+@return{} false}
+
+Let's look at the subclass @class{DrGBuilderMiddle}, a builder to
+construct the middle of two points or a segment.
+
+@smalltalkExample{DrGMathItemBuilder subclass: #DrGMiddleBuilder
+   instanceVariableNames: 'pointA pointB segment'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'DrGeo-Presenter-Builder'}
+
+The template methods are implemented to fit the task. The middle
+builder wants item which are either point or segment but also
+depending on the history of the already added item to the builder.
+
+@smalltalkMethod{isWanted: aMathItemCollection,
+@return{} aMathItemCollection notEmpty 
+   and: [
+      (aMathItemCollection first isPointItem and: [aMathItemCollection first ~= pointA])
+      or: [aMathItemCollection first isSegmentItem and: [pointA isNil]]
+      ]}
+
+Observe a segment is not wanted if a point -- pointA -- was already
+provided to the builder.
+
+Adding an item to a builder also depends on the history of added item,
+pointB will be set once pointA is already known:
+
+@smalltalkMethod{addItem: aMathItemCollection at: aPoint,
+super addItem: aMathItemCollection at: aPoint.
+aMathItemCollection first isPointItem 
+   ifTrue: [
+      pointA ifNil: [
+         pointA := aMathItemCollection first.
+         @return{} self].
+      pointB ifNil: [
+         pointB := aMathItemCollection first.
+         @return{} self ] ]
+   ifFalse: [segment := aMathItemCollection first]}
+
+Once the segment or the point A and B are known, we are ready to build
+middle point:
+
+@smalltalkMethod{readyToBuild,
+@return{} segment notNil or: [pointA notNil and: [pointB notNil]]}
 
 @node Template Method
 @section Template Method
