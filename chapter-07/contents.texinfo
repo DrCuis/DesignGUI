@@ -168,7 +168,7 @@ CommandManager --> "1" CommandStack
 @end ignore
 
 @figure{Command pattern diagram (for ease of reading the @emph{App}
-prefix is removed),commandDiagram,16}
+prefix is removed),ch07-commandDiagram,16}
 
 @subsection Memory game with undo/redo
 
@@ -292,8 +292,10 @@ The existing objects are hold in a pool of objects,
 @smalltalkMethod{initialize,
 pool := OrderedCollection new}
 
-when a new object is pushed in the factory, it is first searched in
-the pool,
+when a new object is pushed in the factory@footnote{The item are not
+built in the factory, this process is factored out in a familly of
+builder classes discussed in the next section.}, it is first searched
+in the pool,
 
 @smalltalkMethod{pushAsLastWhenInPool: anItem,
 "if this item has a twin in the pool@comma{} push as last this last one and return true@comma{}
@@ -336,11 +338,10 @@ In DrGeo, the geometric object model uses the template method pattern to
 establish how equality is articulated:
 
 @smalltalkMethod{DrGMathItem>>= aMathItem,
-@return{} aMathItem isMathItem 
-   ifFalse: [false]
-   ifTrue: [self basicType == aMathItem basicType
-      and: [self nodeType == aMathItem nodeType
-      and: [self parentsEqual: aMathItem]]]}
+@return{} aMathItem isMathItem
+   and: [self basicType == aMathItem basicType
+   and: [self nodeType == aMathItem nodeType
+   and: [self parentsEqual: aMathItem] ] ]}
 
 For a segment defined by two points, @smalltalk{basicType} is
 @smalltalk{#segment} and @smalltalk{nodeType} is
@@ -351,24 +352,15 @@ The subclasses of @class{DrGMathItem} implement the
 if the extremities of the segments are the same points:
 
 @smalltalkMethod{parentsEqual: aMathItem,
-((parents first = aMathItem parents first) and:
-[parents second = aMathItem parents second])
-   ifTrue: [@return{} true].
-   
-((parents first = aMathItem parents second) and:
-[parents second = aMathItem parents first])
-   ifTrue: [@return{} true].
-   
-@return{} false}
+@return{} parents asSet = aMathItem parents asSet}
 
 Comparing can be slow, therefore we compare first the hash value of
 each objects, pre-computed:
 
-
 @smalltalkMethod{rehash,
-@return{} hash := ((parents sorted: [:ptA :ptB | ptA point <= ptB point]) hash 
-   bitXor: self nodeType hash) 
-   bitXor: self basicType hash}
+@return{} hash := (parents asSet hash 
+bitXor: self nodeType hash) 
+bitXor: self basicType hash}
 
 These details show the tricky part in this pattern: how to establish
 two objects are identical. With objects representing mathematics items
@@ -399,12 +391,12 @@ so an event propagated to whatever is listening
 "
 Add a math item in the selection list of the builder@comma{} aPoint is the position where the action took place. Return true if mathItem accepted
 "
-(self isWanted: aMathItemCollection at: aPoint) ifTrue: [
-   self addItem: aMathItemCollection at: aPoint.
-   "Are we done? If so notify our dependent"
-   self readyToBuild ifTrue: [self triggerEvent: #readyToBuild].
-   @return{} true].
-@return{} false}
+@return{} (self isWanted: aMathItemCollection at: aPoint)
+   and: [
+      self addItem: aMathItemCollection at: aPoint.
+      "Are we done? If so notify our dependent"
+      self readyToBuild ifTrue: [self triggerEvent: #readyToBuild].
+      true]}
 
 Let's look at the subclass @class{DrGBuilderMiddle}, a builder to
 construct the middle of two points or a segment.
@@ -415,16 +407,15 @@ construct the middle of two points or a segment.
    poolDictionaries: ''
    category: 'DrGeo-Presenter-Builder'}
 
-The template methods are implemented to fit the task. The middle
-builder wants item which are either point or segment but also
-depending on the history of the already added item to the builder.
+The methods are overridden to fit the task. The middle builder filters
+items which are either point or segment and depending on the history
+of the already added item to the builder.
 
 @smalltalkMethod{isWanted: aMathItemCollection,
 @return{} aMathItemCollection notEmpty 
    and: [
       (aMathItemCollection first isPointItem and: [aMathItemCollection first ~= pointA])
-      or: [aMathItemCollection first isSegmentItem and: [pointA isNil]]
-      ]}
+      or: [aMathItemCollection first isSegmentItem and: [pointA isNil]] ]}
 
 Observe a segment is not wanted if a point -- pointA -- was already
 provided to the builder.
@@ -450,13 +441,152 @@ middle point:
 @smalltalkMethod{readyToBuild,
 @return{} segment notNil or: [pointA notNil and: [pointB notNil]]}
 
+In the DrGeo GUI, each builder is associated with a tool activated by
+a button or a menu entry. A builder is very handy to both give feedback to
+the user and to interpret what the user wants to do.
+
+For example with the @class{DrGMiddleBuilder}:
+
+@itemize
+
+@item
+@strong{Feedback.} Thanks to the @msg{isWanted:} message, DrGeo
+selectively shows balloon text on the relevant mathematics items to
+the builder
+
+@figure{A balloon text indicates this segment can be
+selected,ch07-hoverSegment,3}
+
+but does not when hovering non relevant mathematics items
+
+@figure{No balloon text indicates this circle can't be
+selected,ch07-hoverCircle,3}
+
+@item
+@strong{Interpret.} Once a mathematics items is added to the builder,
+the @msg{isWanted:} discards additional options for future selection
+
+@figure{Point A was selected@comma{} it can't be selected
+again nor the segment AB,ch07-hoverPoint,2}
+
+@end itemize
+
+@cindex design pattern @subentry template method
 @node Template Method
 @section Template Method
-to build geometric items
+This pattern is massively used, very likely it is present in your
+code. In @ref{Flyweight}, we discussed template method in a use case to
+implement equality between two mathematics items:
+
+@smalltalkMethod{DrGMathItem>>= aMathItem,
+@return{} aMathItem isMathItem
+   and: [self basicType == aMathItem basicType
+   and: [self nodeType == aMathItem nodeType
+   and: [self parentsEqual: aMathItem] ] ]}
+
+Although @class{DrGMathItem} provides a simple implementation of
+@method{parentsEqual:},
+
+@smalltalkMethod{parentsEqual: aMathItem,
+@return{} parents = aMathItem parents}
+
+many of its sub-classes override it to adjust to the mathematics item,
+
+@smalltalkMethod{DrGAngleBisector3ptsItem>>parentsEqual: aMathItem,
+@return parents = aMathItem parents
+   or: [parents reverse = aMathItem parents]}
+
+@smalltalkMethod{DrGPolygonNptsItem>>parentsEqual: aPolygon,
+|shiftedCollection|
+parents size = aPolygon parents size ifFalse: [@return{} false].
+shiftedCollection := parents.
+shiftedCollection size timesRepeat: [
+   shiftedCollection = aPolygon parents ifTrue: [@return{} true].
+   shiftedCollection := shiftedCollection shiftRight].
+shiftedCollection := parents reverse.
+shiftedCollection size timesRepeat: [
+   shiftedCollection = aPolygon parents ifTrue: [@return{} true].
+   shiftedCollection := shiftedCollection shiftRight].
+@return{}  false}
+
+In the @ref{Builder} we have a template method too to decide when to add a
+mathematics item to a builder:
+
+@smalltalkMethod{add: aMathItemCollection at: aPoint,
+@return{} (self isWanted: aMathItemCollection at: aPoint)
+   and: [
+      self addItem: aMathItemCollection at: aPoint.
+      "Are we done? If so notify our dependent"
+      self readyToBuild ifTrue: [self triggerEvent: #readyToBuild].
+      true]}
+      
+This time the @method{isWanted:} and @method{readyToBuild} methods are
+not implemented in the top class of the builder hierarchy:
+
+@smalltalkMethod{isWanted: aMathItemCollection,
+" Check if the builder is interested by aMathItem "
+self subclassResponsibility}
+
+@smalltalkMethod{readyToBuild,
+" Can the builder build the math item now? "
+self subclassResponsibility}
+
+Only sub classes implement the behavior to fit their purpose. For
+example in @class{DrGLocusBuilder}:
+
+@smalltalkMethod{isWanted: aMathItemCollection,
+@return{} aMathItemCollection notEmpty and: [
+   (aMathItemCollection first isPointItemOnCurve and: [freePoint isNil])			
+   or: [aMathItemCollection first isConstrainedPointItem and: [constrainedPoint isNil]] ]}
+
+@smalltalkMethod{readyToBuild,
+@return{} freePoint notNil and: [constrainedPoint notNil]}
+
+@method{buildItem} is another template method. It builds an item
+once enough relevant mathematics items were added to the builder.
+
+@smalltalkMethod{buildItem,
+| itemDefinitions |
+itemDefinitions := self mathItemClass.
+@return{} itemDefinitions isCollection 
+   ifFalse: [@{itemDefinitions newWith: self arguments in: presenter@}]
+   ifTrue: [point := point + (0.2@@1.3).
+      itemDefinitions collect: [:class | 
+         point := point - (0@@0.5).
+         class newWith: self arguments in: presenter]]}
+
+Its abstract methods @method{mathItemClass} and @method{arguments} are
+implemented in the sub classes. Again for locus,
+
+@smalltalkMethod{mathItemClass,
+@return{} DrGLocus2ptsItem}
+
+@smalltalkMethod{arguments,
+@return{} @{freePoint. constrainedPoint@}}
+
+The builder pattern is very handy to deal with the complexity of
+constructing various kind of objects, each one with its own
+constraints. In DrGeo, a builder is associated with tool and state to
+manage its input and its progress toward creating the new mathematics
+item.
 
 @node State
 @section State
-To manage tools
+In DrGeo, when the user clicks on a button to operate on the sketch,
+it is selecting a tool: to move items, to edit the styles, to delete
+items, to create new ones, etc.
+
+A tool is often associated with a builder and it can handle different
+states through dedicated methods. Possibles state are:
+@smalltalk{handleChoice:}, @smalltalk{handleMouseAt:},
+@smalltalk{handlePress:}, @smalltalk{handlePressShiftKey:},
+@smalltalk{handleRelease}, @smalltalk{handleReleaseShiftKey},
+@smalltalk{handleShiftKey:}, @smalltalk{handleShiftKeyMouseAt:},
+@smalltalk{handleStillPress:}
+
+The Morph used as a canvas of the sketch is responsible of the low
+level duty of translating user action with pointer and keyboard to
+message sending to one of the methods enumerated above.
 
 @node Bridge
 @section Bridge
