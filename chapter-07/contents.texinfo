@@ -570,6 +570,7 @@ constraints. In DrGeo, a builder is associated with tool and state to
 manage its input and its progress toward creating the new mathematics
 item.
 
+@cindex design pattern @subentry state
 @node State
 @section State
 In DrGeo, when the user clicks on a button to operate on the sketch,
@@ -584,9 +585,125 @@ states through dedicated methods. Possibles state are:
 @smalltalk{handleShiftKey:}, @smalltalk{handleShiftKeyMouseAt:},
 @smalltalk{handleStillPress:}
 
-The Morph used as a canvas of the sketch is responsible of the low
-level duty of translating user action with pointer and keyboard to
-message sending to one of the methods enumerated above.
+The @class{DrGDrawable} class, a Morph used as a canvas for the
+sketch, is responsible of the low level duty of translating user
+action with pointer and keyboard to message sending to one of the
+methods enumerated above.
+
+The messages are sent to the current tool. For example, when the
+pointer is hovering the sketch,
+
+@smalltalkMethod{mouseHover: evt localPosition: localEventPosition,
+"handle mouse move with button up"
+localEventPosition = prevMousePos ifTrue: [@return{} self]. "nothing to process"
+evt shiftPressed 
+   ifTrue: [self tool @emph{handleShiftKeyMouseAt:} localEventPosition]
+   ifFalse: [self tool @emph{handleMouseAt:} localEventPosition].
+prevMousePos := localEventPosition}
+
+or the user clicks somewhere with button 1,
+
+@smalltalkMethod{mouseButton1Down: evt localPosition: localPosition,
+evt shiftPressed 
+   ifTrue: [self tool @emph{handlePressShiftKey:} localPosition ]
+   ifFalse: [self tool @emph{handlePress:} localPosition].
+self showUnderMouseMorph}
+
+or when button 2 is released,
+
+@smalltalkMethod{mouseButton1Up: evt localPosition: localPosition,
+evt shiftPressed 
+   ifTrue: [self tool @emph{handleReleaseShiftKey:} localPosition]
+   ifFalse: [self tool @emph{handleRelease:} localPosition ].
+(self localBounds containsPoint: localPosition) 
+   ifFalse: [Cursor normalCursorWithMask activateCursor]}
+
+
+The state design pattern works with two hierarchies of classes: the
+contexts and the states. In DrGeo, a context is the tool currently in
+use, @class{DrGTool} is the root of this hierarchy. A tool can be in
+various internal state, therefore the tool dispatch to its internal
+state the responsibility to handle the user actions:
+
+@smalltalkMethod{DrGTool>>handleMouseAt: aPoint,
+@return{} self state handleMouseAt: aPoint}
+
+or
+
+@smalltalkMethod{DrGTool>>handlePressShiftKey: aPoint,
+@return{} self state handlePressShiftKey: aPoint}
+
+The @class{DrGBuildTool} is the tool to construct new item, its comes with a builder as described in @ref{Builder}:
+
+@smalltalk{DrGTool subclass: #DrGBuildTool
+   instanceVariableNames: 'selectedMorphs builder'
+   classVariableNames: ''
+   poolDictionaries: ''
+   category: 'DrGeo-Presenter-Tool'}
+
+When a tool is initialized, it is set to a default neutral state:
+
+@smalltalkMethod{DrGBuildTool>>initialize,
+super initialize.
+self switchState:  DrGBuildToolState.
+selectedMorphs := OrderedCollection new}
+
+@smalltalkMethod{DrGTool>>switchState: aStateClass,
+self state: (aStateClass new context: self)}
+
+The build tool lets the user to define a new mathematics item by
+selecting existing items in a sketch. The relevant message is
+@method{handlePress:}
+
+@smalltalkMethod{DrGBuildToolState>>handlePress: aPoint,
+"return true if we process something (including additional user choice)"
+| morphs |
+self drawable hideTip.
+self context last: aPoint.
+morphs := self context relevantMorphsNear: aPoint.
+morphs size = 1	ifTrue: [
+   self handleChoice: morphs.
+   @return{} true].
+(morphs size = 0 and: [self context isWanted: #() ]) ifTrue: [
+   self handleChoice: morphs.
+   @return{} true].
+"More than one math item under mouse@comma{} user must choose one item"
+morphs size >= 2 ifTrue: [
+   "Display a pop-up menu to select one item"
+   self context chooseMorph: morphs.
+   @return{} true].
+@return{}false}
+
+The @class{DrGBuildTool} has only one state. The @class{DrGSelectTool}
+is much more interesting as it comes with 9 different states.
+
+With this tool, the user interacts with the sketch by dragging items,
+reassigning point or even cloning items.
+
+@smalltalkMethod{initialize,
+self reset.
+builder := DrGCloneBuilder new}
+
+The tool is initialized in a neutral state:
+
+@smalltalkMethod{reset,
+super reset.
+start := nil.
+self switchState: DrGSelectToolStateNeutral.
+mathItems := nil.
+builder ifNotNil: [builder reset]}
+
+It is therefore enlightening to look at the handlers of this
+state. For example, when hovering a sketch, the point shape is
+adjusted to a pointing hand to inform the user something can be
+grabbed:
+
+@smalltalkMethod{handleMouseAt: aPoint,
+| processSomething |
+(processSomething := super handleMouseAt: aPoint)
+   ifTrue: [Cursor webLinkCursor activateCursor] 
+   ifFalse: [Cursor normalCursorWithMask activateCursor].
+@return{} processSomething }
 
 @node Bridge
 @section Bridge
