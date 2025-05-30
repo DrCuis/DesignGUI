@@ -369,7 +369,7 @@ limited. After all, we could have two segments mathematically
 identical through a process of transformations and only a mathematics
 solver could establish it.
 
-@cindex design pattern @subentry builder
+@cindex design pattern @subentry builder  
 @node Builder
 @section Builder
 A builder is an object specialized to construct one or several types
@@ -593,7 +593,7 @@ methods enumerated above.
 The messages are sent to the current tool. For example, when the
 pointer is hovering the sketch,
 
-@smalltalkMethod{mouseHover: evt localPosition: localEventPosition,
+@smalltalkMethod{DrGDrawable>>mouseHover: evt localPosition: localEventPosition,
 "handle mouse move with button up"
 localEventPosition = prevMousePos ifTrue: [@return{} self]. "nothing to process"
 evt shiftPressed 
@@ -603,7 +603,7 @@ prevMousePos := localEventPosition}
 
 or the user clicks somewhere with button 1,
 
-@smalltalkMethod{mouseButton1Down: evt localPosition: localPosition,
+@smalltalkMethod{DrGDrawable>>mouseButton1Down: evt localPosition: localPosition,
 evt shiftPressed 
    ifTrue: [self tool @emph{handlePressShiftKey:} localPosition ]
    ifFalse: [self tool @emph{handlePress:} localPosition].
@@ -611,7 +611,7 @@ self showUnderMouseMorph}
 
 or when button 2 is released,
 
-@smalltalkMethod{mouseButton1Up: evt localPosition: localPosition,
+@smalltalkMethod{DrGDrawable>>mouseButton1Up: evt localPosition: localPosition,
 evt shiftPressed 
    ifTrue: [self tool @emph{handleReleaseShiftKey:} localPosition]
    ifFalse: [self tool @emph{handleRelease:} localPosition ].
@@ -633,9 +633,10 @@ or
 @smalltalkMethod{DrGTool>>handlePressShiftKey: aPoint,
 @return{} self state handlePressShiftKey: aPoint}
 
-The @class{DrGBuildTool} is the tool to construct new item, its comes with a builder as described in @ref{Builder}:
+The @class{DrGBuildTool} is the tool to construct new item, its comes
+with a builder as described in @ref{Builder}:
 
-@smalltalk{DrGTool subclass: #DrGBuildTool
+@smalltalkExample{DrGTool subclass: #DrGBuildTool
    instanceVariableNames: 'selectedMorphs builder'
    classVariableNames: ''
    poolDictionaries: ''
@@ -651,7 +652,7 @@ selectedMorphs := OrderedCollection new}
 @smalltalkMethod{DrGTool>>switchState: aStateClass,
 self state: (aStateClass new context: self)}
 
-The build tool lets the user to define a new mathematics item by
+The build tool lets the user define a new mathematics item by
 selecting existing items in a sketch. The relevant message is
 @method{handlePress:}
 
@@ -694,16 +695,111 @@ mathItems := nil.
 builder ifNotNil: [builder reset]}
 
 It is therefore enlightening to look at the handlers of this
-state. For example, when hovering a sketch, the point shape is
-adjusted to a pointing hand to inform the user something can be
-grabbed:
+state. For example, when hovering a sketch (@msg{handleMouseAt:}), the
+pointer shape is adjusted to a pointing hand to inform the user
+something can be grabbed:
 
-@smalltalkMethod{handleMouseAt: aPoint,
+@smalltalkMethod{DrGSelectToolStateNeutral>>handleMouseAt: aPoint,
 | processSomething |
 (processSomething := super handleMouseAt: aPoint)
    ifTrue: [Cursor webLinkCursor activateCursor] 
    ifFalse: [Cursor normalCursorWithMask activateCursor].
 @return{} processSomething }
+
+More interestingly, when the mouse button is pressed
+(@msg{handlePress:})on a relevant item, the tool is switched to a
+grabbed state with class @class{DrGSelectToolStateGrabbed}:
+
+@smalltalkMethod{DrGSelectToolStateNeutral>>handlePress: aPoint,
+| morphs griddedPoint|
+self drawable hideTip.
+griddedPoint := self context gridPoint: aPoint.
+morphs := self context relevantMorphsNear: aPoint.
+morphs size = 1 
+   ifTrue: 
+      [self context last: griddedPoint.
+      self context morph: morphs first.
+      self context updateDirtyItemsList.
+      self switchState: DrGSelectToolStateGrabbed.
+      @return{} true].
+"More than one math item under mouse"
+morphs size > 1 
+   ifTrue: 
+      [self context last: griddedPoint.
+      self context chooseMorph: morphs.
+      @return{} true].
+"The user clicked in the background@comma{} clear the selection"
+self context reset.
+@return{} false}
+
+It offers two dedicated handlers. In case the mouse button is released
+(@msg{handleRelease:}) while in grabbed state, the tool switches back
+to neutral state:
+
+@smalltalkMethod{DrGSelectToolStateGrabbed>>handleRelease: aPoint,
+self switchState: DrGSelectToolStateNeutral.
+self context reset.
+"After move event rehash the the free positionnable item"
+self context factory rehash}
+
+If instead the mouse is moving (@msg{handleMouseAt:}), the tool
+switches to a dragged state with class
+@class{DrGSelectToolStateDragged}:
+
+@smalltalkMethod{DrGSelectToolStateGrabbed>>handleMouseAt: aPoint,
+"The user is moving@comma{} switch to dragging state"
+self context
+   start: aPoint;
+   last: aPoint.
+self context morph isBitmap 
+   ifTrue: [self switchState: DrGSelectToolStateDraggedBitmap] 
+   ifFalse: [self drawable dottedLinesToParentsOf: self mathItem.
+      self switchState: DrGSelectToolStateDragged].
+@return{} true}
+
+
+
+@c ---
+@c   config:
+@c     class:
+@c       hideEmptyMembersBox: true
+@c ---
+@c classDiagram
+@c class DrGTool{
+@c   switchState:()
+@c   handleMouseAt:()
+@c   handlePress:()
+@c   handlePressShiftKey:()
+@c   handleRelease:()
+@c   handleResleaseShiftKey:()
+@c   handleShiftKey:()
+@c   handleShiftKeyMouseAt:()
+@c }
+@c class DrGBuildTool
+@c class DrGSelectTool
+
+@c class DrGToolState
+@c class DrGBuildToolState
+@c class DrGSelectToolState
+@c class DrGSelectToolStateDragged
+@c class DrGSelectToolStateGrabbed
+@c class DrGSelectToolStateNeutral
+@c class DrGSelectToolStateSelected
+
+@c DrGTool <|-- DrGBuildTool
+@c DrGTool <|-- DrGSelectTool
+@c DrGToolState <|-- DrGBuildToolState
+@c DrGToolState <|-- DrGSelectToolState
+@c DrGSelectToolState <|-- DrGSelectToolStateDragged
+@c DrGSelectToolState <|-- DrGSelectToolStateGrabbed
+@c DrGSelectToolState <|-- DrGSelectToolStateNeutral
+@c DrGSelectToolState <|-- DrGSelectToolStateSelected
+
+
+
+@c DrGTool --> "1" DrGToolState
+
+
 
 @node Bridge
 @section Bridge
