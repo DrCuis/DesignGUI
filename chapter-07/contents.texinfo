@@ -662,7 +662,7 @@ selecting existing items in a sketch. The relevant message is
 self drawable hideTip.
 self context last: aPoint.
 morphs := self context relevantMorphsNear: aPoint.
-morphs size = 1	ifTrue: [
+morphs size = 1 ifTrue: [
    self handleChoice: morphs.
    @return{} true].
 (morphs size = 0 and: [self context isWanted: #() ]) ifTrue: [
@@ -716,18 +716,18 @@ self drawable hideTip.
 griddedPoint := self context gridPoint: aPoint.
 morphs := self context relevantMorphsNear: aPoint.
 morphs size = 1 
-   ifTrue: 
-      [self context last: griddedPoint.
+   ifTrue: [
+      self context last: griddedPoint.
       self context morph: morphs first.
       self context updateDirtyItemsList.
       self switchState: DrGSelectToolStateGrabbed.
-      @return{} true].
+      @return{} true ].
 "More than one math item under mouse"
 morphs size > 1 
-   ifTrue: 
-      [self context last: griddedPoint.
+   ifTrue: [
+      self context last: griddedPoint.
       self context chooseMorph: morphs.
-      @return{} true].
+      @return{} true ].
 "The user clicked in the background@comma{} clear the selection"
 self context reset.
 @return{} false}
@@ -757,49 +757,34 @@ self context morph isBitmap
       self switchState: DrGSelectToolStateDragged].
 @return{} true}
 
+Understanding how the state of a given tool -- or context in the State
+design pattern terminology -- changes is complex to follow. Knowing
+how the pattern works is fundamental to understand what is going
+on. This pattern proved to be useful to handle the complexity of a
+collection of GUI tools, each one with its own way to interact with
+the UI environment.
+
+Sequence diagram helps to have a global understanding of the flow of
+state in a given tool.
+
+@c sequenceDiagram
+@c SelectToolStateNeutral->>SelectToolStateGrabbed: handlePress:<br/>(grabbing item)
+@c SelectToolStateNeutral-->>SelectToolStateNeutral: handleMouseAt:<br/>(feedback)
+@c SelectToolStateNeutral-->>SelectToolStateNeutral: handleShiftKeyMouseAt:<br/> (mutate feedback)
+@c SelectToolStateGrabbed->>SelectToolStateNeutral: handleRelease:<br/>(drop item, no move)
+@c SelectToolStateGrabbed->>SelectToolStateDragged: handleMouseAt:<br/>(move grabbed item)
+@c SelectToolStateGrabbed->>SelectToolStateDragged: handleStillPress:<br/>(drag cloned item)
+@c SelectToolStateDragged->>SelectToolStateNeutral: handleRelease:<br/>(drop item)
+@c SelectToolStateDragged-->>SelectToolStateDragged: handleMouseAt:<br/>(still moving item)
+@c SelectToolStateDragged-->>SelectToolStateDragged: handleStillPress:<br/>(merge points)
+@c SelectToolStateNeutral->>MutatorToolStateGrabbed: handlePressShiftKey:<br/>(grab point to mutate)
+@c MutatorToolStateGrabbed->>MutatorToolStateDragged: handleMouseAt:<br/>(detach point)
+@c MutatorToolStateGrabbed->>SelectToolStateNeutral: handleRelease:<br/>(cancel mutation)
+@c MutatorToolStateDragged-->>MutatorToolStateDragged: handleMouseAt:<br/>(mutate point)
+@c MutatorToolStateDragged->>SelectToolStateNeutral: handleRelease:<br/>(drop mutuated point)
 
 
-@c ---
-@c   config:
-@c     class:
-@c       hideEmptyMembersBox: true
-@c ---
-@c classDiagram
-@c class DrGTool{
-@c   switchState:()
-@c   handleMouseAt:()
-@c   handlePress:()
-@c   handlePressShiftKey:()
-@c   handleRelease:()
-@c   handleResleaseShiftKey:()
-@c   handleShiftKey:()
-@c   handleShiftKeyMouseAt:()
-@c }
-@c class DrGBuildTool
-@c class DrGSelectTool
-
-@c class DrGToolState
-@c class DrGBuildToolState
-@c class DrGSelectToolState
-@c class DrGSelectToolStateDragged
-@c class DrGSelectToolStateGrabbed
-@c class DrGSelectToolStateNeutral
-@c class DrGSelectToolStateSelected
-
-@c DrGTool <|-- DrGBuildTool
-@c DrGTool <|-- DrGSelectTool
-@c DrGToolState <|-- DrGBuildToolState
-@c DrGToolState <|-- DrGSelectToolState
-@c DrGSelectToolState <|-- DrGSelectToolStateDragged
-@c DrGSelectToolState <|-- DrGSelectToolStateGrabbed
-@c DrGSelectToolState <|-- DrGSelectToolStateNeutral
-@c DrGSelectToolState <|-- DrGSelectToolStateSelected
-
-
-
-@c DrGTool --> "1" DrGToolState
-
-
+@figure{States sequence of the Select tool,ch07-statesSequence,16}
 
 @node Bridge
 @section Bridge
