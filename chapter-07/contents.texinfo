@@ -765,7 +765,7 @@ collection of GUI tools, each one with its own way to interact with
 the UI environment.
 
 Sequence diagram helps to have a global understanding of the flow of
-state in a given tool.
+states in a given tool.
 
 @c sequenceDiagram
 @c SelectToolStateNeutral->>SelectToolStateGrabbed: handlePress:<br/>(grabbing item)

@@ -1,8 +1,8 @@
 @documentlanguage en
 @documentencoding UTF-8
-@set bookletTitle Design GUI with Morph
+@set bookletTitle Design GUI with Morph - (DRAFT)
 @set cuisVersion 7.0 or later
-@set writers H. Fernandes with M. Volkmann
+@set writers H. Fernandes
 @settitle @value{bookletTitle}
 @codequoteundirected on
 @codequotebacktick on
@@ -33,7 +33,9 @@ Cuis-Smalltalk
 
 @macro thanks
 @c Alphabetical list of reviewers
-Thanks to...  for the reviews of the booklet, suggestions and borrowed
+Thanks to Mark Volkmann to share his examples and chapter on layout.
+@*
+Thanks to ... for the reviews of the booklet, suggestions and borrowed
 texts. Your help is very valuable.
 @end macro
 
