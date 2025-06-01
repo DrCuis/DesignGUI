@@ -153,8 +153,7 @@ Observe how the @class{Morph} has only @class{PlacedMorph} as its subclass, this
 
 Let's examine the attributes of the @class{Morph} class
 
-@smalltalkExampleCaption{Definition of the @class{Morph} class,morphDefinition,
-Object subclass: #Morph
+@smalltalkExample{Object subclass: #Morph
    instanceVariableNames: 'owner submorphs properties id privateDisplayBounds'
    classVariableNames: 'LastMorphId'
    poolDictionaries: ''
@@ -202,8 +201,7 @@ These abilities of @class{PlacedMorph} to scale, to resize, to rotate and to be 
 
 It is about time to examine its definition
 
-@smalltalkExampleCaption{Definition of the @class{PlacedMoprh}, placedMorphDefinition,
-Morph subclass: #PlacedMorph
+@smalltalkExample{Morph subclass: #PlacedMorph
    instanceVariableNames: 'location layoutSpec'
    classVariableNames: ''
    poolDictionaries: ''
@@ -225,7 +223,8 @@ We have two more instance variables:
 
 Time to experiment a bit! Execute this simple code
 
-@smalltalkExample{Sample10PythagorasTree new ::
+@smalltalkExampleCaption{Inspect a star,inspectStar,
+Sample10PythagorasTree new ::
    openInWorld ;
    inspect}
 
@@ -254,8 +253,7 @@ The reader may wonder if there is any use case of the @class{Morph} class when i
 @subsection Rectangular Morph
 The remaining classes of the kernel morph hierarchy adds geometry and visual properties. @class{BoxMorph} is the most important one, it is bounded to a rectangular extent. It is the root of most sub-morphs used to construct @acronym{GUI,Graphic User Interface}, indeed its elements are most of the time bounded to a rectangular shape. It allows a lot of optimisation in the rendering of the whole @cuis{} @acronym{GUI}.
 
-@smalltalkExampleCaption{Definition of the @class{BoxMorph}, boxMorphDefinition,
-PlacedMorph subclass: #BoxMorph
+@smalltalkExample{PlacedMorph subclass: #BoxMorph
    instanceVariableNames: 'extent'
    classVariableNames: ''
    poolDictionaries: ''
@@ -266,21 +264,24 @@ This additional @smalltalk{extent} attribute defines its width (x-axis) and heig
 
 There are companion methods to play with
 
-@smalltalkExample{BoxMorph new ::
+@smalltalkExampleCaption{Adjust width and height,boxWidthHeigh,
+BoxMorph new ::
    openInWorld;
    morphWidth: 1000;
    morphHeight: 10}
 
 Or more directly
 
-@smalltalkExample{BoxMorph new ::
+@smalltalkExampleCaption{Adjust extent!,boxExtent,
+BoxMorph new ::
    openInWorld;
    morphExtent: 1000@@10}
 
 @cindex morph @subentry local bounds
 As this is a kind of @class{PlacedMorph}, we ask directly about its bounds -- position and extent -- by executing and printing the result
 
-@smalltalkExample{BoxMorph new ::
+@smalltalkExampleCaption{Am I occupying a lot of place?,boxLocalBounds,
+BoxMorph new ::
    openInWorld;
    localBounds
 @result{} 0@@0 corner: 50@@40.}
@@ -288,7 +289,8 @@ As this is a kind of @class{PlacedMorph}, we ask directly about its bounds -- po
 The returned object is a @class{Rectangle} instance, as @class{Point} instances, this is a fundamental architecture class when dealing with @acronym{GUI}.
 
 Observe as you get the same local bounds even when positioning around the morph
-@smalltalkExample{BoxMorph new ::
+@smalltalkExampleCaption{My bounds doesn't depend on my position,boxLocalBounds2,
+BoxMorph new ::
    openInWorld;
    morphPosition: 200@@200;
    localBounds
@@ -296,13 +298,14 @@ Observe as you get the same local bounds even when positioning around the morph
 
 @cindex morph @subentry bounds in owner
 This is because we are asking in the local morph coordinates system. What the reader may want is asking in the owner coordinates system, here the @cuis{} World
-@smalltalkExample{"Morph positioned at pointer position"
+
+@smalltalkExampleCaption{Morph positioned at pointer position,boxFullBoundsPosition1,
 BoxMorph new ::
   openInWorld;
   @strong{fullBoundsInOwner}
-@result{} 493@@594 corner: 543@@634.
+@result{} 493@@594 corner: 543@@634}
 
-"Morph positioned according to programming instruction"
+@smalltalkExampleCaption{Morph positioned according to programming instruction,boxFullBoundsPosition2,
 BoxMorph new ::
    openInWorld;
    morphPosition: 200@@200;

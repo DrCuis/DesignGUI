@@ -4,9 +4,6 @@
 @include misc/copying.texinfo
 @c %**end of header
 
-@everyheading @emph{D R A F T} @| @thispage @| @thischapter
-
-
 @titlepage
    @title @value{bookletTitle}
    @subtitle A Practical Guide for Cuis 

@@ -60,7 +60,8 @@ This kind of label is set with a minimum number of characters it is
 willing to display. If that minimum number is lower than the label's
 content, it will contract the text:
 
-@smalltalkExample{(SqueezeLabelMorph 
+@smalltalkExampleCaption{Label that squeezes,labelSqueeze1,
+(SqueezeLabelMorph 
    contents: 'I am a very looong label with maybe not enought place for me'
    minCharsToShow: 20) openInWorld.}
 
@@ -81,7 +82,8 @@ layout.
 
 Compare the two examples with a squeezed and regular label:
 
-@smalltalkExample{| label row | 
+@smalltalkExampleCaption{Squeezed label for a text entry,labelTextEntry1,
+| label row | 
 label := SqueezeLabelMorph 
 	contents: 'I am a very long label'
 	minCharsToShow: 15.
@@ -99,7 +101,8 @@ when comparing to a regular label use case
 
 @figure{A text entry with a regular label,ch06-labelLayout,5}
 
-@smalltalkExample{| row | 
+@smalltalkExampleCaption{Regular label for a text entry,labelTextEntry2,
+| row | 
 row := LayoutMorph newRow.
 row
    addMorph: (LabelMorph contents: 'I am a very long label');
@@ -188,7 +191,8 @@ When creating a @class{LabelGroup}, we associate labels and
 widgets/controls in an unique group. In return the user gets a layout
 to be inserted in a dialog or a window.
 
-@smalltalkExample{(LabelGroup with: @{
+@smalltalkExampleCaption{Labelling a group of morphs, labelMorphs,
+(LabelGroup with: @{
 'First Name:' -> TextEntryMorph new.
 'Last Name:' -> TextEntryMorph new@}) openInWorld}
 
@@ -294,7 +298,8 @@ In a GUI, a check button represents a boolean value. There are used in
 group with a text label or any kind of morph to represent its iconic
 representation.
 
-@smalltalkExample{| column group |
+@smalltalkExampleCaption{Check group, checkGroup,
+| column group |
 column := LayoutMorph newColumn.
 group := CheckGroup fromList: #('Cuis' 'Pharo' 'Squeak').
 group buttons do: [:each | each when: #checkSelection send: #show: to: Transcript].
@@ -414,7 +419,8 @@ likely already installed on the @cuis{} system of the reader if the
 previous sections of this booklet were read. A decorate pane expect a
 morph to decorate, a string and an optional collection of buttons:
 
-@smalltalkExample{(DecoratedPane 
+@smalltalkExampleCaption{Decorating a moprh, decoratedMorph1,
+(DecoratedPane 
    open: (Sample03Smiley new)
    label: 'Be Happy') openInWorld }
 

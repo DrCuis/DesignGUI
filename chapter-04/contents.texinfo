@@ -102,16 +102,19 @@ For example:
 
 @figure{A pop up menu to inform, ch04-popupmenu-inform, 6}
 
-@smalltalkExample{PopUpMenu inform: 'Something interesting just happened.'.}
+@smalltalkExampleCaption{Simple pop up menu,popupMenu1,
+PopUpMenu inform: 'Something interesting just happened.'.}
 
 @figure{A pop up menu to answer Yes or No, ch04-popupmenu-confirm, 4}
 
-@smalltalkExample{likesIceCream := PopUpMenu confirm: 'Do you like ice cream?'.
+@smalltalkExampleCaption{Yes or No pop up menu,popupMenu2,
+likesIceCream := PopUpMenu confirm: 'Do you like ice cream?'.
 likesIceCream print. "prints true or false"}
 
 @figure{A pop up menu to select among two choices, ch04-popupmenu-confirm-truechoice-falsechoice, 4}
 
-@smalltalkExample{likesIceCream := PopUpMenu
+@smalltalkExampleCaption{Two choices pop up menu,popupMenu3,
+likesIceCream := PopUpMenu
     confirm: 'Do you like ice cream?'
     trueChoice: 'Love it!'
     falseChoice: 'Not for me'.
@@ -119,8 +122,9 @@ likesIceCream print. "prints true or false"}
 
 @figure{A pop up menu to select among several choices, ch04-popupmenu-withcaption-choosefrom, 3}
 
-@smalltalkExample{color := PopUpMenu withCaption: 'Choose a color.' chooseFrom: #('red' 'green' 'blue').
-color print. "prints choice index 1, 2, or 3"}
+@smalltalkExampleCaption{Many choices pop up menu, popupMenu4,
+color := PopUpMenu withCaption: 'Choose a color.' chooseFrom: #('red' 'green' 'blue').
+color print. "prints choice index 1@comma{} 2@comma{} or 3"}
 
 @cindex widget @subentry menu @subentry selection
 @subsection Selection menu
@@ -129,7 +133,8 @@ The @class{SelectionMenu} class is a subclass of @class{PopupMenu}, it gives a b
 
 For example,
 
-@smalltalkExample{labels := #('Red sky at sunset' 'A Clockwork Orange'
+@smalltalkExampleCaption{Selection menu@comma{} index answer,popupMenu5,
+labels := #('Red sky at sunset' 'A Clockwork Orange'
    'Yellow submarine' 'Green peace' 'The Blue dot' 'Purple rain').
 lines := #(3 6). "draw lines after these indexes"
 menu := SelectionMenu labels: labels lines: lines.
@@ -144,7 +149,8 @@ What we want is a color object instead of an index. To do so,
 we tell @class{SelectionMenu} about a collection of colors from which to
 obtain the returned value depending on the user selected menu entry.
 
-@smalltalkExample{@dots{}
+@smalltalkExampleCaption{Selection menu@comma{} value answer,popupMenu6,
+@dots{}
 colors := @{Color red . Color orange. Color yellow . Color green . Color blue . Color purple@}.
 menu := SelectionMenu labels: labels lines: lines selections: colors.
 selection := menu startUpMenu.
@@ -213,7 +219,8 @@ For example:
 
 @figure{A StringRequestMorph open, ch04-stringrequestmorph, 6}
 
-@smalltalkExample{StringRequestMorph
+@smalltalkExampleCaption{Request a string from the user, stringRequest1,
+StringRequestMorph
     request: 'Comment'
     initialAnswer: 'no comment'
     verifying: [ :answer | answer isEmpty not ]
@@ -251,7 +258,8 @@ underlined, etc.
 The following code creates an instance of @class{TextModelMorph},
 changes its value, and prints its value:
 
-@smalltalkExample{textEntry := TextModelMorph withText: 'initial content'.
+@smalltalkExampleCaption{Simple text entry,textEntry1,
+textEntry := TextModelMorph withText: 'initial content'.
 textEntry openInWorld.
 textEntry editor actualContents: 'new content'.
 textEntry text print}

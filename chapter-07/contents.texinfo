@@ -786,11 +786,152 @@ states in a given tool.
 
 @figure{States sequence of the Select tool,ch07-statesSequence,16}
 
+
+@cindex design pattern @subentry bridge
 @node Bridge
 @section Bridge
-DrGSvgCanvas
+
+The @cuis{} graphic system is organized in two hierarchies of classes:
+
+@itemize
+
+@item
+The @class{MorphicCanvas} hierarchy offers 2D drawing
+services. Notable subclasses are the @class{BitBltCanvas} based on the
+original Smalltalk-80 Bits Block Transfer service, the Vector Graphics
+service specific to the @cuis{} system and the Hybrid service using
+simultaneously the two previous services for both efficiency and high
+rendering quality (@class{HybridCanvas}).
+
+@item
+The @class{VectorEngine} hierarchy offers the concrete implementation
+of the graphic rendering. In the sub-hierarchy
+@class{VectorEngineSmalltalk} is the pure Smalltalk implementation for
+research and debugging purposes. In the sub-hierarchy
+@class{VectorEngineWithPlugin} is the C implementations for optimal
+speed rendering. Both offer various quality and speed rendering
+options with specific classes.
+
+@end itemize
+
+The @class{MorphicCanvas} hierarchy represents the
+@strong{Abstraction} part and the @class{VectorEngine} hierarchy is
+the @strong{Implementation} part of the graphic system. It is an
+example of the Bridge pattern in the @cuis{} system.
+
+The abstraction part represents the public protocol used for drawing
+the Morphs on the screen. Depending on the type of canvas, different
+rendering engine is then used.
+
+The @class{AbstractVectorCanvas} is the default abstraction used in the
+@cuis{} system. Observe its protocol largely inspired by SVG:
+
+@anchor{Sample01Star}
+@smalltalkMethod{Sample01Star>>drawOn: aCanvas,
+aCanvas strokeWidth: 12 color: `Color lightOrange` do: [
+   aCanvas
+      moveTo: `(Point rho: 100 theta: 90 degreesToRadians)`;
+      lineTo: `(Point rho: 100 theta: (360/5*2+90) degreesToRadians)`;
+      lineTo: `(Point rho: 100 theta: (360/5*4+90) degreesToRadians)`;
+      lineTo: `(Point rho: 100 theta: (360/5*6+90) degreesToRadians)`;
+      lineTo: `(Point rho: 100 theta: (360/5*8+90) degreesToRadians)`;
+      lineTo: `(Point rho: 100 theta: 90 degreesToRadians)` ]}
+
+
+DrGeo uses this abstraction to implement its own canvas
+(@class{DrGSvgCanvas}) to render a sketch in a SVG file. It follows
+the public protocol of @class{AbstractVectorCanvas}. The choice was
+made to make an implementation from the @strong{Abstraction} hierarchy
+and not the @strong{Implementation} one because the former is used as
+a parameter in the Morph's @method{drawOn:} method.
+
+In @xref{Sample01Star} drawing method, the used protocol to implement
+in @class{DrGSvgCanvas} is @msg{strokeWidth:color:do:}, @msg{moveTo:}
+and @msg{lineTo:}.
+
+Observe the implementations, in @class{AbstractVectorCanvas}:
+
+@smalltalkMethod{strokeWidth: strokeWidth color: aStrokeColor do: pathCommandsBlock,
+"Prepare parameters for drawing stroke."
+self initForPath.
+engine
+   strokeWidth: strokeWidth
+   color: aStrokeColor
+   do: pathCommandsBlock}
+
+then in @class{DrGSvgCanvas}:
+
+@smalltalkMethod{strokeWidth: strokeWidth color: strokeColor do: pathCommandsBlock,
+self pathStrokeWidth: strokeWidth color: strokeColor fillColor: nil.
+self doPath: pathCommandsBlock ensureClosePath: false}
+
+and at some point operations occur in XML tree:
+
+@smalltalkMethod{pathStrokeWidth: strokeWidth color: strokeColor strokeDashArray: sda fillColor: fillColor,
+pathNode := XMLElement named: #path.
+self
+   styleOf: pathNode
+   StrokeWidth: strokeWidth
+   color: strokeColor
+   strokeDashArray: sda
+   fillColor: fillColor.
+@return{} pathNode}
+
+Same goes for @method{lineTo:}
+
+@smalltalkMethod{AbstractVectorCanvas>>lineTo: aPoint,
+engine lineTo: aPoint.
+currentPoint := aPoint.
+lastControlPoint := currentPoint}
+
+@smalltalkMethod{DrGSvgCanvas>>lineTo: point,
+firstPoint ifNil: [@return{} self].
+self addPathCommands: 'L '@comma{} point printMini.
+currentPoint := point }
+
+
+@class{DrGSvgCanvas} implements partially the public protocol of
+@class{AbstractVectorCanvas}, restricted to the part used by DrGeo. It
+weights only 33 methods and among them only 17 are from the canvas
+abstraction.
 
 @node Strategy
 @section Strategy
-To manage hierarchy of platform
+To manage the diversity of the operating systems and hosts a @cuis{}
+application is running on, the strategy pattern is handy.
+
+In DrGeo, it is implemented with a hierarchy of @class{DrGPlatform},
+each one with its own strategy to access resources and preferences in
+the host: @class{DrGWorkstation} to operate on personal computer,
+@class{DrGDevelopment} to operate on developer mode,
+@class{DrGAndroid} and @class{DrGiPad} on tablet. The two later ones
+are not implemented any more as DrGeo is not ported any more to these
+devices.
+
+Then, in the @class{DrGeoSystem} class, it is decided which kind of
+platform to use, depending on how the system is configured
+
+@smalltalkMethod{DrGeoSystem>>beWorkstation,
+platform := DrGWorkstation new}
+
+or
+
+@smalltalkMethod{DrGeoSystem>>beDevelopment,
+" Be like the Cuis environment for DrGeo development "
+platform := DrGDevelopment new}
+
+The resources are accessed from the @class{DrGeoSystem} public class
+protocol without knowing which platform is used underneath
+
+@smalltalkMethod{DrGeoSystem class>>iconsPath,
+@return{} platform iconsPath}
+
+It depends on the selected platform, only known by @class{DrGeoSystem}:
+
+@smalltalkMethod{DrGPlatform>>iconsPath,
+@return{} self resourcesPath / 'icons'}
+
+@smalltalkMethod{DrGWorkstation>>iconsPath,
+@return{} self resourcesPath / 'graphics' / 'iconsSVG'}
+
 
