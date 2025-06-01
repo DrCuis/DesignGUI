@@ -10,7 +10,16 @@ HTML - https://DrCuis.github.io/DesignGUI
 The contents of this booklet are protected under Creative Commons
 [Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/)
 
-# Notes to writers and contributors
+# Notes to contributors
+This booklet needs reviews from its readers! It is still in **DRAFT**
+state, it contains many errors. 
+
+To contribute clone the repository and submit pull-request, it is the
+most handy for reviewers and editors.
+
+Thanks!
+
+# Notes to writers
 This booklet is written with the GNU Texinfo software. It is the
 documentation package of the GNU project. It is a well-maintained and
 documented project. Documentation written with Texinfo can be converted
