@@ -20,24 +20,22 @@
 @end titlepage
 
 @iftex
-@c   @shortcontents
    @contents
 @end iftex
 
 @node Top
-
 @bookQuote
-
 @*
-
 A journey in Morph world.
-
 @top @value{bookletTitle}
+
+@menu
+@end menu
 
 @ifnottex
   @shortcontents
   @insertcopying
-  @contents
+  @contents       
 @end ifnottex
 
 @tex
@@ -83,16 +81,22 @@ A journey in Morph world.
 @c The games source code package
 @node Memory Game v1
 @appendix Memory Game v1
+Download @url{https://github.com/DrCuis/DesignGUI/blob/main/misc/MemoryGameV1.pck.st, MemoryPackage v1}
+@*
 @smallformat
 @verbatiminclude misc/MemoryGameV1-untabbed.pck.st
 @end smallformat
 @node Memory Game v2
 @appendix Memory Game v2
+Download @url{https://github.com/DrCuis/DesignGUI/blob/main/misc/MemoryGameV2.pck.st, MemoryPackage v2}
+@*
 @smallformat
 @verbatiminclude misc/MemoryGameV2-untabbed.pck.st
 @end smallformat
 @node Memory Game v3
 @appendix Memory Game v3
+Download @url{https://github.com/DrCuis/DesignGUI/blob/main/misc/MemoryGameV3.pck.st, MemoryPackage v3}
+@*
 @smallformat
 @verbatiminclude misc/MemoryGameV3-untabbed.pck.st
 @end smallformat

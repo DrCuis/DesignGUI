@@ -40,9 +40,8 @@ function doInfo {
 function doHtml {
     prepareDestination $htmlDest
     cp misc/style.css $htmlDest
-#    texi2any --no-validate -I $imgPath --output=$htmlDest/ --html --css-ref=style.css $masterDoc
     texi2any -c ICONS=true -I $imgPath --output=$htmlDest/ --html -c FORMAT_MENU=menu \
-	     -c CONTENTS_OUTPUT_LOCATION=inline --css-ref=style.css  $masterDoc 
+	     -c CONTENTS_OUTPUT_LOCATION=inline --css-ref=style.css --no-warn $masterDoc 
 }
 
 function cleanupDestination {

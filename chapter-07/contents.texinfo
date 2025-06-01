@@ -385,7 +385,7 @@ In DrGeo there is a whole hierarchy of 39 builders. The abstract class
 template methods. When an object is added to the builder, first it is
 asked if it is wanted or not. Next, once the object is added to the
 builder, it is asked if the builder is ready to build a new object, if
-so an event propagated to whatever is listening
+so an event is propagated to whatever is listening
 
 @smalltalkMethod{add: aMathItemCollection at: aPoint,
 "
@@ -467,7 +467,7 @@ selected,ch07-hoverCircle,3}
 the @msg{isWanted:} discards additional options for future selection
 
 @figure{Point A was selected@comma{} it can't be selected
-again nor the segment AB,ch07-hoverPoint,2}
+again nor the segment AB@comma{} but point B can,ch07-hoverPoint,2}
 
 @end itemize
 
@@ -475,8 +475,15 @@ again nor the segment AB,ch07-hoverPoint,2}
 @node Template Method
 @section Template Method
 This pattern is massively used, very likely it is present in your
-code. In @ref{Flyweight}, we discussed template method in a use case to
-implement equality between two mathematics items:
+code.  The principle is to write the structure of a method in an
+abstract class. The method uses auxiliary methods implemented in
+sub-classes, each one with a different and specific
+implementation. In the abstract class, these methods will respond
+@smalltalk{self subclassResponsibility} or provide a minimal
+implementation to be overridden in sub-classes.
+
+In @ref{Flyweight}, we mentioned briefly the template method pattern
+in a use case to implement equality between two mathematics items:
 
 @smalltalkMethod{DrGMathItem>>= aMathItem,
 @return{} aMathItem isMathItem
@@ -568,7 +575,7 @@ The builder pattern is very handy to deal with the complexity of
 constructing various kind of objects, each one with its own
 constraints. In DrGeo, a builder is associated with tool and state to
 manage its input and its progress toward creating the new mathematics
-item.
+item. We present tool and state in the next section.
 
 @cindex design pattern @subentry state
 @node State
