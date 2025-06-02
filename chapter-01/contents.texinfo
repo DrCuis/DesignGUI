@@ -40,7 +40,7 @@ Execute the code bellow with @kbd{Ctrl-p} to get the result printed in your imag
 
 Open a Workspace and execute the following expressions
 
-@smalltalkExample{
+@smalltalkExampleCaption{My first morph, firstMorph,
 box := ColoredBoxMorph new.
 box color: Color pink.
 box morphExtent: 200 @@ 100.
@@ -48,13 +48,12 @@ box openInWorld}
 
 to render a pink rectangle.
 
-Open the halo of work-handles for this morph by holding down a key and clicking
-it. The key to hold down depends on your platform. It is the
-@kbd{Command} key in macOS and the @kbd{Control} key
-or @kbd{shift+Control} key in other
-platforms. With a three button mouse, you can middle-click
-to get the halo. Click the red button in the upper-left of the halo to
-remove the morph.
+Open the halo of work-handles for this morph by holding down a key and
+clicking it. The key to hold down depends on your platform. It is the
+@kbd{Command} key in macOS and the @kbd{Control} key or
+@kbd{shift+Control} key in other platforms. With a three button mouse,
+you can middle-click to get the halo. Click the red button in the
+upper-left of the halo to remove the morph.
 
 @node Quick Start
 @section Quick Start
@@ -63,7 +62,7 @@ some labels, a text input, and a button to implement a simple
 application.
 
 In a new Workspace, select and invoke the following code.
-@kbd{Command+a} to select All, then @kbd{Command+d} to DoIt.
+@kbd{Ctrl+a} to select All, then @kbd{Ctrl+d} to DoIt.
 
 @smalltalkExampleCaption{My first layout, firstLayout,
 | view input greetingLabel button row |

@@ -35,7 +35,7 @@ Cuis-Smalltalk
 @c Alphabetical list of reviewers
 Thanks to Mark Volkmann to share his examples and chapter on layout.
 @*
-Thanks to ... for the reviews of the booklet, suggestions and borrowed
+Thanks to Ken Dickey for the reviews of the booklet, suggestions and borrowed
 texts. Your help is very valuable.
 @end macro
 
