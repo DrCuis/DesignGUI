@@ -95,7 +95,7 @@ should be aligned.  By default the submorphs will be aligned at the
 beginning of its major axis and centered on its minor axis.
 
 You can lengthen the layout by adding space to its morphExtent.
-@smalltalk{layout morphExtent: (layout morphExtent + (80 @ 0)).}
+@smalltalk{layout morphExtent: (layout morphExtent + (80 @@ 0)).}
 Another way of doing this is to get the LayoutMorph's halo
 and drag its yellow Change size button at the lower right.
 
