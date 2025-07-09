@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7095] on 10 April 2025 at 10:53:03 am'!
+'From Cuis7.5 [latest update: #7342] on 9 July 2025 at 1:15:16 pm'!
 'Description '!
-!provides: 'MemoryGameV1' 1 6!
+!provides: 'MemoryGameV1' 1 7!
 SystemOrganization addCategory: #MemoryGameV1!
 
 
@@ -137,7 +137,7 @@ installCards
 			cards at: x@y put: card ].
 		playground addMorph: row ]! !
 
-!MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 3/18/2025 23:14:00'!
+!MemoryGameWindow methodsFor: 'initialization' stamp: 'tsl 7/9/2025 13:14:39'!
 installStatusBar
 	statusBar := TextParagraphMorph new
 			padding: 2;
@@ -145,10 +145,10 @@ installStatusBar
 			borderWidth: 1;
 			borderColor: self borderColor twiceLighter ;
 			setHeightOnContent.
-	self addMorph: statusBar layoutSpec: LayoutSpec new useMorphHeight.
+	self addMorph: statusBar layoutSpec: LayoutSizeSpec new useMorphHeight.
 	self message: 'Welcome to ', 'Memory Game' bold! !
 
-!MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 3/18/2025 23:30:19'!
+!MemoryGameWindow methodsFor: 'initialization' stamp: 'tsl 7/9/2025 13:14:32'!
 installToolbar
 	| toolbar button |
 	toolbar := LayoutMorph newRow separation: 2.
@@ -166,7 +166,7 @@ installToolbar
 		setBalloonText: 'Stop the game';
 		morphExtent: 32 asPoint.
 	toolbar addMorph: button.
-	self addMorph: toolbar layoutSpec: LayoutSpec new useMorphHeight
+	self addMorph: toolbar layoutSpec: LayoutSizeSpec new useMorphHeight
 ! !
 
 !MemoryGameWindow methodsFor: 'updating' stamp: 'hlsf 3/19/2025 16:37:56'!

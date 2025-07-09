@@ -145,7 +145,7 @@ installStatusBar
          borderWidth: 1;
          borderColor: self borderColor twiceLighter ;
          setHeightOnContent.
-   self addMorph: statusBar layoutSpec: LayoutSpec new useMorphHeight.
+   self addMorph: statusBar layoutSpec: LayoutSizeSpec new useMorphHeight.
    self message: 'Welcome to ', 'Memory Game' bold! !
 
 !MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 3/18/2025 23:30:19'!
@@ -166,7 +166,7 @@ installToolbar
       setBalloonText: 'Stop the game';
       morphExtent: 32 asPoint.
    toolbar addMorph: button.
-   self addMorph: toolbar layoutSpec: LayoutSpec new useMorphHeight
+   self addMorph: toolbar layoutSpec: LayoutSizeSpec new useMorphHeight
 ! !
 
 !MemoryGameWindow methodsFor: 'updating' stamp: 'hlsf 3/19/2025 16:37:56'!

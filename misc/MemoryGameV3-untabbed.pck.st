@@ -475,7 +475,7 @@ installStatusBar
          borderWidth: 1;
          borderColor: self borderColor twiceLighter ;
          setHeightOnContent.
-   self addMorph: statusBar layoutSpec: LayoutSpec new useMorphHeight.
+   self addMorph: statusBar layoutSpec: LayoutSizeSpec new useMorphHeight.
    self message: 'Welcome to ', 'Memory Game' bold! !
 
 !MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 5/24/2025 10:32:50'!
@@ -506,7 +506,7 @@ installToolbar
       setBalloonText: 'Redo the last play';
       morphExtent: 32 asPoint.
    toolbar addMorph: button.
-   self addMorph: toolbar layoutSpec: LayoutSpec new useMorphHeight
+   self addMorph: toolbar layoutSpec: LayoutSizeSpec new useMorphHeight
 ! !
 
 !MemoryGameWindow class methodsFor: 'instance creation' stamp: 'hlsf 3/22/2025 15:37:23'!

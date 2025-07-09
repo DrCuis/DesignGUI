@@ -1,86 +1,86 @@
-'From Cuis7.3 [latest update: #7158] on 24 May 2025 at 4:26:24 pm'!
+'From Cuis7.5 [latest update: #7342] on 9 July 2025 at 1:20:31 pm'!
 'Description '!
-!provides: 'MemoryGameV3' 1 3!
-SystemOrganization addCategory: 'MemoryGameV3'!
+!provides: 'MemoryGameV3' 1 4!
+SystemOrganization addCategory: #MemoryGameV3!
 
 
-!classDefinition: #Command category: 'MemoryGameV3'!
+!classDefinition: #Command category: #MemoryGameV3!
 Object subclass: #Command
 	instanceVariableNames: 'presenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV3'!
-!classDefinition: 'Command class' category: 'MemoryGameV3'!
+!classDefinition: 'Command class' category: #MemoryGameV3!
 Command class
 	instanceVariableNames: ''!
 
-!classDefinition: #PlayCardCommand category: 'MemoryGameV3'!
+!classDefinition: #PlayCardCommand category: #MemoryGameV3!
 Command subclass: #PlayCardCommand
 	instanceVariableNames: 'status position'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV3'!
-!classDefinition: 'PlayCardCommand class' category: 'MemoryGameV3'!
+!classDefinition: 'PlayCardCommand class' category: #MemoryGameV3!
 PlayCardCommand class
 	instanceVariableNames: ''!
 
-!classDefinition: #CommandManager category: 'MemoryGameV3'!
+!classDefinition: #CommandManager category: #MemoryGameV3!
 Object subclass: #CommandManager
 	instanceVariableNames: 'stack presenter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV3'!
-!classDefinition: 'CommandManager class' category: 'MemoryGameV3'!
+!classDefinition: 'CommandManager class' category: #MemoryGameV3!
 CommandManager class
 	instanceVariableNames: ''!
 
-!classDefinition: #MemoryCardModel category: 'MemoryGameV3'!
+!classDefinition: #MemoryCardModel category: #MemoryGameV3!
 Object subclass: #MemoryCardModel
 	instanceVariableNames: 'flipped done color'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV3'!
-!classDefinition: 'MemoryCardModel class' category: 'MemoryGameV3'!
+!classDefinition: 'MemoryCardModel class' category: #MemoryGameV3!
 MemoryCardModel class
 	instanceVariableNames: ''!
 
-!classDefinition: #MemoryGame category: 'MemoryGameV3'!
+!classDefinition: #MemoryGame category: #MemoryGameV3!
 Object subclass: #MemoryGame
 	instanceVariableNames: 'model view playing cmdManager'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV3'!
-!classDefinition: 'MemoryGame class' category: 'MemoryGameV3'!
+!classDefinition: 'MemoryGame class' category: #MemoryGameV3!
 MemoryGame class
 	instanceVariableNames: ''!
 
-!classDefinition: #MemoryGameModel category: 'MemoryGameV3'!
+!classDefinition: #MemoryGameModel category: #MemoryGameV3!
 Object subclass: #MemoryGameModel
 	instanceVariableNames: 'size tupleSize cards'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV3'!
-!classDefinition: 'MemoryGameModel class' category: 'MemoryGameV3'!
+!classDefinition: 'MemoryGameModel class' category: #MemoryGameV3!
 MemoryGameModel class
 	instanceVariableNames: ''!
 
-!classDefinition: #CommandStack category: 'MemoryGameV3'!
+!classDefinition: #CommandStack category: #MemoryGameV3!
 ReadWriteStream subclass: #CommandStack
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV3'!
-!classDefinition: 'CommandStack class' category: 'MemoryGameV3'!
+!classDefinition: 'CommandStack class' category: #MemoryGameV3!
 CommandStack class
 	instanceVariableNames: ''!
 
-!classDefinition: #MemoryGameWindow category: 'MemoryGameV3'!
+!classDefinition: #MemoryGameWindow category: #MemoryGameV3!
 SystemWindow subclass: #MemoryGameWindow
 	instanceVariableNames: 'presenter statusBar playground'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV3'!
-!classDefinition: 'MemoryGameWindow class' category: 'MemoryGameV3'!
+!classDefinition: 'MemoryGameWindow class' category: #MemoryGameV3!
 MemoryGameWindow class
 	instanceVariableNames: ''!
 
@@ -467,7 +467,7 @@ installCards
 			row addMorph: cardView].
 		playground addMorph: row ]! !
 
-!MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 3/18/2025 23:14:00'!
+!MemoryGameWindow methodsFor: 'initialization' stamp: 'tsl 7/9/2025 13:19:58'!
 installStatusBar
 	statusBar := TextParagraphMorph new
 			padding: 2;
@@ -475,10 +475,10 @@ installStatusBar
 			borderWidth: 1;
 			borderColor: self borderColor twiceLighter ;
 			setHeightOnContent.
-	self addMorph: statusBar layoutSpec: LayoutSpec new useMorphHeight.
+	self addMorph: statusBar layoutSpec: LayoutSizeSpec new useMorphHeight.
 	self message: 'Welcome to ', 'Memory Game' bold! !
 
-!MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 5/24/2025 10:32:50'!
+!MemoryGameWindow methodsFor: 'initialization' stamp: 'tsl 7/9/2025 13:19:20'!
 installToolbar
 	| toolbar button |
 	toolbar := LayoutMorph newRow separation: 2.
@@ -506,7 +506,7 @@ installToolbar
 		setBalloonText: 'Redo the last play';
 		morphExtent: 32 asPoint.
 	toolbar addMorph: button.
-	self addMorph: toolbar layoutSpec: LayoutSpec new useMorphHeight
+	self addMorph: toolbar layoutSpec: LayoutSizeSpec new useMorphHeight
 ! !
 
 !MemoryGameWindow class methodsFor: 'instance creation' stamp: 'hlsf 3/22/2025 15:37:23'!
