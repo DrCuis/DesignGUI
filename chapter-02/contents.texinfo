@@ -201,7 +201,7 @@ variable. There are methods to set each of these instance variables.
 
 We could have added @smalltalk{box2} to @smalltalk{layout} using the
 message @msg{add:proportionWidth:} which adds a submorph AND sets the
-@smalltalk{proportionalWidth} property of its @class{LayoutEdgesSpec}.
+@smalltalk{proportionalWidth} property of its @class{LayoutSizeSpec}.
 However, an issue with this approach is that it creates a new instance
 of @class{LayoutSizeSpec} where the values of
 @smalltalk{proportionalWidth} and @smalltalk{proportionalHeight} are
