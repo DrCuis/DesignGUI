@@ -1,46 +1,46 @@
-'From Cuis7.3 [latest update: #7095] on 10 April 2025 at 10:56:43 am'!
+'From Cuis7.5 [latest update: #7342] on 9 July 2025 at 1:21:51 pm'!
 'Description '!
-!provides: 'MemoryGameV2' 1 9!
-SystemOrganization addCategory: 'MemoryGameV2'!
+!provides: 'MemoryGameV2' 1 10!
+SystemOrganization addCategory: #MemoryGameV2!
 
 
-!classDefinition: #MemoryCardModel category: 'MemoryGameV2'!
+!classDefinition: #MemoryCardModel category: #MemoryGameV2!
 Object subclass: #MemoryCardModel
 	instanceVariableNames: 'flipped done color'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV2'!
-!classDefinition: 'MemoryCardModel class' category: 'MemoryGameV2'!
+!classDefinition: 'MemoryCardModel class' category: #MemoryGameV2!
 MemoryCardModel class
 	instanceVariableNames: ''!
 
-!classDefinition: #MemoryGame category: 'MemoryGameV2'!
+!classDefinition: #MemoryGame category: #MemoryGameV2!
 Object subclass: #MemoryGame
 	instanceVariableNames: 'model view playing'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV2'!
-!classDefinition: 'MemoryGame class' category: 'MemoryGameV2'!
+!classDefinition: 'MemoryGame class' category: #MemoryGameV2!
 MemoryGame class
 	instanceVariableNames: ''!
 
-!classDefinition: #MemoryGameModel category: 'MemoryGameV2'!
+!classDefinition: #MemoryGameModel category: #MemoryGameV2!
 Object subclass: #MemoryGameModel
 	instanceVariableNames: 'size tupleSize cards'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV2'!
-!classDefinition: 'MemoryGameModel class' category: 'MemoryGameV2'!
+!classDefinition: 'MemoryGameModel class' category: #MemoryGameV2!
 MemoryGameModel class
 	instanceVariableNames: ''!
 
-!classDefinition: #MemoryGameWindow category: 'MemoryGameV2'!
+!classDefinition: #MemoryGameWindow category: #MemoryGameV2!
 SystemWindow subclass: #MemoryGameWindow
 	instanceVariableNames: 'presenter statusBar playground'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MemoryGameV2'!
-!classDefinition: 'MemoryGameWindow class' category: 'MemoryGameV2'!
+!classDefinition: 'MemoryGameWindow class' category: #MemoryGameV2!
 MemoryGameWindow class
 	instanceVariableNames: ''!
 
@@ -255,7 +255,7 @@ installCards
 			row addMorph: cardView].
 		playground addMorph: row ]! !
 
-!MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 3/18/2025 23:14:00'!
+!MemoryGameWindow methodsFor: 'initialization' stamp: 'tsl 7/9/2025 13:21:19'!
 installStatusBar
 	statusBar := TextParagraphMorph new
 			padding: 2;
@@ -263,10 +263,10 @@ installStatusBar
 			borderWidth: 1;
 			borderColor: self borderColor twiceLighter ;
 			setHeightOnContent.
-	self addMorph: statusBar layoutSpec: LayoutSpec new useMorphHeight.
+	self addMorph: statusBar layoutSpec: LayoutSizeSpec new useMorphHeight.
 	self message: 'Welcome to ', 'Memory Game' bold! !
 
-!MemoryGameWindow methodsFor: 'initialization' stamp: 'hlsf 3/22/2025 15:40:23'!
+!MemoryGameWindow methodsFor: 'initialization' stamp: 'tsl 7/9/2025 13:21:12'!
 installToolbar
 	| toolbar button |
 	toolbar := LayoutMorph newRow separation: 2.
@@ -284,7 +284,7 @@ installToolbar
 		setBalloonText: 'Stop the game';
 		morphExtent: 32 asPoint.
 	toolbar addMorph: button.
-	self addMorph: toolbar layoutSpec: LayoutSpec new useMorphHeight
+	self addMorph: toolbar layoutSpec: LayoutSizeSpec new useMorphHeight
 ! !
 
 !MemoryGameWindow class methodsFor: 'instance creation' stamp: 'hlsf 3/22/2025 15:37:23'!

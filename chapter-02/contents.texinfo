@@ -176,13 +176,24 @@ all the available space.
 @cindex layout @subentry @class{LayoutSpec}
 Each morph can have a @class{LayoutSpec} that specifies how it should
 be laid out within its owner, this ignored if the owner is not a
-@class{LayoutMorph} instance.
+@class{LayoutMorph} instance. @class{LayoutSpec} is abstract with two
+subclasses:
+@itemize
+  @item
+  @class{LayoutSizeSpec} - for rows/columns. Manages dimensions via
+  @smalltalk{fixedWidth}, @smalltalk{fixedHeight},
+  @smalltalk{proportionalWidth} and @smalltalk{proportionalHeight}
+  and alignment via @smalltalk{offAxisEdgeWeight}.
 
-Instances of @class{LayoutSpec} have the following instance variables:
-@smalltalk{morph}, @smalltalk{fixedWidth}, @smalltalk{fixedHeight},
-@smalltalk{offAxisEdgeWeight}, @smalltalk{proportionalWidth}, and
-@smalltalk{proportionalHeight}.  There are methods to set each of
-these instance variables.
+  @item
+  @class{LayoutEdgesSpec} - for form layouts. Defines corner anchors
+  using @smalltalk{topLeftEdgesWeight},
+  @smalltalk{bottomRightEdgesWeight}, @smalltalk{topLeftOffset} and
+  @smalltalk{bottomRightOffset}.
+@end itemize
+
+Instances of @class{LayoutSpec} have @smalltalk{morph} as instance
+variable. There are methods to set each of these instance variables.
 
 @smalltalkExample{box2 layoutSpec proportionalWidth: 1}
 
@@ -190,12 +201,12 @@ these instance variables.
 
 We could have added @smalltalk{box2} to @smalltalk{layout} using the
 message @msg{add:proportionWidth:} which adds a submorph AND sets the
-@smalltalk{proportionalWidth} property of its @class{LayoutSpec}.
+@smalltalk{proportionalWidth} property of its @class{LayoutSizeSpec}.
 However, an issue with this approach is that it creates a new instance
-of @class{LayoutSpec} where the values of
+of @class{LayoutSizeSpec} where the values of
 @smalltalk{proportionalWidth} and @smalltalk{proportionalHeight} are
 both 1.  To only modify one of those properties, it's best to set it
-directly on the @class{LayoutSpec} instance of the morph.
+directly on the @class{LayoutSizedSpec} instance of the morph.
 
 @cindex layout @subentry spacer
 Let's modify our example @ref{layoutExample1} so the boxes are spread
