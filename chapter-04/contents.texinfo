@@ -344,6 +344,15 @@ propagated to the text entry to update itself (method partial shown above)
 aSymbol == #acceptedContents ifTrue: [ @return{}self updateAcceptedContents ].
 @dots{}}
 
+@cindex text entry @subentry @method{hasUnaccpetedEdits:}
+Beware, the behavior of @method{updateAcceptedContents} may be altered
+by the status of @smalltalk{hasUnacceptedEdits} attributes. When
+@smalltalk{true}, it may prevent the update of the text entry from
+other mean when the user has previously key-in text. In case of doubt,
+try to set this attribute to @smalltalk{false}: @smalltalk{textEntry
+hasUnacceptedEdits: false}.
+
+
 @end enumerate
 
 @cindex widget @subentry text entry @subentry prompt text
