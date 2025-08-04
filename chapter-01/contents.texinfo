@@ -1,21 +1,19 @@
 @node Introduction
 @chapter Introduction
 
-This booklet is a collection of how-to guides to learn how to build
-basic @acronym{GUI,Graphic User Interface} with @cuis{} and its
-Morphic system. Some chapters,
-such as @ref{What is a Morph after all?} and @ref{Design a GUI application}
-present a deeper knowledge as well.
-Most chapters can be read independently to serve the
-needs of the reader.
+This booklet is a collection of how-to guides to learn how to build basic
+@acronym{GUI, Graphic User Interface} with @cuis{} and its Morphic system.
+Some chapters, such as @ref{What is a Morph after all?} and @ref{Design a
+GUI application}, present deeper knowledge as well. Most chapters can be
+read independently to serve the needs of the reader.
 
-The standard @cuis{} framework for building user interfaces is Morphic
-3, it is the most refined version of the Morphic graphic system found in Smalltalk
-environments. The classes provided by this framework are in the class
-category @label{Morphic}. What non-Smalltalk GUI libraries refer to as
-@emph{components} or @emph{widgets} are called @emph{Morphs} in
-@cuis{}; therefore in the rest of this book the terms Morph, widget,
-component are interchangeable.
+The standard @cuis{} framework for building user interfaces is Morphic 3;
+it is the most refined version of the Morphic graphic system found in
+Smalltalk environments. The classes provided by this framework are in the
+class category @label{Morphic}. What non-Smalltalk GUI libraries refer to as
+@emph{components} or @emph{widgets} are called @emph{Morphs} in @cuis{};
+therefore, in the rest of this book, the terms Morph, widget, and component
+are interchangeable.
 
 @menu
 * Overview::
@@ -25,20 +23,21 @@ component are interchangeable.
 @node Overview
 @section Overview
 There are many provided morphs that are subclasses of the class
-@class{Morph} and it's easy to create custom morphs.
+@class{Morph}, and it's easy to create custom morphs.
 
 The primary way of organizing morphs is to create instances of
 @class{LayoutMorph} and add submorphs to them. Instances of
-@class{LayoutMorph} can be nested to achieve pretty much any
-layout. It is used massively, in a @cuis{} image with several browsers
-open, there are tenth of layout.
+@class{LayoutMorph} can be nested to achieve pretty much any layout. It
+is used massively; in a @cuis{} image with several browsers open, there
+are tens of layouts.
 
-Execute the code bellow with @kbd{Ctrl-p} to get the result printed in your image
+Execute the code below with @kbd{Ctrl-p} to get the result printed in your
+image:
 
 @smalltalkExample{LayoutMorph allInstances size
 @result{} 79.}
 
-Open a Workspace and execute the following expressions
+Open a Workspace and execute the following expressions:
 
 @smalltalkExampleCaption{My first morph, firstMorph,
 box := ColoredBoxMorph new.
@@ -51,7 +50,7 @@ to render a pink rectangle.
 Open the halo of work-handles for this morph by holding down a key and
 clicking it. The key to hold down depends on your platform. It is the
 @kbd{Command} key in macOS and the @kbd{Control} key or
-@kbd{shift+Control} key in other platforms. With a three button mouse,
+@kbd{Shift+Control} key in other platforms. With a three-button mouse,
 you can middle-click to get the halo. Click the red button in the
 upper-left of the halo to remove the morph.
 
@@ -61,8 +60,8 @@ Rendering a single morph isn't particularly interesting. Let's render
 some labels, a text input, and a button to implement a simple
 application.
 
-In a new Workspace, select and invoke the following code.
-@kbd{Ctrl+a} to select All, then @kbd{Ctrl+d} to DoIt.
+In a new Workspace, select and invoke the following code. Use @kbd{Ctrl+a}
+to select All, then @kbd{Ctrl+d} to DoIt.
 
 @smalltalkExampleCaption{My first layout, firstLayout,
 | view input greetingLabel button row |
@@ -80,9 +79,8 @@ input := TextModelMorph withText: '' ::
 greetingLabel := LabelMorph contents: '' ::
     color: Color red;
     font: FontFamily defaultFamilyAndPointSize bold.
-
-"Create a button that when clicked execute
- the associated block of code"
+"Create a button that when clicked executes
+the associated block of code"
 button := PluggableButtonMorph
     model: [greetingLabel contents: 'Hello@comma{} '@comma{} input text@comma{} '!']
     action: #value.
@@ -102,12 +100,12 @@ view
 
 @figure{My first interface,ch01-morphicGreeter,6}
 
-This morph is a bit like a ``Hello World'' panel, it should be
-inserted in window with proper title and icon to operate on. To remove
-this panel, you need again the request its halo, it is not very
-practical. Let's change the simple app we've built so it can be inside
-a window. In the previous code, edit the end of the script to insert
-our view in a @class{SystemWindow} instance.
+This morph is a bit like a ``Hello World'' panel; it should be inserted in a
+window with a proper title and icon to operate on. To remove this panel,
+you need to again request its halo, which is not very practical. Let's
+change the simple app we've built so it can be inside a window. In the
+previous code, edit the end of the script to insert our view in a
+@class{SystemWindow} instance.
 
 Again, select the entire script and invoke it.
 
