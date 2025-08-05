@@ -1,5 +1,5 @@
 @node Design a GUI application
-@chapter Design a GUI application
+@chapter Design a GUI Application
 
 @quotation
 Don't ask whether you can do something, but how to do it.
@@ -8,13 +8,12 @@ Don't ask whether you can do something, but how to do it.
 
 @*
 
-In the previous chapter we explained how to handle user interactions
-on widgets as button and text editor. We illustrated it with a
-complete memory game; we did not particularly pay attention to how the
-responsibilities were spread across the various involved objects. In a
-small project it does not really mater, however as soon as you want
-your project to grow it may lead to complicate code, difficult to make
-evolve and to maintain.
+In the previous chapter, we explained how to handle user interactions on
+widgets such as buttons and text editors. We illustrated it with a complete
+memory game; we did not particularly pay attention to how the responsibilities
+were spread across the various involved objects. In a small project, it does
+not really matter. However, as soon as you want your project to grow, it may lead
+to complicated code that is difficult to evolve and maintain.
 
 @menu
 * Responsibilities::
@@ -24,102 +23,175 @@ evolve and to maintain.
 
 @node Responsibilities
 @section Responsibilities
-In @acronym{OOP, Object Oriented Programming} we like each object to be responsible of its assigned business. Of course we can assign kind of extended businesses to a few objects as we did in @ref{Memory Game v1} but this is not good design.
 
-A project growing produces legacy code, when the responsibilities of the objects are not properly bounded it makes this code difficult to understand and to maintain. A developer willing to make changes will face various challenges and difficulty: to distinguish how the responsibilities are spread across the involved objects, if any; to face long methods hard to understand; to replace one behaviour or one class by another one, in that circumstance it may require to replace several behaviors; to collaborate with several developers, each one working independently in once facet of the project,...
+In @acronym{OOP, Object Oriented Programming}, we like each object to be
+responsible for its assigned business. Of course, we can assign kinds of extended
+businesses to a few objects as we did in @ref{Memory Game v1}, but this is not
+good design.
 
-A good practice is to design an object with a clearly assigned task, ideally only one per object; each methods of the object should come with meaningful names@footnote{The book @emph{Smalltalk with Style} is worth reading to write good Smalltalk code.} and each one with a clearly assigned task too, ideally method should not be longer than 10 lines.
+A growing project produces legacy code. When the responsibilities of the objects
+are not properly bounded, it makes this code difficult to understand and
+maintain. A developer willing to make changes will face various challenges
+and difficulties: distinguishing how the responsibilities are spread across the
+involved objects, if any; facing long methods that are hard to understand;
+replacing one behavior or one class by another one, which may require replacing
+several behaviors; collaborating with several developers, each working
+independently on one facet of the project, etc.
 
-With this practice in mind, when it comes to @acronym{GUI} application development, there is this well known design pattern @acronym{MVC, Model View Controller} or its alternative @acronym{MVP,Model View Presenter}; in this design the responsibilities are spread on three orthogonal axes with no conceptual overlap.
+A good practice is to design an object with a clearly assigned task, ideally
+only one per object. Each method of the object should come with meaningful
+names@footnote{The book @emph{Smalltalk with Style} is worth reading to write good
+Smalltalk code.}, and each one with a clearly assigned task too. Ideally, a method
+should not be longer than 10 lines.
 
-In the following sections we present the details of this design applied step by step to the memory game presented in the previous chapter.
+With this practice in mind, when it comes to @acronym{GUI, Graphic User
+Interface} application development, there is a well-known design pattern:
+@acronym{MVC, Model View Controller} or its alternative @acronym{MVP, Model View
+Presenter}. In this design, the responsibilities are spread on three
+orthogonal axes with no conceptual overlap.
 
-@cindex @acronym{MVC,Model View Controller}
-@cindex @acronym{MVP,Model View Presenter}
+In the following sections, we present the details of this design applied step
+by step to the memory game presented in the previous chapter.
+
+@cindex @acronym{MVC, Model View Controller}
+@cindex @acronym{MVP, Model View Presenter}
+
 @node Model View Presenter
 @section Model View Presenter
 
-@acronym{MVC}@footnote{@url{https://en.wikipedia.org/wiki/Model-view-controller}} and @acronym{MVP}@footnote{@url{https://en.wikipedia.org/wiki/Model-view-presenter}} designs are very close. @acronym{MVC}, nowadays widely used in GUI and Web application developments, was invented by the Smalltalk community in the late seventies and early  eighties. @acronym{MVP} is a subtle variation where the presenter has more responsibilities than the controller and acts more as a middle-man between the model and view objects.
+@acronym{MVC}@footnote{@url{https://en.wikipedia.org/wiki/Model-view-controller}}
+and
+@acronym{MVP}@footnote{@url{https://en.wikipedia.org/wiki/Model-view-presenter}}
+designs are very close. @acronym{MVC}, nowadays widely used in GUI and
+Web application developments, was invented by the Smalltalk community
+in the late seventies and early eighties. @acronym{MVP} is a subtle
+variation where the presenter has more responsibilities than the
+controller and acts more as a middle-man between the model and view
+objects.
 
-Let's review the responsibilities of each three objects.
+Let's review the responsibilities of each of the three objects.
 
 @itemize
-   @item
-   @strong{Model.} This object defines a domain by its intrinsic characteristics, related to the intended goal. A Person model may have attributes like family name, first name and gender; or in another design it could have an unique anonymous identifier attribute.
+@item
+@strong{Model.} This object defines a domain by its intrinsic characteristics,
+related to the intended goal. A Person model may have attributes like family
+name, first name, and gender; or in another design, it could have a unique
+anonymous identifier attribute.
 
-The model knows nothing about the view and presenter involved in the design. However, a model modifying itself its attributes should have a way to notify the views to update their representation of the model, it is the role of the dependency mechanism explained later in the chapter.
+The model knows nothing about the view and presenter involved in the design.
+However, a model modifying itself its attributes should have a way to notify the
+views to update their representation of the model. This is the role of the
+dependency mechanism explained later in the chapter.
 
-   @item
-   @strong{View.} It is responsible to display to the user a meaningful view of the model, here before a Person model. The view can be passive to display the attribute of a Person model or interactive to edit the attributes of the Person model. One model may be displayed by one or several different views, @emph{therefore a model object has no knowledge of the views} acting on it.
-   @item
-   @strong{Presenter.} This object acts as a middle-mam between the
-model and the view, instantiating and gluing both and acting as the entry point in the application@footnote{This is an assumed variation from the view used as the entry point of the traditional approach. Being a middle-man, it makes sense it is instantiated first.}.
+@item
+@strong{View.} It is responsible for displaying to the user a meaningful view of
+the model, such as a Person model. The view can be passive to display the
+attribute of a Person model or interactive to edit the attributes of the Person
+model. One model may be displayed by one or several different views.
+@emph{Therefore, a model object has no knowledge of the views} acting on it.
 
-The presenter also handles the user actions mediated by the views of a given model. Therefore, when the user edit a text entry, click on a button, select an entry in a menu or drag a visual object, the event is handled to the presenter. Then it decides, depending on the context and the state of the application, what to do with the event, like updating the state of the application and handling suited data to the model eventually.
+@item
+@strong{Presenter.} This object acts as a middle-man between the model and the
+view, instantiating and gluing both and acting as the entry point in the
+application@footnote{This is an assumed variation from the view used as the
+entry point of the traditional approach. Being a middle-man, it makes sense it is
+instantiated first.}.
 
+The presenter also handles the user actions mediated by the views of a given
+model. Therefore, when the user edits a text entry, clicks on a button, selects
+an entry in a menu, or drags a visual object, the event is handled to the
+presenter. Then it decides, depending on the context and the state of the
+application, what to do with the event, like updating the state of the
+application and handling suited data to the model eventually.
 @end itemize
 
-Now, let's see how to reshape our memory game to fit it in the @acronym{MVP} design.
+Now, let's see how to reshape our memory game to fit it in the
+@acronym{MVP} design.
 
 
 @cindex @acronym{MVP,Model View Presenter} @subentry model
 @subsection Memory Game Model
 
-The model is the isolated object, without knowledge of the presenter and the view@footnote{Though several models may know about each other.}, it is easier to start from there.
+The model is the isolated object, without knowledge of the presenter and the
+view@footnote{Though several models may know about each other.}, it is easier to
+start from there.
 
-In the previous design of the game, we had two classes @class{MemoryGameWindow} and @class{MemoryCard} acting as view and model. Therefore we need to extract what is model related.
+In the previous design of the game, we had two classes, @class{MemoryGameWindow}
+and @class{MemoryCard}, acting as view and model. Therefore, we need to extract
+what is model-related.
 
-Our game involves the domain of a game with cards, we define two models:
+Our game involves the domain of a game with cards. We define two models:
 
 @itemize
-   @item
-   @class{MemoryCardModel}. It knows about the intrinsic characteristics of a card in the context of the memory game. In the earlier game design, the @class{MemoryCard} view knows about its @smalltalk{cardColor} and its states @smalltalk{done}, @smalltalk{flipped}; the latter one was deduced by a method based on the color attribute of the view. These three characteristics are clearly part of the card model and need to be represented by instance attributes:
+@item
+@class{MemoryCardModel}. It knows about the intrinsic characteristics of a card
+in the context of the memory game. In the earlier game design, the
+@class{MemoryCard} view knows about its @smalltalk{cardColor} and its states
+@smalltalk{done} and @smalltalk{flipped}; the latter one was deduced by a method
+based on the color attribute of the view. These three characteristics are
+clearly part of the card model and need to be represented by instance
+attributes:
 
 @smalltalkExample{
 Object subclass: #MemoryCardModel
    instanceVariableNames: 'flipped done color'
    @dots{}}
 
-We add the necessary initialization and methods to externally get the state and to update it.
+We add the necessary initialization and methods to externally get the
+state and to update it.
 
 @smalltalkMethod{initialize,
 done := flipped := false}
 
-When a card has been successfully associated with cards sharing the same colour, we set it as done and it can't be played anymore 
-@smalltalkMethod{setDone,
-done := true}
+When a card has been successfully associated with cards sharing the
+same colour, we set it as done, and it can't be played anymore
+@smalltalkMethod{setDone, done := true}
 
-To evaluate the available card to play, we need to know if a card is done or not
-@smalltalkMethod{isDone,
-@return{} done}
+To evaluate the available card to play, we need to know if a card is done or not:
 
-During a player move, we need to know if a card is already flipped, if so the play can't flip it again
-@smalltalkMethod{isFlipped,
-@return{} flipped}
+@smalltalkMethod{isDone, @return{} done}
 
-   @item
-   @class{MemoryGameModel}. This model defines what is a memory game. The previous @class{MemoryGameWindow} had 6 instances variables, a mix of view and domain related attributes: @smalltalk{size}, @smalltalk{cards}, @smalltalk{tupleSize}, @smalltalk{statusBar}, @smalltalk{playground} and @smalltalk{playing}. Only the first three attributes are related to the characteristic of the game, we may hesitate on the later one @smalltalk{playing}, but it will prove to be more useful in the presenter to determine the state of the application.
+During a player move, we need to know if a card is already flipped. If so, the
+player can't flip it again:
+
+@smalltalkMethod{isFlipped, @return{} flipped}
+
+@item
+@class{MemoryGameModel}. This model defines what a memory game is. The previous
+@class{MemoryGameWindow} had 6 instance variables, a mix of view and domain-related
+attributes: @smalltalk{size}, @smalltalk{cards}, @smalltalk{tupleSize},
+@smalltalk{statusBar}, @smalltalk{playground}, and @smalltalk{playing}. Only the
+first three attributes are related to the characteristics of the game. We may
+hesitate on the latter one @smalltalk{playing}, but it will prove to be more
+useful in the presenter to determine the state of the application.
 
 @smalltalkExample{Object subclass: #MemoryGameModel
    instanceVariableNames: 'size tupleSize cards'
    @dots{}}
 
-  @itemize
-    @item
-    @smalltalk{size}. A point representing the disposition of the cards. @smalltalk{4@@3} are 3 rows of 4 cards.
+@itemize
+@item
+@smalltalk{size}. A point representing the disposition of the cards.
+@smalltalk{4@@3} are 3 rows of 4 cards.
 
-    @item
-    @smalltalk{tupleSize}. An integer, the number of associated cards to find, by default 2.
+@item
+@smalltalk{tupleSize}. An integer, the number of associated cards to find,
+by default 2.
 
-    @item
-    @smalltalk{cards}. The collection of @class{MemoryCardModel} instances.
-  @end itemize
+@item
+@smalltalk{cards}. The collection of @class{MemoryCardModel} instances.
+@end itemize
 
-We have the necessary methods to initialize the instance and to create the card models. Compared to its counterpart @method{MemoryGameWindow>>installCards} of the previous design, the method @method{installCards} here after is much simpler and easier to understand because it only instantiate the card models. Separation of responsibility is paying off:
+We have the necessary methods to initialize the instance and to create the card
+models. Compared to its counterpart @method{MemoryGameWindow>>installCards} of
+the previous design, the method @method{installCards} here is much simpler and
+easier to understand because it only instantiates the card models. Separation
+of responsibility is paying off:
 
 @smalltalkMethod{initialize,
 size := 4 @@ 3.
 tupleSize := 2}
+
 @smalltalkMethod{installCardModels,
 | colours |
 cards := Array2D newSize: size.
@@ -130,28 +202,41 @@ colours := self distributeColors.
          at: x@@y
          put: (MemoryCardModel new color: colours removeFirst) ] ]}
 
-In this class, we also import, unchanged, the behaviors of @class{MemoryGameWindow} fitting the game model: @method{distributeColors}, @method{doneCards}, @method{flippedCards}, @method{undoneCards} and @method{isGameWon}.
+In this class, we also import, unchanged, the behaviors of
+@class{MemoryGameWindow} fitting the game model:
+@method{distributeColors}, @method{doneCards}, @method{flippedCards},
+@method{undoneCards} and @method{isGameWon}.
 
 That's it for the models of the game.
 @end itemize
 
 @cindex @acronym{MVP,Model View Presenter} @subentry view
 @subsection Memory Game View
-We have defined two model classes, so we may expect to define two view classes. Well, not necessary, here we just need to define one view class for the whole game and we use an existing view of @cuis{} for the card model, the @class{PluggableButtonMorph}
 
-We need to reshape @class{MemoryGameWindow} to contain only view related business, first in its attributes then its behaviors. First at all, @strong{a view always knows about its presenter}, it can even know about the model through the mediation of the presenter
-@smalltalkMethod{presenter: aPresenter,
-presenter := aPresenter.
-self model: presenter model}
+We have defined two model classes, so we may expect to define two view classes.
+Well, not necessarily. Here we just need to define one view class for the whole
+game, and we use an existing view of @cuis{} for the card model, the
+@class{PluggableButtonMorph}.
 
-It also knows about some other views needed for its internal organisation and regulation
+We need to reshape @class{MemoryGameWindow} to contain only view-related
+business, first in its attributes then its behaviors. First of all, @emph{a view
+always knows about its presenter}, it can even know about the model through the
+mediation of the presenter:
+
+@smalltalkMethod{presenter: aPresenter, presenter := aPresenter. self
+model: presenter model}
+
+It also knows about some other views needed for its internal
+organisation and regulation:
+
 @smalltalkExample{SystemWindow subclass: #MemoryGameWindow
    instanceVariableNames: 'presenter statusBar playground'
    @dots{}}
 
-Again the behaviors is stripped down to only view considerations and the @method{initialize} method is shortened.
+Again, the behavior is stripped down to only view considerations, and the
+@method{initialize} method is shortened.
 
-Installing the toolbar slightly differs,
+Installing the toolbar slightly differs:
 
 @smalltalkMethod{installToolbar,
 | toolbar button |
@@ -160,11 +245,13 @@ button := PluggableButtonMorph model: presenter action: #startGame ::
    enableSelector: #isStopped;
 @dots{}}
 
-the model of the buttons is not any more the view but the @smalltalk{presenter}.
- 
-Indeed, we explained earlier it is the presenter responsibility to handle user events, the actions remain the same and we can anticipate the related methods will be transferred from the view to the presenter class.
+The model of the buttons is not anymore the view but the @smalltalk{presenter}.
 
-Now, we should look at installing the card views,
+Indeed, we explained earlier that it is the presenter's responsibility to handle
+user events. The actions remain the same, and we can anticipate the related
+methods will be transferred from the view to the presenter class.
+
+Now, we should look at installing the card views:
 
 @anchor{MemoryGameWindow>>installCards}
 @smalltalkMethod{installCards,
@@ -185,15 +272,28 @@ size := model size.
       row addMorph: cardView].
    playground addMorph: row ]}
 
-it relies on the already instantiated card models; we ask the game model all the card models: @smalltalk{model cards}.
+It relies on the already instantiated card models; we ask the game model all
+the card models: @smalltalk{model cards}.
 
-Observe how we just use a stock @class{PluggableButtonMorph} as a view for the card, indeed we don't need to specialize its behavior, so we keep it simple. Again, the @smalltalk{presenter}  handles the user click on the card, it should be understood as executing the statement @smalltalk{presenter flip: x@@y} at the event@footnote{The message @msg{model:action:actionArgument:} to instantiate a button is extremely confusing in its @smalltalk{model:} keyword; it is not a model as we discussed earlier but only the receiver of the user action, the @emph{controller} in the sense of the @acronym{MVC} pattern.}
+Observe how we just use a stock @class{PluggableButtonMorph} as a view for the
+card. Indeed, we don't need to specialize its behavior, so we keep it simple.
+Again, the @smalltalk{presenter} handles the user click on the card. It should be
+understood as executing the statement @smalltalk{presenter flip: x@@y} at the
+event@footnote{The message @msg{model:action:actionArgument:} to instantiate a
+button is extremely confusing in its @smalltalk{model:} keyword; it is not a
+model as we discussed earlier but only the receiver of the user action, the
+@emph{controller} in the sense of the @acronym{MVC} pattern.}.
 
-For clarity, we have presented above a shortened version of the @method{installCards} method, without the dependencies between the card models and the card views. The logic of installing the card models then the card views is handled by the presenter, the middle-man, We discuss it in the next section. 
+For clarity, we have presented above a shortened version of the
+@method{installCards} method, without the dependencies between the card models
+and the card views. The logic of installing the card models then the card views
+is handled by the presenter, the middle-man. We discuss it in the next section.
 
-@cindex @acronym{MVP,Model View Presenter} @subentry presenter
+@cindex @acronym{MVP, Model View Presenter} @subentry presenter
+
 @subsection Memory Game Presenter
-We define a new class @class{MemoryGame} as our presenter,
+
+We define a new class @class{MemoryGame} as our presenter:
 
 @smalltalkExample{Object subclass: #MemoryGame
    instanceVariableNames: 'model view playing'
@@ -201,11 +301,13 @@ We define a new class @class{MemoryGame} as our presenter,
    poolDictionaries: ''
    category: 'MemoryGameV2'}
 
-It acts as the entry point of a GUI application, therefore its name is kept short with no @emph{Presenter} fragment. A new game instance is then invoked by a simple
+It acts as the entry point of a GUI application, therefore its name is kept short
+with no @emph{Presenter} fragment. A new game instance is then invoked by a
+simple:
 
 @smalltalkExample{MemoryGame new}
 
-As we explained earlier, the presenter instantiates both the model and the view,
+As we explained earlier, the presenter instantiates both the model and the view:
 
 @smalltalkMethod{initialize,
 model := MemoryGameModel new.
@@ -213,9 +315,9 @@ view := MemoryGameWindow presenter: self.
 self startGame.
 view openInWorld}
 
-observe the game model is attached neither to the view nor to the presenter.
+Observe the game model is attached neither to the view nor to the presenter.
 
-From the initialization, the game then is started
+From the initialization, the game then is started:
 
 @smalltalkMethod{startGame,
 model installCardModels.
@@ -224,11 +326,13 @@ view message: 'Starting a new game' bold green.
 view setLabel: 'P L A Y I N G'.
 playing := true}
 
-by invoking card models and views installations, it is asked to each object in charge of that business.
+By invoking card models and views installations, it is asked to each object in
+charge of that business.
 
-We already learn the @method{flip:} method, called when the user click on a card, is now defined in the presenter.
-
-The method is quite similar to the previous iteration, except now we only know about the card model, the associated card view is unknown
+We already learned the @method{flip:} method, called when the user clicks on a
+card, is now defined in the presenter. The method is quite similar to the
+previous iteration, except now we only know about the card model. The associated
+card view is unknown:
 
 @smalltalkMethod{flip: position,
 | flippedCards |
@@ -251,19 +355,27 @@ flippedCards := model flippedCards.
 @dots{}}
 
 @cindex event @subentry trigger
-Therefore, to update the state of a card view, a card model triggers events which are propagated to any card view listening to the events. An event is coded as a symbol representing an aspect of the model that changed. The symbol name is arbitrary chosen to be meaningful. In the @method{flip:} method there are three events:
+
+Therefore, to update the state of a card view, a card model triggers events
+which are propagated to any card view listening to the events. An event is coded
+as a symbol representing an aspect of the model that changed. The symbol name is
+arbitrarily chosen to be meaningful. In the @method{flip:} method, there are
+three events:
+
 @itemize
-   @item
-   @smalltalk{lock}. It informs the card is locked and it can not be played anymore
+@item
+@smalltalk{lock}. It informs the card is locked and it cannot be played anymore.
 
-   @item
-   @smalltalk{flash}. It informs the card is revealing itself
+@item
+@smalltalk{flash}. It informs the card is revealing itself.
 
-   @item
-   @smalltalk{unlock}. It informs the card is unlocked and it can be played again.
+@item
+@smalltalk{unlock}. It informs the card is unlocked and it can be played again.
 @end itemize
 
-When triggering an event, it is additionally possible to pass along a parameter. Observe  this feature in the model's @method{flip} method to inform about the card color changed
+When triggering an event, it is additionally possible to pass along a
+parameter. Observe this feature in the model's @method{flip} method to inform
+about the card color changed:
 
 @smalltalkMethod{MemoryCardModel>>flip,
 | newColor |
@@ -271,39 +383,55 @@ flipped := flipped not.
 newColor := flipped ifTrue: [color ] ifFalse: [self backColor].
 self triggerEvent: #color with: newColor }
 
-All in all, there are four events triggered by a card model: @smalltalk{lock}, @smalltalk{flash}, @smalltalk{unlock} and @smalltalk{color}. How a view can listen to a given event is discussed in the next section.
+All in all, there are four events triggered by a card model: @smalltalk{lock},
+@smalltalk{flash}, @smalltalk{unlock}, and @smalltalk{color}. How a view can
+listen to a given event is discussed in the next section.
 
 @node The Three Musketeers
 @section The Three Musketeers
 
-The model, the view and the presenter are tied together. Unlike the three musketeers which were tied together by friendship and the fight for justice, our three objects are tied together by the dependency mechanism we already discussed in the previous sections.
+The model, the view, and the presenter are tied together. Unlike the three
+musketeers, which were tied together by friendship and the fight for justice,
+our three objects are tied together by the dependency mechanism we already
+discussed in the previous sections.
 
-Earlier we wrote a model does not know about its view(s). However how can a view be notified its model changed?
+Earlier, we wrote a model does not know about its view(s). However, how can a
+view be notified its model changed?
 
 @cindex event @subentry update
 @cindex event @subentry change
 @cindex dependency @seeentry{event}
 @subsection update/change
 
-In the @acronym{MVC} design, a view is added as a dependent object to the model it wants to receive update from.
+@subsection Update/Change
+
+In the @acronym{MVC} design, a view is added as a dependent object to the model
+it wants to receive updates from:
 
 @smalltalkExample{model addDependent: aView.
 @dots{}
 model changed: #color}
 
-Then the dependent view receives @msg{update:} message with an argument exposing the changed aspect in the model. It must handle it appropriately
+Then the dependent view receives @msg{update:} message with an argument
+exposing the changed aspect in the model. It must handle it appropriately:
 
 @smalltalkMethod{view>>update: aspect,
 aspect == #color ifTrue: [self color: model color]
 @dots{}}
 
-A view can stop listening to a model to not receive @msg{update:} message anymore
+A view can stop listening to a model to not receive @msg{update:} message anymore:
 
 @smalltalkExample{model removeDependent: aView}
 
-There are two drawbacks to this design: all the changed aspects in the model are handled in an unique @method{update:} method in each listening view, if there are a lot of aspects to handle, the @method{update:} becomes cluttered. Moreover, the update is sent to all the views, independently of there interest for a particular aspect; think about a view not interested in the change of the color aspect of a model, it still receives color update.
+There are two drawbacks to this design: all the changed aspects in the model are
+handled in a unique @method{update:} method in each listening view. If there are
+a lot of aspects to handle, the @method{update:} becomes cluttered. Moreover, the
+update is sent to all the views, independently of their interest for a particular
+aspect. Think about a view not interested in the change of the color aspect of a
+model; it still receives color updates.
 
-The changed/update mechanism appeared with the @acronym{MVC} design, looking at the implementation of the @method{changed:} method is interesting
+The changed/update mechanism appeared with the @acronym{MVC} design. Looking at
+the implementation of the @method{changed:} method is interesting:
 
 @smalltalkMethod{Object>>changed: aspectSymbol,
 "Receiver changed. The change is denoted by the argument. 
@@ -315,33 +443,47 @@ self
    triggerEvent: #changed:
    with: aspectSymbol}
 
-underneath it is implemented with the trigger event we met in the previous section. Indeed, it is now superseded and implemented with the observer pattern which offers more flexibility. We discuss it in the next section.
+Underneath, it is implemented with the trigger event we met in the previous
+section. Indeed, it is now superseded and implemented with the observer pattern,
+which offers more flexibility. We discuss it in the next section.
 
-The changes/update mechanism is still largely used in the Morphic widget, therefore it is worth getting acquainted with. 
+The changes/update mechanism is still largely used in the Morphic widget,
+therefore it is worth getting acquainted with.
 
 @cindex observer pattern @seeentry{event}
 @cindex event @subentry observer pattern
-@subsection The observer pattern
 
-When several views are tied to an identical model, a given view may only be interested to receive update of a specific aspect of the model.
+@subsection The Observer Pattern
 
-To do so we specifically register the aspect a view is interested by
+When several views are tied to an identical model, a given view may only be
+interested to receive updates of a specific aspect of the model.
+
+To do so, we specifically register the aspect a view is interested by:
+
 @smalltalkExample{model when: #border send: #adjustBorder to: view.
 model when: #color send: #setColor: to: anotherView}
 
-then the model triggers events
+Then the model triggers events:
+
 @smalltalkExample{model triggertEvent: #border.
 model triggerEvent: #color with: Color red}
 
-and the effects on the views are equivalent to the sent messages
+And the effects on the views are equivalent to the sent messages:
+
 @smalltalkExample{view adjustBorder.
 anotherView setColor: Color red}
 
-The sent message is set at the registering time of the event with the message @msg{when:send:to:} and the optional parameter is set when triggering the event with the message @msg{triggerEvent:with:}.
+The sent message is set at the registering time of the event with the message
+@msg{when:send:to:} and the optional parameter is set when triggering the event
+with the message @msg{triggerEvent:with:}.
 
-An additional flexibility of the observer pattern: it is not required to subclass the view to implement a specific method, as it was necessary with the @method{update:} method.
+An additional flexibility of the observer pattern: it is not required to subclass
+the view to implement a specific method, as it was necessary with the
+@method{update:} method.
 
-In our memory game, this is one reason we dont't need to define a card view class, we use the stock @class{PluggableButtonMorph}. Observe how we register these events, we previously left out this part (@xref{MemoryGameWindow>>installCards})
+In our memory game, this is one reason we don't need to define a card view
+class; we use the stock @class{PluggableButtonMorph}. Observe how we register
+these events. We previously left out this part (@xref{MemoryGameWindow>>installCards}):
 
 @smalltalkMethod{installCards,
 @dots{}
@@ -354,8 +496,9 @@ cardModel
 cardView layoutSpec proportionalWidth: 1; proportionalHeight: 1.
 @dots{}}
 
-
-One last detail, to foster your understanding of the relation between these two event mechanisms, the @method{addDependent:} method is also implemented with the observer pattern
+One last detail: to foster your understanding of the relation between these two
+event mechanisms, the @method{addDependent:} method is also implemented with
+the observer pattern:
 
 @smalltalkMethod{Object>>addDependent: anObserver,
 "Make the given object one of the receiver's observers (dependents).
@@ -373,4 +516,6 @@ self
 
 @xref{Memory Game v2} for the complete game code.
 
-We end here our chapter regarding the design of a GUI application. The more you will use this design, the more you will appreciate it, particularly when a project grows.
+We end here our chapter regarding the design of a GUI application. The more you
+will use this design, the more you will appreciate it, particularly when a project
+grows.
