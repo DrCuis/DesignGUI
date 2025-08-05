@@ -1,7 +1,5 @@
 @node Handle user interaction
-@chapter Handle user interaction
-
-@*
+@chapter Handle User Interaction
 
 This chapter covers the use of widgets in the base @cuis{} image.
 We hope the examples presented in this chapter provide
@@ -43,7 +41,7 @@ defining a class that opens a window containing a single button.
 Initially the window background color is white.
 Clicking the button toggles the color between red and blue.
 
-Create the following class.
+Create the following class:
 
 @smalltalkExample{Object subclass: #ButtonDemo
    instanceVariableNames: 'layout'
@@ -51,7 +49,7 @@ Create the following class.
    poolDictionaries: ''
    category: 'Demo'}
 
-Define the following instance methods.
+Define the following instance methods:
 
 @smalltalkMethod{initialize,
 | button extent window |
@@ -89,15 +87,19 @@ note how the window background color changes.
 @cindex widget @subentry menu
 @node Menu
 @section Menu
-@cuis{} offers several easy to use options for menus
-to inform or to ask the user to make a choice.
+
+@cuis{} offers several easy-to-use options for menus to inform or to ask
+the user to make a choice.
 
 @cindex widget @subentry menu @subentry pop up
-@subsection Pop up
+
+@subsection Pop Up
+
 The class @class{PopUpMenu} provides an easy way to render a dialog that
-displays information, asks the user for confirmation,
-or ask the user to select an option.
-It is similar to the JavaScript DOM functions @code{alert} and @code{confirm}.
+displays information, asks the user for confirmation, or asks the user to
+select an option. It is similar to the JavaScript DOM functions @code{alert}
+and @code{confirm}.
+
 For example:
 
 @figure{A pop up menu to inform, ch04-popupmenu-inform, 6}
@@ -129,9 +131,13 @@ color print. "prints choice index 1@comma{} 2@comma{} or 3"}
 @cindex widget @subentry menu @subentry selection
 @subsection Selection menu
 
-The @class{SelectionMenu} class is a subclass of @class{PopupMenu}, it gives a bit more flexibility to the developer. Indeed, once the user selected a menu entry, instead of returning this index entry as @class{PopUp Menu} does, it returns an associated object to this entry. It is therefore more flexible.
+The @class{SelectionMenu} class is a subclass of @class{PopupMenu}; it
+gives a bit more flexibility to the developer. Indeed, once the user
+selects a menu entry, instead of returning this index entry as
+@class{PopUp Menu} does, it returns an associated object to this
+entry. It is therefore more flexible.
 
-For example,
+For example:
 
 @smalltalkExampleCaption{Selection menu@comma{} index answer,popupMenu5,
 labels := #('Red sky at sunset' 'A Clockwork Orange'
@@ -141,13 +147,14 @@ menu := SelectionMenu labels: labels lines: lines.
 selection := menu startUpMenu.
 selection print. "prints the selected menu entry index"}
 
-still returns the index of the selected menu entry, which may not be very helpful.
+Still returns the index of the selected menu entry, which may not be very
+helpful.
 
 @figure{A selection menu without title, ch04-selectionmenu, 3}
 
-What we want is a color object instead of an index. To do so,
-we tell @class{SelectionMenu} about a collection of colors from which to
-obtain the returned value depending on the user selected menu entry.
+What we want is a color object instead of an index. To do so, we tell
+@class{SelectionMenu} about a collection of colors from which to obtain the
+returned value depending on the user-selected menu entry.
 
 @smalltalkExampleCaption{Selection menu@comma{} value answer,popupMenu6,
 @dots{}
@@ -156,7 +163,8 @@ menu := SelectionMenu labels: labels lines: lines selections: colors.
 selection := menu startUpMenu.
 selection print. "prints the selected color"}
 
-In the following example we demonstrate a use case of @class{SelectionMenu} in a @class{MenuDemo} class
+In the following example, we demonstrate a use case of
+@class{SelectionMenu} in a @class{MenuDemo} class.
 
 @smalltalkExample{Object subclass: #MenuDemo
    instanceVariableNames: 'colorButton statusLabel window'
@@ -184,8 +192,8 @@ window
    openInWorld;
    morphExtent: (300 @@ window layoutMorph minimumExtent y)}
 
-Once the button is clicked, we request at run time the menu with
-the appropriate selection of colors from which to pick an answer.
+Once the button is clicked, we request at runtime the menu with the
+appropriate selection of colors from which to pick an answer.
 
 @smalltalkMethod{colorMenu,
 @return{} SelectionMenu 
@@ -195,7 +203,8 @@ the appropriate selection of colors from which to pick an answer.
 
 @figure{A selection menu open, ch04-selectionmenu2, 6}
 
-then we adjust the window color and button label accordingly
+Then we adjust the window color and button label accordingly:
+
 @smalltalkMethod{openMenu,
 | selectedColor |
 (selectedColor := self colorMenu startUpMenu) ifNotNil: [
@@ -208,12 +217,13 @@ then we adjust the window color and button label accordingly
 To run this, evaluate @smalltalk{MenuDemo new} in a Workspace.
 
 @cindex widget @subentry menu @subentry string request
-@subsection String request
 
-The class @class{StringRequestMorph} prompts the user to enter a text response.
-It can verify the response using a provided block that returns
-a Boolean value indicating whether the response is valid.
-It can also evaluate a block if the user clicks the cancel button.
+@subsection String Request
+
+The class @class{StringRequestMorph} prompts the user to enter a text
+response. It can verify the response using a provided block that returns a
+Boolean value indicating whether the response is valid. It can also
+evaluate a block if the user clicks the cancel button.
 
 For example:
 
@@ -229,7 +239,7 @@ StringRequestMorph
 
 @cindex widget @subentry text entry
 @node Text entry
-@section Text entry
+@section Text Entry
 
 The @class{TextModelMorph} class can be used for single or multiple
 line text input. It is a very important and complex class with a lot
@@ -264,10 +274,11 @@ textEntry openInWorld.
 textEntry editor actualContents: 'new content'.
 textEntry text print}
 
-Typically you will want to modify many aspects of this morph such as
-its size and whether words automatically wrap to a new lines. By
-default, words that would extend past the right side wrap to the next
-line. To prevent wrapping:
+Typically, you will want to modify many aspects of this morph such as its
+size and whether words automatically wrap to new lines. By default, words
+that would extend past the right side wrap to the next line. To prevent
+wrapping:
+
 @smalltalkExample{textEntry wrapFlag: false}
 
 The value associated with a @class{TextModelMorph} is either held in a
@@ -291,16 +302,18 @@ returns.
 @item
 @smalltalk{TextModelMorph withModel: aTextModel}
 
-The approach allows the same @class{TextModel} to be used by multiple
-other morphs.  It creates an instance, sets its model to a
-@class{TextModel}, and returns the instance.
+The approach allows the same @class{TextModel} to be used by multiple other
+morphs. It creates an instance, sets its model to a @class{TextModel}, and
+returns the instance.
 
-With this approach, when a @class{TextModel} sees its contents changed, it informs its view about the change
+With this approach, when a @class{TextModel} sees its contents changed, it
+informs its view about the change:
+
 @smalltalkMethod{actualContents: aTextOrString,
 self basicActualContents: aTextOrString.
 self changed: #actualContents}
 
-and a @class{TextModelMorph} listen to so such change to update itself
+And a @class{TextModelMorph} listens to such changes to update itself:
 
 @smalltalkMethod{update: aSymbol,
 super update: aSymbol.
@@ -317,7 +330,7 @@ This approach allows the value to be maintained in any object,
 provide the text with its @emph{getter} and to update its text
 attribute from the text entry with its @emph{setter}.
 
-Underneath, it wraps the text provider in a @class{PluggableTextModel}
+Underneath, it wraps the text provider in a @class{PluggableTextModel},
 which is then the model of the text entry @footnote{For real, the
 @class{TextModelMorph} instance, but the term text entry will be
 preferably used to avoid confusion.}.
@@ -329,7 +342,7 @@ When a change is notified by the text provider
 self changed: #getterSymbol.
 @dots{} }
 
-the pluggable model receives an update which in turn notify of the change
+The pluggable model receives an update which in turn notifies of the change:
 
 @smalltalkMethod{PluggableTextModel >> update: aSymbol,
 @dots{}
@@ -337,7 +350,7 @@ aSymbol == textGetter ifTrue: [ @return{}self changed: #acceptedContents ].
 aSymbol == selectionGetter ifTrue: [ @return{}self changed: #initialSelection ].
 self changed: aSymbol}
 
-propagated to the text entry to update itself (method partial shown above)
+Propagated to the text entry to update itself (method partial shown above):
 
 @smalltalkMethod{update: aSymbol,
 @dots{}
@@ -376,7 +389,7 @@ Another way is to set the background color of the @class{TextModelMorph}.
 @cindex widget @subentry text entry @subentry scroll bar
 By default, when there are more lines than fit in the height, a
 vertical scroll bar appears.  When wrapping is turned off, if the text
-does not fit in the width then a horizontal scroll bar appears.
+does not fit in the width, then a horizontal scroll bar appears.
 
 To prevent scroll bars from appearing, send the following message to an
 instance @msg{hideScrollBarsIndefinitely}.
@@ -429,11 +442,12 @@ To listen for changes to the value of a @class{TextModelMorph}:
     "Do something with the value."]}
 
 @cindex widget @subentry text entry @subentry discard
-By default, if the user attempts to close a @class{SystemWindow}
-and it contains @class{TextModelMorph} instances that have unsaved changes,
-they are asked to confirm this with the message
-"Changes have not been saved. Is it OK to cancel those changes?".
-The user must select "Yes" to close the window.
+
+By default, if the user attempts to close a @class{SystemWindow} and it
+contains @class{TextModelMorph} instances that have unsaved changes, they are
+asked to confirm this with the message "Changes have not been saved. Is it OK
+to cancel those changes?" The user must select "Yes" to close the window.
+
 To disable this check for a particular instance of @class{TextModelMorph},
 send it @msg{askBeforeDiscardingEdits:} with the argument @smalltalk{false}.
 
@@ -465,7 +479,7 @@ textEntry selectFrom: index to: index.}
 The following code demonstrates listening for key events.  It prints
 their ASCII codes and character representations to the Transcript.
 
-@smalltalkExample{textEntry keystrokeAction: [ :evt |
+@smalltalkExample{textEntry keystrokeAction: [:evt |
    evt keyValue print.
    evt keyCharacter print ]}
 
@@ -508,13 +522,13 @@ entry := TextModelMorph textProvider: self textGetter: aSymbol textSetter: (aSym
    morphExtent: 0 @@ 0;
    tabToFocus: true;
    wrapFlag: false.
-entry layoutSpec proportionalWidth: 1. " width is 100 % " 
+entry layoutSpec proportionalWidth: 1. "width is 100%"
 @return{} entry}
 
 
 @cindex widget @subentry label
 
-Our text entries are then packed in row with the appropriate label
+Our text entries are then packed in a row with the appropriate label:
 
 @smalltalkMethod{rowLabeled: aString for: aMorph,
 "Answer a row LayoutMorph containing a LabelMorph and a given morph."
@@ -526,7 +540,7 @@ row := LayoutMorph newRow ::
 row layoutSpec proportionalHeight: 0.
 @return{} row}
 
-We define an action method for the unique button of our small application
+We define an action method for the unique button of our small application:
 
 @smalltalkMethod{greet,
 | greeting |
@@ -535,9 +549,8 @@ greeting := firstName
    ifNotEmpty: [ 'Hello @{1@} @{2@}!' format: @{firstName. lastName@} ].
 greetLabel contents: greeting}
 
-
-Finally our @method{initialize} method is packing all the involved morph
-together
+Finally, our @method{initialize} method is packing all the involved morphs
+together:
 
 @smalltalkMethod{initialize,
 | button image window |
@@ -566,7 +579,8 @@ window layoutMorph
    separation: 10;
    color: (Color blue alpha: 0.1)}
 
-In @ref{Which components? Where to find more?}, you will learn how to use additional @cuis{} packages to ease the creation of such dialog window.
+In @ref{Which components? Where to find more?}, you will learn how to use
+additional @cuis{} packages to ease the creation of such dialog windows.
 
 			
 @cindex widget @subentry list
@@ -594,8 +608,8 @@ Create the following class:
     poolDictionaries: ''
     category: 'Demos'}
 
-Add the following instance methods. We start with a bit tool long
-@method{initialize} method responsible to build the whole GUI.
+Add the following instance methods. We start with a bit long
+@method{initialize} method responsible for building the whole GUI.
 
 @smalltalkMethod{initialize,
 | addButton layout row |
@@ -642,16 +656,15 @@ layout := window layoutMorph.
 layout separation: 10.
 window morphExtent: 250 @ layout minimumExtent y}
 
-Observe at the begining of the @method{initialize} method the creation
-of the list, its model is @smalltalk{self}, therefore an instance of
-@class{ListDemo}. In a real application it should be a model object
-representing some type of data. Associated to the model are the
-messages to send to @smalltalk{self} to retrieve the list contents
-(@msg{colors}), to get the index of the selected entry in the list
-(@msg{selectedColorIndex}) and to set the selected index
-(@msg{selectedColorIndex:}).
+Observe at the beginning of the @method{initialize} method the creation of
+the list, its model is @smalltalk{self}, therefore an instance of
+@class{ListDemo}. In a real application, it should be a model object
+representing some type of data. Associated with the model are the messages
+to send to @smalltalk{self} to retrieve the list contents (@msg{colors}),
+to get the index of the selected entry in the list (@msg{selectedColorIndex})
+and to set the selected index (@msg{selectedColorIndex:}).
 
-The methods responding to these message are implemented in
+The methods responding to these messages are implemented in
 @class{ListDemo}:
 
 
@@ -674,11 +687,10 @@ selectedColorIndex = 0 ifFalse: [
     
 @return{} ''}
 
-
-When a new color is input by the user, we add it to the
-@smalltalk{colors} collection, update the list then select this color
-from the list. To prepare for any additional new color input, we clear
-the text entry by emitting the event @smalltalk{#newColor}.
+When a new color is input by the user, we add it to the @smalltalk{colors}
+collection, update the list, then select this color from the list. To
+prepare for any additional new color input, we clear the text entry by
+emitting the event @smalltalk{#newColor}.
 
 @smalltalkMethod{newColor: aText,
 | potentialColor |
@@ -692,18 +704,19 @@ potentialColor ifNotEmpty: [
    self changed: #newColor ]}
 
 @cindex collection @subentry index
-Remember, in Smalltalk index of a collection naturally starts with
-one. Therefore, an index of zero naturally indicates that no item is
-selected in the collection.
+
+Remember, in Smalltalk, the index of a collection naturally starts with one.
+Therefore, an index of zero naturally indicates that no item is selected in
+the collection.
 
 @smalltalkMethod{selectedColorIndex,
 @return{} selectedColorIndex}
 
-This method is called when the user clicks or unclicks an item of the
-list. As recalled earlier, an index of zero indicates that no item was
-@smalltalk{selected}. If the color can not be determined by the name
-added to the list or is empty, a default gray color is set as the
-background color of the window.
+This method is called when the user clicks or unclicks an item of the list.
+As recalled earlier, an index of zero indicates that no item was
+@smalltalk{selected}. If the color cannot be determined by the name added
+to the list or is empty, a default gray color is set as the background
+color of the window.
 
 @smalltalkMethod{selectedColorIndex: anIndex,
 | color colorName selected |
@@ -738,10 +751,23 @@ entry layoutSpec proportionalWidth: 1.
 @return{} entry}
 
 @node Memory game
-@section Memory game
-To illustrate user interactions with the mouse, we present in this section a memory color game. This is a board game where a collection of cards are presented to the user with a common neutral color, each card has its own color, hidden at game start-up. The user must find the cards sharing the same color. When the user clicks on a card, its color is revealed, the card with the matching color must be found. When a pair of cards are found, these cards are not playable anymore; if not, the cards' color are hidden again.
+@section Memory Game
 
-Two morphs are used in the design of the game: a kind of @class{SystemWindow} and a kind of @class{PluggableButtonMorph}. The complete source is presented in the appendix @ref{Memory Game v1} of the book. We will not present every part of the code design, but we will focus on the illustrative ones in regard of the topic of this chapter.
+To illustrate user interactions with the mouse, we present in this section
+a memory color game. This is a board game where a collection of cards are
+presented to the user with a common neutral color; each card has its own
+color, hidden at game startup. The user must find the cards sharing the same
+color. When the user clicks on a card, its color is revealed; the card with
+the matching color must be found. When a pair of cards are found, these cards
+are not playable anymore; if not, the cards' colors are hidden again.
+
+Two morphs are used in the design of the game: a kind of @class{SystemWindow}
+and a kind of @class{PluggableButtonMorph}. The complete source is presented
+in the appendix @ref{Memory Game v1} of the book. We will not present every
+part of the code design, but we will focus on the illustrative ones in regard
+to the topic of this chapter.
+
+The game is started with:
 
 The game is started with
 @smalltalkExample{MemoryGameWindow new openInWorld}
@@ -749,10 +775,16 @@ The game is started with
 @figure{Memory color game, ch04-memoryGame,8}
 
 @cindex widget @subentry button
-@unnumberedsubsec The card
-What are the attributes we want a card to have? We need a card to have a specific @emph{card color} and a status flag to inform if we are @emph{done} with the card.
 
-The card is a morph able to paint itself with a color. It reacts to user click to flip itself between its own @emph{card color} and the common neutral color. What we want is a kind of button:
+@unnumberedsubsec The Card
+
+What are the attributes we want a card to have? We need a card to have a
+specific @emph{card color} and a status flag to inform if we are @emph{done}
+with the card.
+
+The card is a morph able to paint itself with a color. It reacts to user
+clicks to flip itself between its own @emph{card color} and the common neutral
+color. What we want is a kind of button:
 
 @smalltalkExample{PluggableButtonMorph subclass: #MemoryCard
    instanceVariableNames: 'cardColor done'
@@ -760,27 +792,34 @@ The card is a morph able to paint itself with a color. It reacts to user click t
    poolDictionaries: ''
    category: 'MemoryGameV1'}
 
-the default color, common to all the card is white
+The default color, common to all the cards, is white:
 
 @smalltalkMethod{defaultColor,
 @return{} Color white}
 
-it knows to be flipped when its @smalltalk{cardColor} is used as the color of the button
+It knows to be flipped when its @smalltalk{cardColor} is used as the color of
+the button:
 
 @smalltalkMethod{isFlipped,
 @return{} color = cardColor }
 
-and the card can flip between this common color and its own @smalltalk{cardColor}
+And the card can flip between this common color and its own @smalltalk{cardColor}:
 
 @smalltalkMethod{flip,
 color := self isFlipped ifTrue: [self defaultColor] ifFalse: [cardColor].
 self redrawNeeded}
 
-@smalltalk{color} is used to paint the button; when adjusting it, we send the message @msg{redrawNeeded} to the button to force its redraw.
+@smalltalk{color} is used to paint the button; when adjusting it, we
+send the message @msg{redrawNeeded} to the button to force its redraw.
 
 @cindex widget @subentry window
-@unnumberedsubsec The board
-What are the attributes of the game board? It knows about the @emph{playground} set with a specific @emph{size} where the @emph{cards} are presented to the user. It communicates messages through its @emph{status bar} and it knows if the user is @emph{playing} or not.
+
+@unnumberedsubsec The Board
+
+What are the attributes of the game board? It knows about the @emph{playground}
+set with a specific @emph{size} where the @emph{cards} are presented to the
+user. It communicates messages through its @emph{status bar} and it knows
+if the user is @emph{playing} or not.
 
 The game is presented in a window with all these attributes:
 
@@ -790,7 +829,8 @@ The game is presented in a window with all these attributes:
    poolDictionaries: ''
    category: 'MemoryGameV1'}
 
-The board presents a toolbar, its playground and status bar in the window column @smalltalk{layoutMoprh}
+The board presents a toolbar, its playground, and status bar in the window column
+@smalltalk{layoutMorph}:
 
 @smalltalkMethod{initialize,
 super initialize.
@@ -803,10 +843,14 @@ self addMorph: playground.
 self installCards.
 self installStatusBar}
 
-Indeed, by default a @class{SystemWindow} comes with a layout, set as a column. The @smalltalk{playground} is also a column layout, the cards are arranged into in several rows.
+Indeed, by default, a @class{SystemWindow} comes with a layout, set as a
+column. The @smalltalk{playground} is also a column layout; the cards are
+arranged into several rows.
 
-@subsubsection Installing the game
-@cuis{} does not come with any notion of toolbar, but it is fairly easy to create one with a row layout and buttons:
+@subsubsection Installing the Game
+
+@cuis{} does not come with any notion of toolbar, but it is fairly easy to
+create one with a row layout and buttons:
 
 @smalltalkMethod{installToolbar,
 | toolbar button |
@@ -822,9 +866,18 @@ toolbar addMorph: button.
 @dots{}
 self addMorph: toolbar layoutSpec: LayoutSpec new useMorphHeight}
 
-Observe @smalltalk{enableSelector: #isStopped}, indeed the ``Play'' button is only active when the game @smalltalk{isStopped}. The same applies with the ``Stop'' button -- not shown here. The toolbar height -- row layout -- is shrunk to the height of its submorphs, to do so the toolbar is added to the window with the appropriate specification @smalltalk{LayoutSpec new useMorphHeight}.
+Observe @smalltalk{enableSelector: #isStopped}; indeed the ``Play''
+button is only active when the game @smalltalk{isStopped}. The same
+applies with the ``Stop'' button -- not shown here. The toolbar height
+-- row layout -- is shrunk to the height of its submorphs; to do so,
+the toolbar is added to the window with the appropriate specification
+@smalltalk{LayoutSpec new useMorphHeight}.
 
-The cards are installed in several rows in the @smalltalk{playground}, previously emptied. We remember about each card in a special @smalltalk{cards} array we can access with x and y coordinates, also the position of a card in the playground. The colors to be used are randomly chosen and arranged in:
+The cards are installed in several rows in the @smalltalk{playground},
+previously emptied. We remember about each card in a special
+@smalltalk{cards} array we can access with x and y coordinates, also
+the position of a card in the playground. The colors to be used are
+randomly chosen and arranged in:
 
 @smalltalkMethod{installCards,
 | colors  row |
@@ -841,19 +894,29 @@ colors := self distributeColors shuffled.
       cards at: x@@y put: card ].
    playground addMorph: row ]}
 
-We make the card interactive, it is a button, when clicked the message @msg{flip:} is sent to the game window with argument the position in the @smalltalk{cards} array and playground:
+We make the card interactive; it is a button. When clicked, the message
+@msg{flip:} is sent to the game window with the argument the position in the
+@smalltalk{cards} array and playground:
 
 @smalltalkExample{MemoryCard model: self action: #flip: actionArgument: x@@y}
 
 @cindex morph @subentry @msg{lock}
-@subsubsection Game logic
-The core of the game logic is in the @method{flip:} method. It first flips and locks@footnote{The @msg{lock} message is part of the @class{Morph} protocol, it suppresses all kind of user interaction with a given morph.} the clicked card
+@subsubsection Game Logic
+The core of the game logic is in the @method{flip:} method. It first
+flips and locks@footnote{The @msg{lock} message is part of the
+@class{Morph} protocol, it suppresses all kind of user interaction
+with a given morph.} the clicked card:
 
 @smalltalkMethod{flip: position,
 | flippedCards |
 (cards at: position) flip; lock.}
 
-then it detects if all the flipped cards share the same color. To do so, we do a clever trick of Smalltalk: we collect all the colors of the flipped cards, then converts the collection of color as a @class{Set} instance, all duplicated colors are removed. If the size of the resulting set is not 1, it means cards have different colors. In that case, we inform the user with a message, then unflip and unlock the clicked cards:
+Then it detects if all the flipped cards share the same color. To do so, we do
+a clever trick of Smalltalk: we collect all the colors of the flipped cards,
+then convert the collection of colors as a @class{Set} instance; all duplicated
+colors are removed. If the size of the resulting set is not 1, it means cards
+have different colors. In that case, we inform the user with a message, then
+unflip and unlock the clicked cards:
 
 @smalltalkExample{flippedCards := self flippedCards.
 (flippedCards collect: [:aCard | aCard cardColor]) asSet size = 1 ifFalse: [
@@ -865,7 +928,10 @@ then it detects if all the flipped cards share the same color. To do so, we do a
    flippedCards do: [:aCard | aCard flip; unlock].
    @return{} self]}
 
-If the colors match, we check if we reach the @smalltalk{tupleSize} association count -- initialized by default to 2, to make pair of cards. If so, we make the cards to flash and we mark them as @smalltalk{done} so they can't be played anymore
+If the colors match, we check if we reach the @smalltalk{tupleSize}
+association count -- initialized by default to 2, to make pairs of
+cards. If so, we make the cards to flash and we mark them as
+@smalltalk{done} so they can't be played anymore:
 
 @smalltalkExample{
    flippedCards size = tupleSize ifTrue: [
@@ -874,17 +940,19 @@ If the colors match, we check if we reach the @smalltalk{tupleSize} association 
       flippedCards do: #flash.
       flippedCards do: #setDone.}
 
-At this point of the game logic, in the event of a game win, we inform the user and update the game status
+At this point of the game logic, in the event of a game win, we inform the user
+and update the game status:
 
 @smalltalkExample{
       self isGameWon ifTrue: [
          self message: 'Congatuluation@comma{} you finished the game!' bold red.
          playing := false] ]}
 
+@subsubsection Messages to the User
 
-@subsubsection Messages to the user
-During the game logic, at several occurrences, we informed the user
-through messages. The message are printed in the status bar set at initialization time:
+During the game logic, at several occurrences, we informed the user through
+messages. The messages are printed in the status bar set at initialization
+time:
 
 @smalltalkMethod{installStatusBar,
 statusBar := TextParagraphMorph new
@@ -896,7 +964,8 @@ statusBar := TextParagraphMorph new
 self addMorph: statusBar layoutSpec: LayoutSpec new useMorphHeight.
 self message: 'Welcome to '@comma{} 'Memory Game' bold}
 
-Its companion method to write a new text message just updates the contents of the @class{TextParagraphMorph} instance:
+Its companion method to write a new text message just updates the
+contents of the @class{TextParagraphMorph} instance:
 
 @smalltalkMethod{message: aText,
 statusBar contents: aText ;
@@ -905,38 +974,53 @@ statusBar contents: aText ;
 @cindex text
 @cindex widget @subentry text
 
-A message sent to the status bar can be more than a plain string, it can be a @class{Text} instance with styling attributes. To do so, we send specific messages to a string, for example @smalltalk{'hello' bold} converts the 'hello' string as a @class{Text} set with a bold style.
+A message sent to the status bar can be more than a plain string; it can be a
+@class{Text} instance with styling attributes. To do so, we send specific
+messages to a string; for example, @smalltalk{'hello' bold} converts the 'hello'
+string as a @class{Text} set with a bold style.
 
 Examples of styling:
 
 @smalltalkExample{'Hello' red bold.
 'Hello ' italic, ' my love' red bold.}
 
-To discover more messages, browse the method categories @label{text conversion ...} of the @class{CharacterSequence} class.
+To discover more messages, browse the method categories @label{text
+conversion ...} of the @class{CharacterSequence} class.
 
+@subsubsection Access and Test
 
-@subsubsection Access and test
-In the core logic of the game, we accessed the flipped cards in the playground. It is a matter of selecting the cards both @emph{not done} and @emph{flipped}.
+In the core logic of the game, we accessed the flipped cards in the playground.
+It is a matter of selecting the cards both @emph{not done} and @emph{flipped}:
 
 @smalltalkMethod{flippedCards,
 @return{} cards elements select: [:aCard | aCard isDone not and: [aCard isFlipped] ]}
 
-The @class{Array2D} instance of the @smalltalk{cards} variable offers access to its cells with x and y coordinates; however it does not offer the whole range of the @class{Collection} protocol, and particularly the @method{select:} method. Nevertheless, its underneath @smalltalk{elements} attribute is an @class{Array}, part of the @class{Collection} hierarchy, we use it to get the whole power of the @class{Collection} protocol.
+The @class{Array2D} instance of the @smalltalk{cards} variable offers access to its
+cells with x and y coordinates; however, it does not offer the whole range of
+the @class{Collection} protocol, and particularly the @method{select:} method.
+Nevertheless, its underlying @smalltalk{elements} attribute is an @class{Array},
+part of the @class{Collection} hierarchy; we use it to get the whole power of the
+@class{Collection} protocol.
 
-We proceed the same to select the done cards
+We proceed the same to select the done cards:
+
 @smalltalkMethod{doneCards,
 @return{} cards elements select: #isDone}
 
-and undone cards are selected by a subtracting operation, prone to resist to code evolution in the card protocol
+And undone cards are selected by a subtracting operation, prone to resist code
+evolution in the card protocol:
 
 @smalltalkMethod{undoneCards,
 @return{} cards elements asOrderedCollection 
    removeAll: self doneCards;
    yourself}
 
-In the core logic of the game, we test if the game is won, it is a matter of testing if all the cards @emph{are done}, in that case this count is equal to the number of cards in the game
+In the core logic of the game, we test if the game is won; it is a matter of
+testing if all the cards @emph{are done}. In that case, this count is equal to
+the number of cards in the game:
 
 @smalltalkMethod{isGameWon,
 @return{} (cards elements select: #isDone) size = (size x * size y)}
 
-The remaining methods of the game does not require comment, they can be read in the complete source code of the @ref{Memory Game v1}.
+The remaining methods of the game do not require comment; they can be read in
+the complete source code of the @ref{Memory Game v1}.
