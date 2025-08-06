@@ -1,14 +1,13 @@
 @node Handle user interaction
 @chapter Handle User Interaction
 
-This chapter covers the use of widgets in the base @cuis{} image.
-We hope the examples presented in this chapter provide
-enough knowledge to further explore the @cuis{} widgets and tools
-present in the base image. We discuss core functionalities such as
-associating a widget to a model, handling user interactions, and
-updating a widget from a model. We conclude the chapter with the
-fully functional @ref{Memory Game v1}.
-
+This chapter covers the use of widgets in the base @cuis{} image. We
+hope the examples presented in this chapter provide enough knowledge
+to further explore the @cuis{} widgets and tools present in the base
+image. We discuss core functionalities such as associating a widget
+with a model, handling user interactions, and updating a widget from a
+model. We conclude the chapter with the fully functional @ref{Memory
+Game v1}.
 @menu
 * Button::
 * Menu::
@@ -30,11 +29,12 @@ they can be configured through composition rather than inheritance.
 Configuration is achieved by specifying a model object and a selector
 for messages to be sent to the model object when an interaction occurs.
 
-Instances of the @class{PluggableButtonMorph} class can be
-created with the @msg{model:action:label:} class method.
-The @smalltalk{model:} keyword specifies a model object,
-the @smalltalk{action:} keyword specifies a selector for the model object, and
-the @smalltalk{label:} keyword specifies the text that appears in the button.
+Instances of the @class{PluggableButtonMorph} class can be created
+with the @msg{model:action:label:} class method.  The
+@smalltalk{model:} keyword specifies a model object, the
+@smalltalk{action:} keyword specifies a selector for the model object,
+and the @smalltalk{label:} keyword specifies the text that appears in
+the button.
 
 Let's demonstrate using a @class{PluggableButtonMorph} by
 defining a class that opens a window containing a single button.
@@ -395,6 +395,7 @@ To prevent scroll bars from appearing, send the following message to an
 instance @msg{hideScrollBarsIndefinitely}.
 
 @cindex widget @subentry text entry @subentry extent
+
 The default size of a @class{TextModelMorph} is 200 by 100.  This is
 set in the @method{initialize} method of @class{PluggableMorph}, which
 is the superclass of @class{PluggableScrollPane}, which is the
@@ -412,6 +413,7 @@ Setting the height to zero causes it to actually be set to the height
 required for a single line in the current font.
 
 @cindex widget @subentry text entry @subentry tab focus
+
 By default, pressing the tab key does not move focus from one
 @class{TextModelMorph} instance to another.  To enable this, do the
 following for each instance:
@@ -425,6 +427,7 @@ request the update:
 
 @cindex widget @subentry text entry @subentry accept contents
 @cindex widget @subentry text entry @subentry model update
+
 @smalltalkExample{textEntry scroller acceptContents}
 
 There are multiple ways to configure user actions to trigger an update
@@ -443,10 +446,11 @@ To listen for changes to the value of a @class{TextModelMorph}:
 
 @cindex widget @subentry text entry @subentry discard
 
-By default, if the user attempts to close a @class{SystemWindow} and it
-contains @class{TextModelMorph} instances that have unsaved changes, they are
-asked to confirm this with the message "Changes have not been saved. Is it OK
-to cancel those changes?" The user must select "Yes" to close the window.
+By default, if the user attempts to close a @class{SystemWindow} and
+it contains @class{TextModelMorph} instances that have unsaved
+changes, they are asked to confirm this with the message "Changes have
+not been saved. Is it OK to cancel those changes?" The user must
+select "Yes" to close the window.
 
 To disable this check for a particular instance of @class{TextModelMorph},
 send it @msg{askBeforeDiscardingEdits:} with the argument @smalltalk{false}.
@@ -656,17 +660,17 @@ layout := window layoutMorph.
 layout separation: 10.
 window morphExtent: 250 @ layout minimumExtent y}
 
-Observe at the beginning of the @method{initialize} method the creation of
-the list, its model is @smalltalk{self}, therefore an instance of
-@class{ListDemo}. In a real application, it should be a model object
-representing some type of data. Associated with the model are the messages
-to send to @smalltalk{self} to retrieve the list contents (@msg{colors}),
-to get the index of the selected entry in the list (@msg{selectedColorIndex})
-and to set the selected index (@msg{selectedColorIndex:}).
+Observe at the beginning of the @method{initialize} method the
+creation of the list, its model is @smalltalk{self}, therefore an
+instance of @class{ListDemo}. In a real application, it should be a
+model object representing some type of data. Associated with the model
+are the messages to send to @smalltalk{self} to retrieve the list
+contents (@msg{colors}), to get the index of the selected entry in the
+list (@msg{selectedColorIndex}) and to set the selected index
+(@msg{selectedColorIndex:}).
 
 The methods responding to these messages are implemented in
 @class{ListDemo}:
-
 
 @smalltalkMethod{addColor,
 self newColor: newColorEntry text}
@@ -753,19 +757,21 @@ entry layoutSpec proportionalWidth: 1.
 @node Memory game
 @section Memory Game
 
-To illustrate user interactions with the mouse, we present in this section
-a memory color game. This is a board game where a collection of cards are
-presented to the user with a common neutral color; each card has its own
-color, hidden at game startup. The user must find the cards sharing the same
-color. When the user clicks on a card, its color is revealed; the card with
-the matching color must be found. When a pair of cards are found, these cards
-are not playable anymore; if not, the cards' colors are hidden again.
+To illustrate user interactions with the mouse, we present in this
+section a memory color game. This is a board game where a collection
+of cards are presented to the user with a common neutral color; each
+card has its own color, hidden at game startup. The user must find the
+cards sharing the same color. When the user clicks on a card, its
+color is revealed; the card with the matching color must be
+found. When a pair of cards are found, these cards are not playable
+anymore; if not, the cards' colors are hidden again.
 
-Two morphs are used in the design of the game: a kind of @class{SystemWindow}
-and a kind of @class{PluggableButtonMorph}. The complete source is presented
-in the appendix @ref{Memory Game v1} of the book. We will not present every
-part of the code design, but we will focus on the illustrative ones in regard
-to the topic of this chapter.
+Two morphs are used in the design of the game: a kind of
+@class{SystemWindow} and a kind of @class{PluggableButtonMorph}. The
+complete source is presented in the appendix @ref{Memory Game v1} of
+the book. We will not present every part of the code design, but we
+will focus on the illustrative ones in regard to the topic of this
+chapter.
 
 The game is started with:
 
@@ -778,13 +784,13 @@ The game is started with
 
 @unnumberedsubsec The Card
 
-What are the attributes we want a card to have? We need a card to have a
-specific @emph{card color} and a status flag to inform if we are @emph{done}
-with the card.
+What are the attributes we want a card to have? We need a card to have
+a specific @emph{card color} and a status flag to inform if we are
+@emph{done} with the card.
 
-The card is a morph able to paint itself with a color. It reacts to user
-clicks to flip itself between its own @emph{card color} and the common neutral
-color. What we want is a kind of button:
+The card is a morph able to paint itself with a color. It reacts to
+user clicks to flip itself between its own @emph{card color} and the
+common neutral color. What we want is a kind of button:
 
 @smalltalkExample{PluggableButtonMorph subclass: #MemoryCard
    instanceVariableNames: 'cardColor done'
@@ -797,13 +803,14 @@ The default color, common to all the cards, is white:
 @smalltalkMethod{defaultColor,
 @return{} Color white}
 
-It knows to be flipped when its @smalltalk{cardColor} is used as the color of
-the button:
+It knows to be flipped when its @smalltalk{cardColor} is used as the
+color of the button:
 
 @smalltalkMethod{isFlipped,
 @return{} color = cardColor }
 
-And the card can flip between this common color and its own @smalltalk{cardColor}:
+And the card can flip between this common color and its own
+@smalltalk{cardColor}:
 
 @smalltalkMethod{flip,
 color := self isFlipped ifTrue: [self defaultColor] ifFalse: [cardColor].
@@ -816,10 +823,11 @@ send the message @msg{redrawNeeded} to the button to force its redraw.
 
 @unnumberedsubsec The Board
 
-What are the attributes of the game board? It knows about the @emph{playground}
-set with a specific @emph{size} where the @emph{cards} are presented to the
-user. It communicates messages through its @emph{status bar} and it knows
-if the user is @emph{playing} or not.
+What are the attributes of the game board? It knows about the
+@emph{playground} set with a specific @emph{size} where the
+@emph{cards} are presented to the user. It communicates messages
+through its @emph{status bar} and it knows if the user is
+@emph{playing} or not.
 
 The game is presented in a window with all these attributes:
 
@@ -829,8 +837,8 @@ The game is presented in a window with all these attributes:
    poolDictionaries: ''
    category: 'MemoryGameV1'}
 
-The board presents a toolbar, its playground, and status bar in the window column
-@smalltalk{layoutMorph}:
+The board presents a toolbar, its playground, and status bar in the
+window column @smalltalk{layoutMorph}:
 
 @smalltalkMethod{initialize,
 super initialize.
@@ -894,9 +902,9 @@ colors := self distributeColors shuffled.
       cards at: x@@y put: card ].
    playground addMorph: row ]}
 
-We make the card interactive; it is a button. When clicked, the message
-@msg{flip:} is sent to the game window with the argument the position in the
-@smalltalk{cards} array and playground:
+We make the card interactive; it is a button. When clicked, the
+message @msg{flip:} is sent to the game window with the argument the
+position in the @smalltalk{cards} array and playground:
 
 @smalltalkExample{MemoryCard model: self action: #flip: actionArgument: x@@y}
 
@@ -989,38 +997,40 @@ conversion ...} of the @class{CharacterSequence} class.
 
 @subsubsection Access and Test
 
-In the core logic of the game, we accessed the flipped cards in the playground.
-It is a matter of selecting the cards both @emph{not done} and @emph{flipped}:
+In the core logic of the game, we accessed the flipped cards in the
+playground.  It is a matter of selecting the cards both @emph{not
+done} and @emph{flipped}:
 
 @smalltalkMethod{flippedCards,
 @return{} cards elements select: [:aCard | aCard isDone not and: [aCard isFlipped] ]}
 
-The @class{Array2D} instance of the @smalltalk{cards} variable offers access to its
-cells with x and y coordinates; however, it does not offer the whole range of
-the @class{Collection} protocol, and particularly the @method{select:} method.
-Nevertheless, its underlying @smalltalk{elements} attribute is an @class{Array},
-part of the @class{Collection} hierarchy; we use it to get the whole power of the
-@class{Collection} protocol.
+The @class{Array2D} instance of the @smalltalk{cards} variable offers
+access to its cells with x and y coordinates; however, it does not
+offer the whole range of the @class{Collection} protocol, and
+particularly the @method{select:} method.  Nevertheless, its
+underlying @smalltalk{elements} attribute is an @class{Array}, part of
+the @class{Collection} hierarchy; we use it to get the whole power of
+the @class{Collection} protocol.
 
 We proceed the same to select the done cards:
 
 @smalltalkMethod{doneCards,
 @return{} cards elements select: #isDone}
 
-And undone cards are selected by a subtracting operation, prone to resist code
-evolution in the card protocol:
+And undone cards are selected by a subtracting operation, prone to
+resist code evolution in the card protocol:
 
 @smalltalkMethod{undoneCards,
 @return{} cards elements asOrderedCollection 
    removeAll: self doneCards;
    yourself}
 
-In the core logic of the game, we test if the game is won; it is a matter of
-testing if all the cards @emph{are done}. In that case, this count is equal to
-the number of cards in the game:
+In the core logic of the game, we test if the game is won; it is a
+matter of testing if all the cards @emph{are done}. In that case, this
+count is equal to the number of cards in the game:
 
 @smalltalkMethod{isGameWon,
 @return{} (cards elements select: #isDone) size = (size x * size y)}
 
-The remaining methods of the game do not require comment; they can be read in
-the complete source code of the @ref{Memory Game v1}.
+The remaining methods of the game do not require comment; they can be
+read in the complete source code of the @ref{Memory Game v1}.

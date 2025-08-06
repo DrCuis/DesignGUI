@@ -1,9 +1,9 @@
 @node What is a Morph after all?
 @chapter What is a Morph after all?
 
-The Cuis' Morph framework is fundamental to @cuis{}. Every single visual
-piece the user sees and interacts with in the Cuis' window is a morph.
-A morph offers both visual representation and interactivity with keyboard
+The Cuis Morph framework is fundamental to @cuis{}. Every single visual
+piece the user sees and interacts with in the Cuis window is a morph.
+A morph offers both visual representation and interactivity via keyboard
 and mouse inputs.
 
 @menu
@@ -16,13 +16,14 @@ and mouse inputs.
 @section A World of Morphs
 
 @cindex morph @subentry count
-A bit of introspection reveals how many @class{Morph} instances are in use in the @cuis{} living system
+A bit of introspection reveals how many @class{Morph} instances are in use in the
+running @cuis{} system.
 
 @smalltalkExampleCaption{How many buttons?,ch04-buttonCount,
 PluggableButtonMorph allInstances size
-@result{} 288 @footnote{As a recall, you @emph{execute-and-print} to get the result printed; otherwise, it is only executed. Use shortcut @kbd{Ctrl-p} (PrintIt) instead of @kbd{Ctrl-d} (DoIt).}}
+@result{} 288 @footnote{As a reminder, you @emph{execute-and-print} to get the result printed; otherwise, it is only executed. Use shortcut @kbd{Ctrl-p} (PrintIt) instead of @kbd{Ctrl-d} (DoIt).}}
 
-The previous example asked for one specific type of morph. What about asking for all types of morph?
+The previous example asked for one specific type of morph. What about asking for all types of morphs?
 
 @smalltalkExampleCaption{How many morphs are operating on the system?,ch-04-allMorphCount,
 Morph allSubclasses inject: 0 into: [:count :aClass |
@@ -30,20 +31,34 @@ Morph allSubclasses inject: 0 into: [:count :aClass |
 @result{} 1558}
 
 This number, likely different on your own @cuis{} system, represents all
-the objects necessary to operate visually the system. This count changes
-all the time; new morphs are created, and ones no longer necessary are
+the objects necessary to operate the system visually. This count changes
+all the time; new morphs are created, and those no longer necessary are
 garbage collected regularly. You can play a bit with the system and evaluate
-again this count.
+this count again.
 
 @subsection Tree of Morphs
 
 @cindex morph @subentry sub-morph
 @cindex morph @subentry owner
-Any morph can contain other morphs. We already know a @class{LayoutMorph} contains several morphs and manage the way there are layed out; these is reflected in the @smalltalk{submorphs} attribute of each morph, when this collection is empty it means there is no sub-morph. In the other hand, any morph being displayed knows about its containing owner: the @smalltalk{owner} attribute of each morph refers to the morph owning it. And as you can expect it, the owner morph @smalltalk{submorphs} attribute contains the owned morph as well.
+Any morph can contain other morphs. We already know a
+@class{LayoutMorph} contains several morphs and manages the way they
+are laid out; this is reflected in the @smalltalk{submorphs} attribute
+of each morph. When this collection is empty, it means there are no
+submorphs. On the other hand, any morph being displayed knows about
+its owner: the @smalltalk{owner} attribute of each morph refers to the
+morph owning it. And as you might expect, the owner morph's
+@smalltalk{submorphs} attribute contains the owned morph as well.
 
-Then what happens when the @smalltalk{owner} attribute is @smalltalk{nil}? The morph is simply not visible! This double link between owner and owned is very convenient and necessary for the morph framework depending on the situation.
+Then what happens when the @smalltalk{owner} attribute is
+@smalltalk{nil}? The morph is simply not visible! This double link
+between owner and owned is very convenient and necessary for the morph
+framework in various situations.
 
-For example, while an owned morph may have its own local coordinates system for its drawing operations, it can refer to its owner to know about its global coordinates situation, from the point of view of the owner or even from the World perspective -- @emph{simplified for readiness}
+For example, while an owned morph may have its own local coordinate
+system for its drawing operations, it can refer to its owner to
+determine its global coordinates, from the point of view of the owner
+or even from the World perspective -- @emph{simplified for
+readability}.
 
 @smalltalkMethod{Morph>>externalizeToWorld: aPoint,
 "aPoint is in own coordinates. Answer is in world coordinates."
@@ -63,8 +78,8 @@ aCanvas
 ...}		
 
 On the other hand, the owner, depending on its nature, can decide how to
-dispose of its sub-morphs, like a @class{LayoutMorph} does by first
-requesting which sub-morphs to lay out:
+manage its submorphs, like a @class{LayoutMorph} does by first
+requesting which submorphs to lay out:
 
 @smalltalkMethod{LayoutMorph>>submorphsToLayout,
 "Select those that will be laid out."
@@ -75,13 +90,13 @@ requesting which sub-morphs to lay out:
 @cindex morph @subentry halo
 
 Because everything is an object in @cuis{}, every visual part of the system
-is represented through an object the user can interact with and inspect.
-The Halo system, designed with objects, is a special visual tool to know
+is represented by an object the user can interact with and inspect.
+The Halo system, which is itself composed of objects, is a special visual tool to learn
 more about specific @class{Morph} instances. It is invoked on any
 @class{Morph} instance by a middle button click; a halo of colored icons
 then shows up, surrounding the most general selected morph.
 
-Succeeding clicks access more interior submorphs under the mouse pointer,
+Subsequent clicks access more interior submorphs under the mouse pointer,
 and the halo is then updated accordingly. When pressing the @kbd{Shift}
 key, the direction of morph selection is changed: the owner of the selected
 morph is then selected instead.
@@ -91,15 +106,15 @@ Each icon gives access to specific actions to operate on the morph.
 
 @figure{Halo and descriptions on each icon functions,ch04-haloDescription,13}
 
-Some actions need clarifications:
+Some actions need clarification:
 
 @itemize
 @item
 @strong{grab.} It grabs the morph from its owner and can be dropped in the
-World or any other morph accepting dropped morphs.
+World or any other morph that accepts dropped morphs.
 
 @item
-@strong{move.} It moves the morph within its owner. Try the differences
+@strong{move.} It moves the morph within its owner. Try to see the differences
 between grab and move with a menu entry in the World menu.
 
 @item
@@ -131,7 +146,7 @@ WorldMorph allInstances
 Guess what? It is the only morph without an owner and still visible. Take
 any morph in the world, invoke its halo, then from the wrench icon, select
 the menu entry @label{explore morph} and browse the chain of owners until
-you reach the World; you discover it does not have an owner:
+you reach the World; you'll discover it does not have an owner:
 
 @figure{The chain of owners of a morph,ch04-morphOwners,5}
 
@@ -143,16 +158,22 @@ Morph new ::
    openInWorld}
 
 @cindex morph @subentry flash
-A blue rectangular morph shows up at the top left corner of the @cuis{} window. Sometime, the morph we are playing with is out of sight, or we are not sure where it is; a convenient way to find is to ask it flashes itself. In the inspector, execute the code @smalltalk{self flash}.
+A blue rectangular morph shows up at the top left corner of the
+@cuis{} window. Sometimes, the morph we are playing with is out of
+sight, or we are not sure where it is; a convenient way to find it is
+to ask it to flash itself. In the inspector, execute the code
+@smalltalk{self flash}.
 
-Any morph knows about its World, in the inspector execute: @smalltalk{self runningWorld}. As a World is a kind of @class{Morph}, we can flash it too: @smalltalk{self runningWorld flash}.
+Any morph knows about its World; in the inspector, execute:
+@smalltalk{self runningWorld}. As a World is a kind of @class{Morph},
+we can flash it too: @smalltalk{self runningWorld flash}.
 
 @node Morph Hierarchy
 @section Morph Hierarchy
-The @class{Morph} class is the root class to all kinds of
-@class{Morph}, sub-classes specialize on specific facets or add some
+The @class{Morph} class is the root class for all kinds of
+@class{Morph}. Subclasses specialize on specific facets or add
 features. Let's learn a bit more about the @class{Morph} class itself
-and then explore its most fundamental sub-classes.
+and then explore its most fundamental subclasses.
 
 In a stock @cuis{} system, browse the @class{Morph} class; it is in
 the @label{Morphic>Kernel} class category. Here are the most
@@ -181,10 +202,10 @@ fundamental types of @class{Morph}s:
    @end itemize
 @end itemize
 
-Observe how the @class{Morph} has only @class{PlacedMorph} as its subclass;
+Observe how @class{Morph} has only @class{PlacedMorph} as its subclass;
 this is odd and requires some scrutiny by looking at the differences
 between these two classes. Indeed, if @class{Morph} has only one subclass,
-the two should be merged.
+the two classes should be merged.
 
 Let's examine the attributes of the @class{Morph} class:
 
@@ -198,14 +219,14 @@ Let's examine the attributes of the @class{Morph} class:
 There are the expected @smalltalk{owner} and @smalltalk{submorphs}
 attributes; the @smalltalk{properties} attribute is set, when needed,
 as a dictionary to dynamically add attributes or behaviors -- with
-appropriate bloc of code -- to any @class{Morph} instances. There are
+appropriate blocks of code -- to any @class{Morph} instance. There are
 companion methods to set or retrieve a property.
 
 @figure{@class{Morph}'s methods to manipulate properties,ch04-property,8}
 
-This @smalltalk{properties} attribute is used a lot. For example,
-observe its use case to set and get a specific name to a @class{Morph}
-instance
+This @smalltalk{properties} attribute is used extensively. For example,
+observe its use case to set and get a specific name for a @class{Morph}
+instance:
 
 @anchor{morphNameMethods}
 @smalltalkMethod{name: anObject,
@@ -215,10 +236,10 @@ self setProperty: #morphName toValue: 'Glouby'}
 "Answer the value of morphName"
 @return{} self valueOfProperty: #morphName}
 
-Create a new morph as seen in @ref{newInspectMorph}, then in the inspector
+Create a new morph as seen in @ref{newInspectMorph}, then in the inspector,
 execute @smalltalk{self name: 'Glouby'}. Observe how @smalltalk{properties}
 was amended with the dictionary entry @smalltalk{#morphName->'Glouby'};
-when invoking the morph's halo, its new name is printed too.
+when invoking the morph's halo, its new name is also printed.
 
 @figure{A morph's properties, ch04-morphProperties, 8}
 
@@ -226,7 +247,7 @@ Back to the @class{Morph} definition, you can observe there is no attribute
 to describe the shape of a morph!@footnote{The other attributes are used
 for internal management of the morphs and you don't need to care about
 them.} Indeed, a morph has no pre-established shape; its shape is described
-dynamically -- at execution time -- through its @method{drawOn:} method:
+dynamically through its @method{drawOn:} method:
 
 @smalltalkMethod{drawOn: aCanvas,
 drawOn: aCanvas
@@ -234,15 +255,15 @@ drawOn: aCanvas
       fillRectangle: `-75 @@ -70 corner: 75 @@ 70`
       color: `Color blue`}
 
-A @class{Morph} instance's drawing instructions are relative to its owner's
-coordinates system. If you observe this blue rectangular morph we created,
-it is located at the top left corner of the World, where the (0,0)
-coordinates are; in fact, a large part of this morph is not visible, three
-quarters of its area is outside of the screen.
+A @class{Morph} instance's drawing instructions are relative to its
+owner's coordinate system. If you observe this blue rectangular morph
+we created, it is located at the top left corner of the World, where
+the (0,0) coordinates are; in fact, a large part of this morph is not
+visible, three-quarters of its area is outside of the screen.
 
-If you observe the halo as seen in @ref{ch04-morphProperties}, there is no
+If you observe the halo as seen in @ref{ch04-morphProperties}, there are no
 @strong{scale}, @strong{resize}, and @strong{rotate} icons! Indeed, a
-@class{Morph} instance can't be resized or rotated. Moreover, when you try
+@class{Morph} instance cannot be resized or rotated. Moreover, when you try
 to move the morph through its @strong{move} icon, you can't; it sticks to
 its position, hard-coded in its @method{drawOn:} method. It is about time
 to introduce the @class{PlacedMorph} class, which offers these features.
@@ -256,9 +277,9 @@ to introduce the @class{PlacedMorph} class, which offers these features.
 
 @emph{...but not only.}
 
-These abilities of @class{PlacedMorph} to scale, to resize, to rotate, and to
-be moved are some of the differences with @class{Morph}. It is about time
-to examine its definition:
+These abilities of @class{PlacedMorph} -- to scale, resize, rotate,
+and be moved -- are some of the differences compared to
+@class{Morph}. It is about time to examine its definition:
 
 @smalltalkExample{Morph subclass: #PlacedMorph
    instanceVariableNames: 'location layoutSpec'
@@ -274,20 +295,20 @@ We have two more instance variables:
 @itemize
 @item
 This @smalltalk{layoutSpec} attribute is obviously related to the optional
-layout specification used when a @class{PlacedMorph} instance is set in a
-layout morph; this also tells us a @class{Morph} instance can't be set in
+layout specification used when a @class{PlacedMorph} instance is placed in a
+layout morph; this also tells us a @class{Morph} instance cannot be placed in
 a layout.
 
 @item
-This @smalltalk{location} attribute holds the information regarding
-position, scale, and rotation; it is a kind of affine transformation
+This @smalltalk{location} attribute holds the information for
+position, scale, and rotation; it is an affine transformation
 coded as a
 matrix@footnote{@url{https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix}}. These
 transformations are applied -- in one matrix transformation --
 relatively to its owner.
 @end itemize
 
-Time to experiment a bit! Execute this simple code:
+It's time to experiment! Execute this simple code:
 
 @smalltalkExampleCaption{Inspect a star,inspectStar,
 Sample10PythagorasTree new ::
@@ -305,13 +326,13 @@ Moreover, when sending messages to a morph like @smalltalk{#morphPosition},
 @smalltalk{#morphPosition:}, @smalltalk{#scale:}, @smalltalk{#rotation:},
 etc., @cuis{} is just querying or adjusting the @smalltalk{location} matrix
 parameters. Therefore, you, as the user of a @class{PlacedMorph} instance,
-only use these messages without the need to care about the underlying
+only use these messages without needing to worry about the underlying
 matrix representation.
 
 @cindex morph @subentry pixel detection
 @cindex morph @subentry bits mask
 
-One last bit of experiment to foster Morph understanding: @cuis{} knows
+One final experiment to foster an understanding of Morph: @cuis{} knows
 about morph detection. In our previous morph's inspector, execute and
 print @smalltalk{self coversPixel: 0@@0}; the answer is likely false if the
 morph is not positioned to cover the World origin. Now inspect its
@@ -319,18 +340,18 @@ morph is not positioned to cover the World origin. Now inspect its
 1-bit depth @class{Form}. This is how @cuis{} does pixel detection. In
 this @class{Form}, a kind of picture, each bit represents the pixel
 obstruction of the morph: 0 means nothing painted, 1 means the morph
-paints the pixel with an arbitrary color we don't need to know about here.
+paints the pixel with an arbitrary color that we don't need to know about here.
 
-This property is automatically garbage collected when not needed anymore
-or irrelevant.
+This property is automatically garbage collected when it's no longer needed
+or is irrelevant.
 
 @figure{Pixel detection illustrated, ch04-morphBitMask, 9}
 
-The reader may wonder if there is any use case of the @class{Morph} class
-when its instances can't be grabbed and moved around. Why not just use
+The reader may wonder if there is any use case for the @class{Morph} class
+when its instances cannot be grabbed and moved around. Why not just use
 @class{PlacedMorph}? In DrGeo software@footnote{@url{http://gnu.org/s/dr-geo}},
 such morphs are used to represent geometric objects drawn in the
-coordinates system of the owner morph; their positions and aspects are
+coordinate system of the owner morph; their positions and aspects are
 completely dependent on the underlying mathematical models.
 
 @cindex morph @subentry @class{BoxMorph}
@@ -338,10 +359,10 @@ completely dependent on the underlying mathematical models.
 @subsection Rectangular Morph
 
 The remaining classes of the kernel morph hierarchy add geometry and visual
-properties. @class{BoxMorph} is the most important one; it is bounded to
+properties. @class{BoxMorph} is the most important one; it is bounded by
 a rectangular extent. It is the root of most sub-morphs used to construct
-@acronym{GUI, Graphic User Interface}. Indeed, its elements are most of
-the time bounded to a rectangular shape. It allows a lot of optimization in
+@acronym{GUI, Graphic User Interface}. Indeed, its elements are most often
+bounded by a rectangular shape. It allows for significant optimization in
 the rendering of the whole @cuis{} @acronym{GUI}.
 
 @smalltalkExample{PlacedMorph subclass: #BoxMorph
@@ -352,7 +373,7 @@ the rendering of the whole @cuis{} @acronym{GUI}.
 
 @cindex morph @subentry extent
 This additional @smalltalk{extent} attribute defines its width
-(x-axis) and height (y-axis) in the morph local coordinates.
+(x-axis) and height (y-axis) in the morph's local coordinates.
 
 There are companion methods to play with:
 
@@ -371,7 +392,7 @@ BoxMorph new ::
 
 @cindex morph @subentry local bounds
 As this is a kind of @class{PlacedMorph}, we ask directly about its
-bounds -- position and extent -- by executing and printing the result
+bounds -- position and extent -- by executing and printing the result:
 
 @smalltalkExampleCaption{Is my place occupying a lot of space?,boxLocalBounds,
 BoxMorph new ::
@@ -379,12 +400,11 @@ BoxMorph new ::
    localBounds
 @result{} 0@@0 corner: 50@@40.}
 
-The returned object is a @class{Rectangle} instance. As @class{Point}
-instances, this is a fundamental architecture class when dealing with
+The returned object is a @class{Rectangle} instance. As with @class{Point}
+instances, this is a fundamental architectural class when dealing with
 @acronym{GUI}.
 
-Observe as you get the same local bounds even when positioning around the
-morph:
+Observe that you get the same local bounds even when positioning the morph:
 
 @smalltalkExampleCaption{My bounds do not depend on my position, boxLocalBounds2,
 BoxMorph new ::
@@ -394,9 +414,9 @@ BoxMorph new ::
 @result{} 0@@0 corner: 50@@40.}
 
 @cindex morph @subentry bounds in owner
-This is because we are asking in the local morph coordinates
-system. What the reader may want is asking in the owner coordinates
-system, here the @cuis{} World
+This is because we are asking in the morph's local coordinate
+system. What the reader may want is to ask in the owner's coordinate
+system, here the @cuis{} World:
 
 @smalltalkExampleCaption{Morph positioned at pointer position,boxFullBoundsPosition1,
 BoxMorph new ::
@@ -414,7 +434,7 @@ BoxMorph new ::
 @cindex morph @subentry pixel detection
 
 There are several methods dealing specifically with @class{BoxMorph}; take
-a look at them and play a bit to foster your understanding. A last bit
+a look at them and play a bit to foster your understanding. One last bit
 about this class: earlier at @ref{ch04-morphBitMask}, we discussed pixel
 detection with a complicated morph containing holes. In this situation,
 the detection is done with an expensive computed mask. @class{BoxMorph}
@@ -432,11 +452,11 @@ for a non-rectangular morph.
 
 The other morph classes in the kernel category, @class{ColoredBoxMorph} and
 @class{BorderBoxMorph}, add cosmetic features like color, border width and
-color, padding to set space between the border and inner content. It doesn't
+border color, and padding to create space between the border and inner content. It doesn't
 require much explanation. @class{PasteUpMorph} and @class{WorldMorph} are rarely
 used directly.
 
-This modest dive into the Morph framework is now over; we hope it provided
+This brief dive into the Morph framework is now over; we hope it provided
 enough background to foster your understanding when building
-@acronym{GUI}. In another booklet, we will discuss more deeply the Morph
-framework.
+@acronym{GUI}. In another booklet, we will discuss the Morph
+framework in more detail.

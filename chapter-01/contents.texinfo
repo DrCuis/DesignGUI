@@ -1,17 +1,16 @@
 @node Introduction
 @chapter Introduction
 
-This booklet is a collection of how-to guides to learn how to build basic
+This booklet is a collection of how-to guides for building basic
 @acronym{GUI, Graphic User Interface} with @cuis{} and its Morphic system.
 Some chapters, such as @ref{What is a Morph after all?} and @ref{Design a
-GUI application}, present deeper knowledge as well. Most chapters can be
-read independently to serve the needs of the reader.
+GUI application}, present deeper knowledge. Most chapters can be
+read independently to suit the reader's needs.
 
 The standard @cuis{} framework for building user interfaces is Morphic 3;
 it is the most refined version of the Morphic graphic system found in
-Smalltalk environments. The classes provided by this framework are in the
-class category @label{Morphic}. What non-Smalltalk GUI libraries refer to as
-@emph{components} or @emph{widgets} are called @emph{Morphs} in @cuis{};
+Smalltalk environments. What non-Smalltalk GUI libraries refer to as
+@emph{components} or @emph{widgets} is called a @emph{Morph} in @cuis{};
 therefore, in the rest of this book, the terms Morph, widget, and component
 are interchangeable.
 
@@ -22,12 +21,12 @@ are interchangeable.
 
 @node Overview
 @section Overview
-There are many provided morphs that are subclasses of the class
-@class{Morph}, and it's easy to create custom morphs.
+There are many provided morphs that are subclasses of @class{Morph}, and it's
+easy to create custom morphs.
 
 The primary way of organizing morphs is to create instances of
 @class{LayoutMorph} and add submorphs to them. Instances of
-@class{LayoutMorph} can be nested to achieve pretty much any layout. It
+@class{LayoutMorph} can be nested to achieve almost any layout. It
 is used massively; in a @cuis{} image with several browsers open, there
 are tens of layouts.
 
@@ -47,7 +46,7 @@ box openInWorld}
 
 to render a pink rectangle.
 
-Open the halo of work-handles for this morph by holding down a key and
+Open the halo of handles for this morph by holding down a key and
 clicking it. The key to hold down depends on your platform. It is the
 @kbd{Command} key in macOS and the @kbd{Control} key or
 @kbd{Shift+Control} key in other platforms. With a three-button mouse,
@@ -56,7 +55,7 @@ upper-left of the halo to remove the morph.
 
 @node Quick Start
 @section Quick Start
-Rendering a single morph isn't particularly interesting. Let's render
+Rendering a single morph is not particularly interesting. Let's render
 some labels, a text input, and a button to implement a simple
 application.
 
@@ -100,11 +99,11 @@ view
 
 @figure{My first interface,ch01-morphicGreeter,6}
 
-This morph is a bit like a ``Hello World'' panel; it should be inserted in a
-window with a proper title and icon to operate on. To remove this panel,
+This morph, which is similar to a "Hello World" panel, should be inserted into a
+window with a proper title and icon. To remove this panel,
 you need to again request its halo, which is not very practical. Let's
-change the simple app we've built so it can be inside a window. In the
-previous code, edit the end of the script to insert our view in a
+change the simple app we've built so it can be contained within a window. In the
+previous code, edit the end of the script to insert our view into a
 @class{SystemWindow} instance.
 
 Again, select the entire script and invoke it.
