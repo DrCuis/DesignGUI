@@ -4,11 +4,11 @@
 @*
 
 In section @ref{Design a GUI application}, we presented a fundamental design
-pattern of GUI applications. As the development of your GUI application
+pattern for GUI applications. As the development of your GUI application
 progresses and grows in complexity, you may want to use additional design
 patterns. The book @emph{Design Patterns Smalltalk Companion} is a must-read
-for any serious application development. Design patterns help to develop
-code that is easier to maintain; they provide a common ground easing mutual
+for any serious application developer. Design patterns help to develop
+code that is easier to maintain; they provide a common ground, easing mutual
 understanding.
 
 In the following sections, we present several of these patterns with
@@ -33,13 +33,13 @@ concrete use cases in applications developed with the @cuis{} system.
 @node Command
 @section Command
 
-Among the design patterns, it is likely one that impacts the most the
-end-user: it lets you implement the undo and redo operations.
+Among the design patterns, this is likely the one that impacts the
+end-user the most, as it lets you implement the undo and redo operations.
 
 The template repository
 @label{CuisApp}@footnote{@url{https://github.com/hilaire/CuisApp}}
-demonstrates the design of a picture viewer, as a simple Cuis
-application example. The user can rotate, flip and scale a picture
+demonstrates the design of a picture viewer as a simple Cuis
+application example. The user can rotate, flip, and scale a picture.
 Its undo and redo actions are implemented with three classes:
 
 @itemize
@@ -48,15 +48,15 @@ Its undo and redo actions are implemented with three classes:
 @class{AppCommandStack}. Its instance records the history of
 commands. It is a sort of @class{ReadWriteStream} with additional
 behavior, particularly to truncate the stack of commands. Indeed, when
-a new command is inserted in the stack -- it may not be at the end
-depending on the user activation of the @label{undo} action -- the
+a new command is inserted into the stack -- which may not be at the end
+depending on whether the user activated the @label{undo} action -- the
 tail of the stack must be truncated with the @method{truncate}
 method. A @method{previous} method is also needed for the @label{undo}
 action.
 
 @item
 @class{AppCommandManager}. Its instance manages the stack of commands:
-create new commands from user actions then undo and redo commands. For
+it creates new commands from user actions and then undoes and redoes commands. For
 each specific user action, there is a dedicated method:
 @method{flipHorizontally}, @method{rotateLeft}, @method{zoomIn}, etc.
 
@@ -78,11 +78,11 @@ command degrees: -90.
 
 @item
 @class{AppCommand}. The top-level class of a hierarchy of commands, one for
-each user operation. There are the subclasses @class{AppFlipHCommand},
+each user operation. Its subclasses are @class{AppFlipHCommand},
 @class{AppRotateCommand}, etc. Each of these classes implements the
 @method{execute} and @method{unexecute} methods differently.
 
-For some actions like flip horizontally, the @method{unexecute} is identical
+For some actions like flipping horizontally, the @method{unexecute} is identical
 to @method{execute}:
 
 @smalltalkMethod{AppFlipHCommand>>execute,
@@ -91,7 +91,7 @@ self imageMorph image: (self imageMorph form flippedBy: #vertical)}
 @smalltalkMethod{AppFlipHCommand>>unexecute,
 self execute}
 
-Rotating requires an additional behavior (@method{rotatedBy:} not copied
+Rotating requires an additional behavior (@method{rotatedBy:} is not copied
 here):
 
 @smalltalkMethod{AppRotateCommand>>execute,
@@ -101,7 +101,7 @@ self imageMorph image: (self rotatedBy: degrees)}
 self imageMorph image: (self rotatedBy: degrees negated)}
 
 The @method{execute} and @method{unexecute} methods void their effects. In
-some circumstances, the @method{execute} may have a destructive effect as it
+some circumstances, the @method{execute} may have a destructive effect, as
 happens in the zoom out action; an additional attribute is then used to
 keep a copy of the initial data:
 
@@ -109,7 +109,7 @@ keep a copy of the initial data:
 cacheForm := self imageMorph form.
 self imageMorph image: (cacheForm magnifyBy: 0.5)}
 
-So undoing restores properly the data:
+So undoing properly restores the data:
 
 @smalltalkMethod{AppZoomOutCommand>>unexecute,
 self imageMorph image: cacheForm}
@@ -166,12 +166,12 @@ CommandManager --> "1" CommandStack
 
 @end ignore
 
-@figure{Command pattern diagram (for ease of reading the @emph{App}
+@figure{Command pattern diagram (for ease of reading@comma{} the @emph{App}
 prefix is removed),ch07-commandDiagram,16}
 
 @subsection Memory Game with Undo/Redo
 
-What will be the implication to implement the undo and redo actions within
+What would be the implication of implementing the undo and redo actions within
 our game? Our game is simple; the user can only click one card at a time.
 Therefore, we want to record this and also the consequences on the game
 state, if any. The consequences can be none, matching cards, or non-matching
@@ -260,14 +260,14 @@ duplication. It is often associated with the factory pattern, so this will be
 both the place where objects are manufactured or retrieved.
 
 DrGeo uses the flyweight and factory patterns to manage the geometric objects
-created by the user. A geometric object is manufactured once the user provided
+created by the user. A geometric object is manufactured once the user has provided
 enough information by selecting a set of existing objects in a sketch.
 
 To create a segment AB, the user selects point A and point B. If the user
-creates a new segment and selects again the point A and the point B, a new
-segment is not created but instead the existing segment AB is answered.
-Identically, if the user selects point B then point A, the same existing
-segment AB is answered. This mechanism occurs in the flyweight factory.
+creates a new segment and selects point A and point B again, a new
+segment is not created, but instead, the existing segment AB is returned.
+Similarly, if the user selects point B then point A, the same existing
+segment AB is returned. This mechanism occurs in the flyweight factory.
 
 In DrGeo, there are three classes. An abstract @class{DrGFactory}:
 
@@ -285,10 +285,10 @@ The existing objects are held in a pool of objects:
 @smalltalkMethod{initialize,
 pool := OrderedCollection new}
 
-when a new object is pushed in the factory@footnote{The item are not
-built in the factory, this process is factored out in a familly of
+when a new object is pushed into the factory@footnote{The items are not
+built in the factory; this process is factored out in a family of
 builder classes discussed in the next section.}, it is first searched
-in the pool:
+for in the pool:
 
 @smalltalkMethod{pushAsLastWhenInPool: anItem,
 "If this item has a twin in the pool@comma{} push as last this last one and return true@comma{}
@@ -308,7 +308,7 @@ To find in the pool, its index, if any, is searched:
 @return{} self at: (self indexOf: item in: pool)}
 
 Determining if an object has a twin depends on the nature of each object. It
-is done through hash and equality check at the object level:
+is done through a hash and equality check at the object level:
 
 @smalltalkMethod{indexOf: anItem in: aPool,
 "No identity equality but hashed value to detect duplicated object we must consider as equal"
@@ -344,7 +344,7 @@ segments are the same points:
 @smalltalkMethod{parentsEqual: aMathItem,
 @return{} parents asSet = aMathItem parents asSet}
 
-Comparing can be slow, therefore we compare first the hash value of each
+Comparing can be slow, therefore we first compare the hash value of each
 object, pre-computed:
 
 @smalltalkMethod{rehash,
@@ -352,10 +352,10 @@ object, pre-computed:
 bitXor: self nodeType hash) 
 bitXor: self basicType hash}
 
-These details show the tricky part in this pattern: how to establish two
+These details show the tricky part in this pattern: how to establish if two
 objects are identical. With objects representing mathematics items, it is
 difficult; the identity check done by DrGeo is very limited. After all, we
-could have two segments mathematically identical through a process of
+could have two segments that are mathematically identical through a process of
 transformations, and only a mathematics solver could establish it.
 
 @cindex design pattern @subentry builder
@@ -365,13 +365,13 @@ transformations, and only a mathematics solver could establish it.
 
 A builder is an object specialized to construct one or several types of
 objects. The type of the constructed object depends on the nature of the
-inputs sent to the builder. Explained differently, depending on input
-received by the builder, it will figure out what and how to construct a new
+inputs sent to the builder. Explained differently, depending on the input
+received by the builder, it will figure out what to construct and how to construct a new
 object with the provided inputs.
 
 In DrGeo, there is a whole hierarchy of 39 builders. The abstract class
 @class{DrGMathItemBuilder} provides the general mechanism through template
-methods. When an object is added to the builder, first it is asked if it is
+methods. When an object is added to the builder, it is first asked if it is
 wanted or not. Next, once the object is added to the builder, it is asked if
 the builder is ready to build a new object. If so, an event is propagated to
 whatever is listening:
@@ -388,7 +388,7 @@ Add a math item in the selection list of the builder@comma{} aPoint is the posit
       true]}
 
 Let's look at the subclass @class{DrGBuilderMiddle}, a builder to
-construct the middle of two points or a segment.
+construct the midpoint of two points or a segment.
 
 @smalltalkExample{DrGMathItemBuilder subclass: #DrGMiddleBuilder
    instanceVariableNames: 'pointA pointB segment'
@@ -397,7 +397,7 @@ construct the middle of two points or a segment.
    category: 'DrGeo-Presenter-Builder'}
 
 The methods are overridden to fit the task. The middle builder filters items
-which are either point or segment and, depending on the history of the
+that are either a point or a segment and, depending on the history of the
 already added item to the builder:
 
 @smalltalkMethod{isWanted: aMathItemCollection,
@@ -406,7 +406,7 @@ already added item to the builder:
       (aMathItemCollection first isPointItem and: [aMathItemCollection first ~= pointA])
       or: [aMathItemCollection first isSegmentItem and: [pointA isNil]] ]}
 
-Observe a segment is not wanted if a point -- pointA -- was already
+Observe that a segment is not wanted if a point -- pointA -- was already
 provided to the builder.
 
 Adding an item to a builder also depends on the history of added items;
@@ -424,8 +424,8 @@ aMathItemCollection first isPointItem
          @return{} self ] ]
    ifFalse: [segment := aMathItemCollection first]}
 
-Once the segment or the point A and B are known, we are ready to build the
-middle point:
+Once the segment or the points A and B are known, we are ready to build the
+midpoint:
 
 @smalltalkMethod{readyToBuild,
 @return{} segment notNil or: [pointA notNil and: [pointB notNil]]}
@@ -440,20 +440,20 @@ For example with the @class{DrGMiddleBuilder}:
 
 @item
 @strong{Feedback.} Thanks to the @msg{isWanted:} message, DrGeo
-selectively shows balloon text on the relevant mathematics items to
-the builder
+selectively shows balloon text on the relevant mathematics items for
+the builder.
 
 @figure{A balloon text indicates this segment can be
 selected,ch07-hoverSegment,3}
 
-but does not when hovering non relevant mathematics items
+but does not when hovering over non-relevant mathematics items.
 
 @figure{No balloon text indicates this circle can't be
 selected,ch07-hoverCircle,3}
 
 @item
-@strong{Interpret.} Once a mathematics items is added to the builder,
-the @msg{isWanted:} discards additional options for future selection
+@strong{Interpret.} Once a mathematics item is added to the builder,
+the @msg{isWanted:} discards additional options for future selection.
 
 @figure{Point A was selected@comma{} it can't be selected
 again nor the segment AB@comma{} but point B can,ch07-hoverPoint,2}
@@ -463,15 +463,15 @@ again nor the segment AB@comma{} but point B can,ch07-hoverPoint,2}
 @cindex design pattern @subentry template method
 @node Template Method
 @section Template Method
-This pattern is massively used, very likely it is present in your
-code.  The principle is to write the structure of a method in an
+This pattern is used massively, and it is very likely present in your
+code. The principle is to write the structure of a method in an
 abstract class. The method uses auxiliary methods implemented in
-sub-classes, each one with a different and specific
+subclasses, each one with a different and specific
 implementation. In the abstract class, these methods will respond
 @smalltalk{self subclassResponsibility} or provide a minimal
-implementation to be overridden in sub-classes.
+implementation to be overridden in subclasses.
 
-In @ref{Flyweight}, we mentioned briefly the template method pattern
+In @ref{Flyweight}, we briefly mentioned the template method pattern
 in a use case to implement equality between two mathematics items:
 
 @smalltalkMethod{DrGMathItem>>= aMathItem,
@@ -539,7 +539,7 @@ in @class{DrGLocusBuilder}:
 @return{} freePoint notNil and: [constrainedPoint notNil]}
 
 @method{buildItem} is another template method. It builds an item once enough
-relevant mathematics items were added to the builder:
+relevant mathematics items have been added to the builder:
 
 @smalltalkMethod{buildItem,
 | itemDefinitions |
@@ -560,8 +560,8 @@ implemented in the subclasses. Again, for locus:
 @smalltalkMethod{arguments,
 @return{} @{freePoint. constrainedPoint@}}
 
-The builder pattern is very handy to deal with the complexity of constructing
-various kinds of objects, each one with its own constraints. In DrGeo, a
+The builder pattern is very handy for dealing with the complexity of constructing
+various kinds of objects, each with its own constraints. In DrGeo, a
 builder is associated with a tool and state to manage its input and its
 progress toward creating the new mathematics item. We present tool and state
 in the next section.
@@ -585,11 +585,11 @@ states through dedicated methods. Possible states are:
 
 The @class{DrGDrawable} class, a Morph used as a canvas for the sketch, is
 responsible for the low-level duty of translating user actions with
-pointer and keyboard to message sending to one of the methods enumerated
+the pointer and keyboard into message sending to one of the methods enumerated
 above.
 
 The messages are sent to the current tool. For example, when the pointer is
-hovering the sketch:
+hovering over the sketch:
 
 @smalltalkMethod{DrGDrawable>>mouseHover: evt localPosition: localEventPosition,
 "handle mouse move with button up"
@@ -599,7 +599,7 @@ evt shiftPressed
    ifFalse: [self tool @emph{handleMouseAt:} localEventPosition].
 prevMousePos := localEventPosition}
 
-Or the user clicks somewhere with button 1:
+Or when the user clicks somewhere with button 1:
 
 @smalltalkMethod{DrGDrawable>>mouseButton1Down: evt localPosition: localPosition,
 evt shiftPressed 
@@ -617,7 +617,7 @@ evt shiftPressed
    ifFalse: [Cursor normalCursorWithMask activateCursor]}
 
 The state design pattern works with two hierarchies of classes: the contexts
-and the states. In DrGeo, a context is the tool currently in use,
+and the states. In DrGeo, a context is the tool currently in use, and
 @class{DrGTool} is the root of this hierarchy. A tool can be in various
 internal states; therefore, the tool dispatches to its internal state the
 responsibility to handle the user actions:
@@ -631,7 +631,7 @@ Or
 @return{} self state handlePressShiftKey: aPoint}
 
 The @class{DrGBuildTool} is the tool to construct new items; it comes with a
-builder as described in @ref{Builder}:
+builder, as described in @ref{Builder}:
 
 @smalltalkExample{DrGTool subclass: #DrGBuildTool
    instanceVariableNames: 'selectedMorphs builder'
@@ -692,7 +692,7 @@ builder ifNotNil: [builder reset]}
 
 It is therefore enlightening to look at the handlers of this state. For
 example, when hovering a sketch (@msg{handleMouseAt:}), the pointer shape
-is adjusted to a pointing hand to inform the user something can be grabbed:
+is adjusted to a pointing hand to inform the user that something can be grabbed:
 
 @smalltalkMethod{DrGSelectToolStateNeutral>>handleMouseAt: aPoint,
 | processSomething |
@@ -728,8 +728,8 @@ self context reset.
 @return{} false}
 
 It offers two dedicated handlers. In case the mouse button is released
-(@msg{handleRelease:}) while in grabbed state, the tool switches back
-to neutral state:
+(@msg{handleRelease:}) while in the grabbed state, the tool switches back
+to the neutral state:
 
 @smalltalkMethod{DrGSelectToolStateGrabbed>>handleRelease: aPoint,
 self switchState: DrGSelectToolStateNeutral.
@@ -754,9 +754,9 @@ self context morph isBitmap
 
 Understanding how the state of a given tool -- or context in the State
 design pattern terminology -- changes is complex to follow. Knowing
-how the pattern works is fundamental to understand what is going
+how the pattern works is fundamental to understanding what is going
 on. This pattern proved to be useful to handle the complexity of a
-collection of GUI tools, each one with its own way to interact with
+collection of GUI tools, each with its own way of interacting with
 the UI environment.
 
 Sequence diagrams help to have a global understanding of the flow of states
@@ -786,7 +786,7 @@ in a given tool.
 @node Bridge
 @section Bridge
 
-The @cuis{} graphic system is organized in two hierarchies of classes:
+The @cuis{} graphic system is organized into two hierarchies of classes:
 
 @itemize
 
@@ -794,15 +794,15 @@ The @cuis{} graphic system is organized in two hierarchies of classes:
 The @class{MorphicCanvas} hierarchy offers 2D drawing services. Notable
 subclasses are the @class{BitBltCanvas} based on the original Smalltalk-80
 Bits Block Transfer service, the Vector Graphics service specific to the
-@cuis{} system, and the Hybrid service using simultaneously the two previous
-services for both efficiency and high rendering quality (@class{HybridCanvas}).
+@cuis{} system, and the Hybrid service, which uses both previous
+services simultaneously for both efficiency and high rendering quality (@class{HybridCanvas}).
 
 @item
 The @class{VectorEngine} hierarchy offers the concrete implementation
-of the graphic rendering. In the sub-hierarchy
+of the graphic rendering. In the sub-hierarchy,
 @class{VectorEngineSmalltalk} is the pure Smalltalk implementation for
-research and debugging purposes. In the sub-hierarchy
-@class{VectorEngineWithPlugin} is the C implementations for optimal
+research and debugging purposes. In the sub-hierarchy,
+@class{VectorEngineWithPlugin} is the C implementation for optimal
 speed rendering. Both offer various quality and speed rendering
 options with specific classes.
 
@@ -818,11 +818,11 @@ Morphs on the screen. Depending on the type of canvas, different rendering
 engines are then used.
 
 The @class{AbstractVectorCanvas} is the default abstraction used in the
-@cuis{} system. Observe its protocol largely inspired by SVG:
+@cuis{} system. Observe its protocol is largely inspired by SVG:
 
 @anchor{Sample01Star}
 @smalltalkMethod{Sample01Star>>drawOn: aCanvas,
-aCanvas strokeWidth: 12 color: `Color lightOrange` do: [
+aCanvas strokeWidth: 12 color: Color lightOrange do: [
    aCanvas
       moveTo: `(Point rho: 100 theta: 90 degreesToRadians)`;
       lineTo: `(Point rho: 100 theta: (360/5*2+90) degreesToRadians)`;
@@ -832,7 +832,7 @@ aCanvas strokeWidth: 12 color: `Color lightOrange` do: [
       lineTo: `(Point rho: 100 theta: 90 degreesToRadians)` ]}
 
 DrGeo uses this abstraction to implement its own canvas (@class{DrGSvgCanvas})
-to render a sketch in a SVG file. It follows the public protocol of
+to render a sketch into an SVG file. It follows the public protocol of
 @class{AbstractVectorCanvas}. The choice was made to make an implementation
 from the @strong{Abstraction} hierarchy and not the @strong{Implementation}
 one because the former is used as a parameter in the Morph's @method{drawOn:}
@@ -858,6 +858,7 @@ Then in @class{DrGSvgCanvas}:
 self pathStrokeWidth: strokeWidth color: strokeColor fillColor: nil.
 self doPath: pathCommandsBlock ensureClosePath: false}
 
+@c
 And at some point, operations occur in the XML tree:
 
 @smalltalkMethod{pathStrokeWidth: strokeWidth color: strokeColor strokeDashArray: sda fillColor: fillColor,
@@ -870,7 +871,7 @@ self
    fillColor: fillColor.
 @return{} pathNode}
 
-Same goes for @method{lineTo:}
+The same goes for @method{lineTo:}
 
 @smalltalkMethod{AbstractVectorCanvas>>lineTo: aPoint,
 engine lineTo: aPoint.
@@ -882,7 +883,7 @@ firstPoint ifNil: [@return{} self].
 self addPathCommands: 'L '@comma{} point printMini.
 currentPoint := point }
 
-@class{DrGSvgCanvas} implements partially the public protocol of
+@class{DrGSvgCanvas} partially implements the public protocol of
 @class{AbstractVectorCanvas}, restricted to the part used by DrGeo. It weighs
 only 33 methods, and among them, only 17 are from the canvas abstraction.
 
@@ -892,14 +893,14 @@ only 33 methods, and among them, only 17 are from the canvas abstraction.
 @section Strategy
 
 To manage the diversity of the operating systems and hosts a @cuis{} application
-is running on, the strategy pattern is handy.
+is running on, the Strategy pattern is handy.
 
 In DrGeo, it is implemented with a hierarchy of @class{DrGPlatform}, each one
 with its own strategy to access resources and preferences in the host:
 @class{DrGWorkstation} to operate on personal computers, @class{DrGDevelopment}
-to operate on developer mode, @class{DrGAndroid} and @class{DrGiPad} on tablets.
-The two latter ones are not implemented anymore as DrGeo is not ported
-anymore to these devices.
+to operate in developer mode, @class{DrGAndroid} and @class{DrGiPad} on tablets.
+The two latter ones are no longer implemented as DrGeo is not ported
+to these devices anymore.
 
 Then, in the @class{DrGeoSystem} class, it is decided which kind of platform to
 use, depending on how the system is configured:
@@ -919,7 +920,7 @@ without knowing which platform is used underneath:
 @smalltalkMethod{DrGeoSystem class>>iconsPath,
 @return{} platform iconsPath}
 
-It depends on the selected platform, only known by @class{DrGeoSystem}:
+It depends on the selected platform, which is only known by @class{DrGeoSystem}:
 
 @smalltalkMethod{DrGPlatform>>iconsPath,
 @return{} self resourcesPath / 'icons'}
