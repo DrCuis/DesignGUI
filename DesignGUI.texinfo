@@ -5,8 +5,8 @@
 @c %**end of header
 
 @titlepage
-   @title @value{bookletTitle}
-   @subtitle A Practical Guide for Cuis 
+   @title @value{bookTitle}
+   @subtitle @value{bookSubTitle}
    @* @* @* @*
 
    @bookQuote
@@ -25,9 +25,8 @@
 
 @node Top
 @bookQuote
-@*
-A journey in Morph world.
-@top @value{bookletTitle}
+
+@top @value{bookTitle} -- @value{bookSubTitle}
 
 @menu
 @end menu

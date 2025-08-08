@@ -1,7 +1,7 @@
 @copying
-``@value{bookletTitle}'' booklet is for @cuis{} (@value{cuisVersion}),
-a free and modern implementation of the Smalltalk language and
-environment.
+``@value{bookTitle} (@value{bookSubTitle})'' is for @cuis{}
+(@value{cuisVersion}), a free and modern implementation of the
+Smalltalk language and environment.
 
 Copyright @copyright{} 2025 @value{writers}
 @*

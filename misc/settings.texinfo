@@ -1,9 +1,10 @@
 @documentlanguage en
 @documentencoding UTF-8
-@set bookletTitle Design GUI with Morph - (DRAFT)
+@set bookTitle The Morph Book vol. I
+@set bookSubTitle Design Graphic User Interface
 @set cuisVersion 7.0 or later
 @set writers H. Fernandes
-@settitle @value{bookletTitle}
+@settitle @value{bookTitle}
 @codequoteundirected on
 @codequotebacktick on
 @exampleindent 2
@@ -22,7 +23,9 @@
 @c Macro definitions
 @macro bookQuote
 @quotation
-The screen is a window through which one sees a virtual world. The challenge is to make that world look real, act real, sound real, feel real.
+The screen is a window through which one sees a virtual world. The
+challenge is to make that world look real, act real, sound real, feel
+real.
 @author Ivan Sutherland
 @end quotation
 @end macro
@@ -37,7 +40,7 @@ Thanks to Mark Volkmann to share his examples and chapter on layout.
 @*
 
 Thanks to Ken Dickey, Thiago da Silva Lino for the reviews of the
-booklet, suggestions and borrowed texts. Your help is very valuable.
+book, suggestions and borrowed texts. Your help is very valuable.
 @end macro
 
 @macro vm
