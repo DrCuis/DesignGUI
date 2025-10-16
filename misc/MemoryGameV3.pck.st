@@ -462,7 +462,7 @@ installCards
 				when: #lock send:#lock to: cardView;
 				when: #unlock send: #unlock to: cardView;
 				when: #flash send: #flash to: cardView.			
-			cardView layoutSpec proportionalWidth: 1; proportionalHeight: 1.
+			cardView layoutSpec: (LayoutSpec proportionalWidth: 1 proportionalHeight: 1).
 			cardView color: cardModel backColor.
 			row addMorph: cardView].
 		playground addMorph: row ]! !

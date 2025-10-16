@@ -69,8 +69,8 @@ button morphExtent: (extent x + 15) @@ extent y.
 layout := window layoutMorph.
 layout padding: 10.
 window
-   morphExtent: 300 @@ layout minimumExtent y;
-   openInWorld.}
+   openInWorld;
+   morphExtent: 300 @@ layout minimumExtent y.}
 
 @smalltalkMethod{toggleColor,
 layout color: (
@@ -619,7 +619,7 @@ colorList := PluggableListMorph
    listGetter: #colors
    indexGetter: #selectedColorIndex
    indexSetter: #selectedColorIndex:.
-colorList layoutSpec proportionalWidth: 1.
+colorList layoutSpec: (LayoutSpec proportionalWidth: 1).
     
 newColorEntry :=  self textEntryOn: #newColor.
 newColorEntry emptyTextDisplayMessage: 'new color'.
@@ -652,7 +652,7 @@ self selectedColorIndex: 0.
 "Set window size to the smallest height that contains its submorphs."
 layout := window layoutMorph.
 layout separation: 10.
-window morphExtent: 250 @ layout minimumExtent y}
+window morphExtent: 250 @@ layout minimumExtent y}
 
 Observe at the beginning of the @method{initialize} method the
 creation of the list; its model is @smalltalk{self}, therefore an
@@ -695,7 +695,7 @@ potentialColor := aText asString withBlanksTrimmed.
 potentialColor ifNotEmpty: [
    colors add: potentialColor asSymbol.
    colorList updateList.
-   self selectedColorIndex: (colors indexOf: potentialColor )
+   self selectedColorIndex: (colors indexOf: potentialColor ).
    self changed: #clearUserEdits.
    self changed: #newColor ]}
 
@@ -720,7 +720,7 @@ color of the window.
 selectedColorIndex := anIndex.
 
 selected := anIndex ~= 0.
-deleteButton enable: selected.
+deleteButton enableSelector: selected.
 colorName := selected ifTrue: [ colors at: anIndex ].
     
 selectedLabel contents: (colorName
@@ -743,7 +743,7 @@ entry := TextModelMorph
    hideScrollBarsIndefinitely.
 
 entry morphExtent: 0 @@ 0.
-entry layoutSpec proportionalWidth: 1.
+entry layoutSpec: (LayoutSpec proportionalWidth: 1).
 @return{} entry}
 
 @node Memory game
@@ -882,7 +882,7 @@ colors := self distributeColors shuffled.
    row := LayoutMorph newRow.
    1 to: size x do: [:x | | card |
       card := MemoryCard model: self action: #flip: actionArgument: x@@y.
-      card layoutSpec proportionalWidth: 1; proportionalHeight: 1.
+      card layoutSpec: (LayoutSpec proportionalWidth: 1 proportionalHeight: 1).
       card cardColor: colors removeFirst.
       row addMorph: card.
       cards at: x@@y put: card ].
