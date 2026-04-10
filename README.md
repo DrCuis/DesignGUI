@@ -25,7 +25,8 @@ documentation package of the GNU project. It is a well-maintained and
 documented project. Documentation written with Texinfo can be converted
 to info, PDF, HTML, docbook, and text formats. We provide a `makeBook.sh`
 script to output HTML and PDF. To compile the booklet to html for example,
-run `./makeBook.sh html`.
+run `./makeBook.sh html`. Be sure to compile your local copy this way to
+check for compilation errors before submitting your pull request(s).
 
 Read (https://github.com/DrCuis/TheCuisBook/blob/master/README.md) to learn about the commands used to edit the booklet.
 
