@@ -16,7 +16,7 @@ position and size of morphs that are added to them, referred to as submorphs.
 * To row or not to row::
 * Alignment::
 * Proportion::
-* Nest of layouts::
+* Nesting layouts::
 @end menu
 
 @cindex layout
