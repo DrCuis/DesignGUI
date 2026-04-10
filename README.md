@@ -1,4 +1,4 @@
-# Design GUI with Cuis
+# Design a GUI with Cuis
 This booklet shows how to design a graphical user interface with Cuis
 and its Morphic system. It contains how-to guides and background
 regarding the Morphic system. Its chapters can be read independently
@@ -27,5 +27,5 @@ to info, PDF, HTML, docbook, and text formats. We provide a `makeBook.sh`
 script to output HTML and PDF. To compile the booklet to html for example,
 run `./makeBook.sh html`.
 
-Read (https://github.com/DrCuis/TheCuisBook/blob/master/README.md) to learn about the commands to use to edit the booklet
+Read (https://github.com/DrCuis/TheCuisBook/blob/master/README.md) to learn about the commands used to edit the booklet.
 
