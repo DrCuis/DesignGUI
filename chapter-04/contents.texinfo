@@ -111,13 +111,13 @@ PopUpMenu inform: 'Something interesting just happened.'.}
 
 @figure{A pop up menu to answer Yes or No, ch04-popupmenu-confirm, 4}
 
-@smalltalkExampleCaption{Yes or No pop up menu,popupMenu2,
+@smalltalkExampleCaption{Yes or No pop up menu, popupMenu2,
 likesIceCream := PopUpMenu confirm: 'Do you like ice cream?'.
 likesIceCream print. "prints true or false"}
 
 @figure{A pop up menu to select among two choices, ch04-popupmenu-confirm-truechoice-falsechoice, 4}
 
-@smalltalkExampleCaption{Two choices pop up menu,popupMenu3,
+@smalltalkExampleCaption{Two choices pop up menu, popupMenu3,
 likesIceCream := PopUpMenu
     confirm: 'Do you like ice cream?'
     trueChoice: 'Love it!'
@@ -128,7 +128,7 @@ likesIceCream print. "prints true or false"}
 
 @smalltalkExampleCaption{Many choices pop up menu, popupMenu4,
 color := PopUpMenu withCaption: 'Choose a color.' chooseFrom: #('red' 'green' 'blue').
-color print. "prints choice index 1@comma{} 2@comma{} or 3"}
+color print. "prints choice to the Transcript as an index 1@comma{} 2@comma{} or 3"}
 
 @cindex widget @subentry menu @subentry selection
 @subsection Selection menu
@@ -136,34 +136,33 @@ color print. "prints choice index 1@comma{} 2@comma{} or 3"}
 The @class{SelectionMenu} class is a subclass of @class{PopupMenu}; it
 gives a bit more flexibility to the developer. Indeed, once the user
 selects a menu entry, instead of returning this index entry as
-@class{PopUp Menu} does, it returns an associated object to this
+@class{PopUpMenu} does, it can return an associated object to this
 entry. It is therefore more flexible.
 
-For example:
-
-@smalltalkExampleCaption{Selection menu@comma{} index answer,popupMenu5,
-labels := #('Red sky at sunset' 'A Clockwork Orange'
-   'Yellow submarine' 'Green peace' 'The Blue dot' 'Purple rain').
-lines := #(3 6). "draw lines after these indexes"
-menu := SelectionMenu labels: labels lines: lines.
-selection := menu startUpMenu.
-selection print. "prints the selected menu entry index"}
-
-Still returns the index of the selected menu entry, which may not be very
-helpful.
-
-@figure{A selection menu without title, ch04-selectionmenu, 3}
-
-What we want is a color object instead of an index. To do so, we tell
+In our example we want a color object instead of an index. To do so, we tell
 @class{SelectionMenu} about a collection of colors from which to obtain the
 returned value depending on the user-selected menu entry.
 
-@smalltalkExampleCaption{Selection menu@comma{} value answer,popupMenu6,
-@dots{}
-colors := @{Color red . Color orange. Color yellow . Color green . Color blue . Color purple@}.
+For example:
+
+@smalltalkExampleCaption{Selection menu with object answer, popupMenu5,
+labels := #('Red sky at sunset' 'A Clockwork Orange'
+   'Yellow submarine' 'Green peace' 'The Blue dot' 'Purple rain').
+lines := #(3 6). "draw lines after these indexes"
+colors := @{Color red . Color orange . Color yellow . Color green . Color blue . Color purple@}.
 menu := SelectionMenu labels: labels lines: lines selections: colors.
 selection := menu startUpMenu.
-selection print. "prints the selected color"}
+selection print. "prints the selected menu entry's object"}
+
+@figure{A selection menu without title, ch04-selectionmenu, 3}
+
+If you would rather return the index of the selected menu entry, simply call
+the @class{SelectionMenu} class's instance creation method @method{labels:lines:}
+instead. To do so, remove the line beginning with 'colors' in our example above
+and replace the line beginning with 'menu' with this line:
+
+@smalltalkExampleCaption{Selection menu with index answer, popupMenu6,
+menu := SelectionMenu labels: labels lines: lines. "replaces previous menu line"}
 
 In the following example, we demonstrate a use case of
 @class{SelectionMenu} in a @class{MenuDemo} class.
