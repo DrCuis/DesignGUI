@@ -70,7 +70,7 @@ layout := window layoutMorph.
 layout padding: 10.
 window
    openInWorld;
-   morphExtent: 300 @@ layout minimumExtent y.}
+   morphExtent: 400 @@ layout minimumExtent y.}
 
 @smalltalkMethod{toggleColor,
 layout color: (
@@ -83,6 +83,8 @@ Hover over the "Toggle" button for a second
 to see its tooltip (a.k.a balloon text).
 Click the "Toggle" button several times and
 note how the window background color changes.
+
+@figure{ButtomDemo window, ch04-buttondemo-window, 4}
 
 @cindex widget @subentry menu
 @node Menu
