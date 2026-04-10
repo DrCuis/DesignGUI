@@ -200,7 +200,7 @@ appropriate selection of colors from which to pick an answer.
 @return{} SelectionMenu 
    labels: #('Red sky at sunset' 'A Clockwork Orange' 'Yellow submarine' 'Green peace'
       'The Blue dot' 'Purple rain')
-   selections: @{Color red . Color orange. Color yellow . Color green . Color blue . Color purple@}}
+   selections: @{Color red . Color orange . Color yellow . Color green . Color blue . Color purple@}}
 
 @figure{A selection menu open, ch04-selectionmenu2, 6}
 
