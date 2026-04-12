@@ -16,7 +16,7 @@ position and size of morphs that are added to them, referred to as submorphs.
 * To row or not to row::
 * Alignment::
 * Proportion::
-* Nest of layouts::
+* Nesting layouts::
 @end menu
 
 @cindex layout
@@ -74,7 +74,7 @@ To add 10 pixels of space between the submorphs, send
 To add both padding and gap in a single message, do
 @smalltalk{layout separation: 10}.
 
-@figure{Separation of 10 is both gap and padding of 10, ch03-layoutmorph-example3b, 6} 
+@figure{Separation applies 10 to both gap and padding, ch03-layoutmorph-example3b, 6} 
 
 
 @cindex layout @subentry alignment
@@ -89,17 +89,17 @@ For a column @class{LayoutMorph}, the major axis is y, and the minor axis is x.
 If a @class{LayoutMorph} is given a width or height that is larger than
 needed to fit the submorphs, we can specify how the submorphs should be
 aligned. By default, the submorphs will be aligned at the beginning of
-its major axis and centered on its minor axis.
+the @class{LayoutMorph}'s major axis and centered on its minor axis.
 
-You can lengthen the layout by increasing its morphExtent:
+You can lengthen the layout by increasing its morphExtent. For a row @class{LayoutMorph}:
 @smalltalk{layout morphExtent: (layout morphExtent + (80 @@ 0)).}
-Another way of doing this is to get the LayoutMorph's halo
-and drag its yellow Change size button at the lower right.
+Another way of doing this is to get the row LayoutMorph's halo
+and drag the yellow Change size button (found at the lower right) to the right.
 
 @figure{Default alignment, ch03-layoutmorph-example4, 6} 
 
-To change the major axis alignment, @strong{send to the layout morph}
-the message @msg{axisEdgeWeight:} with a floating-point argument
+To change the major axis alignment, send the message @msg{axisEdgeWeight:}
+@strong{to the layout morph} with a floating-point argument
 between 0 and 1. The
 argument should be 0 for left-align, 0.5 for center, or 1 for
 right-align.  The following symbols can also be used for the argument:
@@ -111,14 +111,16 @@ right-align.  The following symbols can also be used for the argument:
   @strong{For columns.} @smalltalk{#columnTop}, @smalltalk{#center}, or @smalltalk{#columnBottom}.
 @end itemize
 
-@smalltalk{layout axisEdgeWeight: #center.}
+For example, you can center your submorphs like this: 
+
+@smalltalkExample{layout axisEdgeWeight: #center.}
 
 @figure{Center alignment, ch03-layoutmorph-example5, 6} 
 
-To change the minor axis alignment, send to each submorph the message
-@msg{offAxisEdgeWeight:} with a floating-point argument. It takes the same
+To change the minor axis alignment, send the message @msg{offAxisEdgeWeight:}
+to each submorph with a floating-point argument. It takes the same
 argument values as the @msg{axisEdgeWeight:} message. Again, this message
-must be sent to each submorph, not to the @class{LayoutMorph}:
+must be @strong{sent to each submorph}, not to the @class{LayoutMorph}:
 
 @smalltalkExample{layout submorphsDo: [:submorph |
    submorph layoutSpec offAxisEdgeWeight: 0]}
@@ -139,7 +141,7 @@ Alternatively to numeric value arguments, symbols can be used:
 
 Browse the method @smalltalk{offAxisEdgeWeight:} to discover more symbols.
 
-@exercise{Top to down, alignmentTopDown, Edit the example @ref{layoutExample1}
+@exercise{Top to bottom, alignmentTopDown, Edit the example @ref{layoutExample1}
 so that @smalltalk{box1} sits at the top of its owner@comma{} @smalltalk{box2} in
 the middle@comma{} and @smalltalk{box3} at the bottom.}
 
@@ -161,9 +163,6 @@ three submorphs that use a proportional width, and they are assigned
 the values 2, 3, and 5.  The total is 10, so the first will take 2/10
 (20%), the second will take 3/10 (30%), and the third will take 5/10
 (50%) of the available space.
-
-Let's modify the previous example to make the second submorph take
-all the available space.
 
 @cindex layout @subentry @class{LayoutSpec}
 
@@ -188,6 +187,9 @@ subclasses:
 Instances of @class{LayoutSpec} have @smalltalk{morph} as an instance
 variable. There are methods to set each of these instance variables.
 
+Let's modify the previous example to make the second submorph take
+all the available space.
+
 @smalltalkExample{box2 layoutSpec: (LayoutSpec proportionalWidth: 1)}
 
 @figure{Using proportionalWidth, ch03-layoutmorph-example7, 6} 
@@ -206,7 +208,7 @@ Let's modify our example @ref{layoutExample1} so the boxes are spread
 across the width of the @class{LayoutMorph} instance with even spacing
 between them.
 
-@smalltalkExampleCaption{Layout with spacer,layoutExample2,
+@smalltalkExampleCaption{Layout with spacers,layoutExample2,
 box1 := ColoredBoxMorph new color: Color red; morphExtent: 50 @@ 75.
 box2 := ColoredBoxMorph new color: Color green; morphExtent: 75 @@ 50.
 box3 := ColoredBoxMorph new color: Color blue; morphExtent: 100 @@ 100.
@@ -224,7 +226,7 @@ layout := LayoutMorph newRow
    addMorph: box3.
 layout openInWorld.}
 
-@figure{Evenly spaced, ch03-layoutmorph-example8, 6} 
+@figure{Evenly spaced morphs, ch03-layoutmorph-example8, 6} 
 
 @smalltalk{spacer1} and @smalltalk{spacer2} each use 1 unit of the
 free space left by the other morphs in the owner. The total free space
@@ -235,8 +237,8 @@ is 2 (1+1), therefore each spacer will occupy 1/2 of the free space.
 free space and the second one three quarters.}
 
 @cindex layout @subentry nested
-@node Nest of layouts
-@section Nest of Layouts
+@node Nesting layouts
+@section Nesting Layouts
 
 To wrap up our discussion on using the @class{LayoutMorph} class, let's
 look at an example that nests layouts:
