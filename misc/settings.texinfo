@@ -39,8 +39,9 @@ Cuis-Smalltalk
 Thanks to Mark Volkmann to share his examples and chapter on layout.
 @*
 
-Thanks to Ken Dickey, Thiago da Silva Lino for the reviews of the
-book, suggestions and borrowed texts. Your help is very valuable.
+Thanks to Ken Dickey, Thiago da Silva Lino, Stephen Smith for the
+reviews of the book, suggestions and borrowed texts. Your help is very
+valuable.
 @end macro
 
 @macro vm
