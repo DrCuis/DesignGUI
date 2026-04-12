@@ -118,8 +118,11 @@ World or any other morph that accepts dropped morphs.
 between grab and move with a menu entry in the World menu.
 
 @item
-@strong{resize.} On a text morph, it changes the area of the morph; on
-more graphics-oriented morphs like the Clock example in @cuis{}, it scales
+@strong{scale.} It maintains the @emph{shape} of the morph, but scales it (for example, you can double the size of the morph).
+
+@item
+@strong{resize.} On a BoxMorph, it changes the area and dimensions of the morph (try it); on
+more graphics-oriented morphs like the Clock example (Sample09Clock) in @cuis{}, it scales
 the morph.
 
 @item
@@ -273,7 +276,7 @@ to introduce the @class{PlacedMorph} class, which offers these features.
 @cindex morph @subentry scale
 @cindex morph @subentry rotate
 
-@subsection Morph You Can Move
+@subsection A Morph You Can Move
 
 @emph{...but not only.}
 
@@ -360,7 +363,7 @@ completely dependent on the underlying mathematical models.
 
 The remaining classes of the kernel morph hierarchy add geometry and visual
 properties. @class{BoxMorph} is the most important one; it is bounded by
-a rectangular extent. It is the root of most sub-morphs used to construct
+a rectangular extent. It is the root of most sub-morphs used to construct a
 @acronym{GUI, Graphic User Interface}. Indeed, its elements are most often
 bounded by a rectangular shape. It allows for significant optimization in
 the rendering of the whole @cuis{} @acronym{GUI}.
@@ -401,7 +404,7 @@ BoxMorph new ::
 @result{} 0@@0 corner: 50@@40.}
 
 The returned object is a @class{Rectangle} instance. As with @class{Point}
-instances, this is a fundamental architectural class when dealing with
+instances, this is a fundamental architectural class when dealing with a
 @acronym{GUI}.
 
 Observe that you get the same local bounds even when positioning the morph:
@@ -457,6 +460,6 @@ require much explanation. @class{PasteUpMorph} and @class{WorldMorph} are rarely
 used directly.
 
 This brief dive into the Morph framework is now over; we hope it provided
-enough background to foster your understanding when building
+enough background to foster your understanding when building a
 @acronym{GUI}. In another booklet, we will discuss the Morph
 framework in more detail.
