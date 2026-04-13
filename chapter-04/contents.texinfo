@@ -217,6 +217,13 @@ Then we adjust the window color and button label accordingly:
 
 To run this, evaluate @smalltalk{MenuDemo new} in a Workspace.
 
+The example above requests the name of the color by sending the
+message @msg{name} to a color; you need the package
+@label{Color-Extras} to get an English name, otherwise the message
+returns the color composition in the RGB space. Install it by
+executing @smalltalk{Feature require: #'Color-Extras'}, browse it to
+discover what it offers.
+
 @cindex widget @subentry menu @subentry string request
 
 @subsection String Request
