@@ -59,15 +59,15 @@
 @include chapter-07/contents.texinfo
 @c
 @c=====================================
-@c Apprendices
+@c Appendices
 @c=====================================
-@c Copyrighted document used in the booklet
+@c Copyrights used in the booklet
 @include misc/copyrights.texinfo
 @c List of exercises
 @node The Exercises
 @appendix The Exercises
 @listoffloats Exercise
-@c Solutions of exercises
+@c Solutions to exercises
 @include chapter-50/contents.texinfo
 @c List of examples
 @node The Examples

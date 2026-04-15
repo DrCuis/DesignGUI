@@ -191,7 +191,7 @@ window
    addMorph: colorButton;
    addMorph: statusLabel;
    openInWorld;
-   morphExtent: (300 @@ window layoutMorph minimumExtent y)}
+   morphExtent: (400 @@ window layoutMorph minimumExtent y)}
 
 Once the button is clicked, we request at runtime the menu with the
 appropriate selection of colors from which to pick an answer.

@@ -44,7 +44,7 @@ names@footnote{The book @emph{Smalltalk with Style} is worth reading to write go
 Smalltalk code.}, and each one with a clearly assigned task as well. Ideally, a method
 should not be longer than 10 lines.
 
-With this practice in mind, when it comes to @acronym{GUI, Graphic User
+With this practice in mind, when it comes to @acronym{GUI, Graphical User
 Interface} application development, there is a well-known design pattern:
 @acronym{MVC, Model View Controller} or its alternative @acronym{MVP, Model View
 Presenter}. In this design, the responsibilities are spread across three

@@ -364,7 +364,7 @@ completely dependent on the underlying mathematical models.
 The remaining classes of the kernel morph hierarchy add geometry and visual
 properties. @class{BoxMorph} is the most important one; it is bounded by
 a rectangular extent. It is the root of most sub-morphs used to construct a
-@acronym{GUI, Graphic User Interface}. Indeed, its elements are most often
+@acronym{GUI, Graphical User Interface}. Indeed, its elements are most often
 bounded by a rectangular shape. It allows for significant optimization in
 the rendering of the whole @cuis{} @acronym{GUI}.
 
