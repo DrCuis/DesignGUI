@@ -1,6 +1,6 @@
-@c Documents avec copyright
-@node Documents Copyright
-@appendix Documents Copyright
+@c Documents with copyright
+@node Copyrights
+@appendix Copyrights
 
 @noindent
 

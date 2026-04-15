@@ -3,7 +3,7 @@
 (@value{cuisVersion}), a free and modern implementation of the
 Smalltalk language and environment.
 
-Copyright @copyright{} 2025 @value{writers}
+Copyright @copyright{} 2025-2026 @value{writers}
 @*
 @thanks{}
 @*

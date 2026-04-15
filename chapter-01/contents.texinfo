@@ -2,7 +2,7 @@
 @chapter Introduction
 
 This booklet is a collection of how-to guides for building basic
-@acronym{GUI, Graphic User Interface} with @cuis{} and its Morphic system.
+@acronym{GUIs, Graphical User Interfaces} with @cuis{} and its Morphic system.
 Some chapters, such as @ref{What is a Morph after all?} and @ref{Design a
 GUI application}, present deeper knowledge. Most chapters can be
 read independently to suit the reader's needs.

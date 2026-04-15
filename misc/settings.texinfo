@@ -1,7 +1,7 @@
 @documentlanguage en
 @documentencoding UTF-8
 @set bookTitle The Morph Book vol. I
-@set bookSubTitle Design Graphic User Interface
+@set bookSubTitle Designing Graphical User Interfaces
 @set cuisVersion 7.0 or later
 @set writers H. Fernandes
 @settitle @value{bookTitle}
@@ -36,7 +36,7 @@ Cuis-Smalltalk
 
 @macro thanks
 @c Alphabetical list of reviewers
-Thanks to Mark Volkmann to share his examples and chapter on layout.
+Thanks to Mark Volkmann for sharing his examples and chapter on layouts.
 @*
 
 Thanks to Ken Dickey, Thiago da Silva Lino, Stephen Smith for the
