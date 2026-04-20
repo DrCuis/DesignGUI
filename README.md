@@ -1,7 +1,7 @@
-# Design a GUI with Cuis
+# Designing Graphical User Interfaces with Cuis
 This booklet shows how to design a graphical user interface with Cuis
 and its Morphic system. It contains how-to guides and background
-regarding the Morphic system. Its chapters can be read independently
+regarding the Morphic system. Its chapters can be read independently.
 
 HTML - https://DrCuis.github.io/DesignGUI
 
