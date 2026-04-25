@@ -166,14 +166,14 @@ initialize
 
 !MemoryGameModel methodsFor: 'initialization' stamp: 'hlsf 3/22/2025 15:35:13'!
 installCardModels
-   | colours |
+   | colors |
    cards := Array2D newSize: size.
-   colours := self distributeColors.
+   colors := self distributeColors.
    1 to: size y do: [:y |
       1 to: size x do: [:x | 
          cards 
             at: x@y 
-            put: (MemoryCardModel new color: colours removeFirst) ] ]! !
+            put: (MemoryCardModel new color: colors removeFirst) ] ]! !
 
 !MemoryGameModel methodsFor: 'accessing' stamp: 'hlsf 3/22/2025 15:55:08'!
 cards
