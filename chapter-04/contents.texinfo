@@ -263,7 +263,7 @@ of features:
 completion.
 
    @item
-   @strong{Style.} Text colors and attributes as bold, italic,
+   @strong{Style.} Text colors and attributes such as bold, italic,
 underlined, etc.
 
    @item
@@ -337,11 +337,11 @@ This approach allows the value to be maintained in any object,
 provide the text with its @emph{getter} and to update its text
 attribute from the text entry with its @emph{setter}.
 Underneath, it wraps the text provider in a @class{PluggableTextModel},
-which is then the model of the text entry @footnote{For real, the
+which is then the model of the text entry @footnote{Actually, the
 @class{TextModelMorph} instance, but the term text entry will be used
 preferably to avoid confusion.}.
 
-When a change is notified by the text provider
+When a change is notified by the text provider:
 
 @smalltalkMethod{TextProvider >> aMethodDoingSomething,
 @dots{}
@@ -546,7 +546,7 @@ row := LayoutMorph newRow ::
 row layoutSpec proportionalHeight: 0.
 @return{} row}
 
-We define an action method for the unique button of our small application:
+We define an action method for the only button in our small application:
 
 @smalltalkMethod{greet,
 | greeting |
@@ -668,7 +668,7 @@ instance of @class{ListDemo}. In a real application, it should be a
 model object representing some type of data. Associated with the model
 are the messages to send to @smalltalk{self} to retrieve the list
 contents (@msg{colors}), to get the index of the selected entry in the
-list (@msg{selectedColorIndex}) and to set the selected index
+list (@msg{selectedColorIndex}), and to set the selected index
 (@msg{selectedColorIndex:}). The methods responding to these messages are implemented in
 @class{ListDemo}:
 
@@ -716,7 +716,7 @@ the collection.
 @smalltalkMethod{selectedColorIndex,
 @return{} selectedColorIndex}
 
-This method is called when the user clicks or unclicks an item of the list.
+This method is called when the user clicks or unclicks an item in the list.
 As recalled earlier, an index of zero indicates that no item was
 @smalltalk{selected}. If the color cannot be determined by the name added
 to the list or is empty, a default gray color is set as the background
